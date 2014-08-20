@@ -77,7 +77,7 @@ import com.iiordanov.bVNC.input.RemotePointer;
 
 import com.iiordanov.tigervnc.vncviewer.CConn;
 
-public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListener, LibFreeRDP.EventListener {
+public class RemoteCanvas extends ImageView implements UIEventListener, LibFreeRDP.EventListener {
     private final static String TAG = "VncCanvas";
     
     public AbstractScaling scaling;
@@ -1217,8 +1217,8 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     }
     
     //////////////////////////////////////////////////////////////////////////////////
-    //  Implementation of LibFreeRDP.UIEventListener. Through the functions implemented
-    //  below libspice and FreeRDP communicate remote desktop size and updates.
+    //  Implementation of UIEventListener. Through the functions implemented
+    //  below libspice communicates remote desktop size and updates.
     //////////////////////////////////////////////////////////////////////////////////
     
     @Override
