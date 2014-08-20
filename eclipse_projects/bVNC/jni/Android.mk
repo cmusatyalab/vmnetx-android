@@ -1,1 +1,1 @@
-../../Opaque/jni/Android.mk
+include $(all-subdir-makefiles)

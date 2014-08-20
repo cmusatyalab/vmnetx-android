@@ -1,1 +1,3 @@
-../../../../Opaque/jni/src/android/generate-linux-keymap.sh
+#!/bin/sh
+
+./keymap-gen.pl keymaps.csv linux xtkbd > android/linuxkeymap.h
