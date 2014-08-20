@@ -66,19 +66,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 
-import com.freerdp.freerdpcore.application.GlobalApp;
-import com.freerdp.freerdpcore.application.SessionState;
-import com.freerdp.freerdpcore.domain.BookmarkBase;
-import com.freerdp.freerdpcore.domain.ManualBookmark;
 import com.freerdp.freerdpcore.services.LibFreeRDP;
 import com.iiordanov.android.bc.BCFactory;
-import com.iiordanov.bVNC.input.RemoteRdpKeyboard;
 import com.iiordanov.bVNC.input.RemoteSpiceKeyboard;
 import com.iiordanov.bVNC.input.RemoteSpicePointer;
 import com.iiordanov.bVNC.input.RemoteVncKeyboard;
 import com.iiordanov.bVNC.input.RemoteVncPointer;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
-import com.iiordanov.bVNC.input.RemoteRdpPointer;
 import com.iiordanov.bVNC.input.RemotePointer;
 
 import com.iiordanov.tigervnc.vncviewer.CConn;
@@ -100,7 +94,6 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     public RfbConnectable rfbconn   = null;
     private RfbProto rfb            = null;
     private CConn cc                = null;
-    private RdpCommunicator rdpcomm = null;
     private SpiceCommunicator spicecomm = null;
     private Socket sock             = null;
     
@@ -118,10 +111,6 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     public AbstractBitmapData bitmapData;
     boolean useFull = false;
     boolean compact = false;
-    
-    // Keeps track of libFreeRDP instance. 
-    GlobalApp freeRdpApp = null;
-    SessionState session = null;
     
     // Progress dialog shown at connection time.
     ProgressDialog pd;
@@ -164,11 +153,6 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     float displayDensity = 0;
     
     /*
-     * This flag indicates whether this is the RDP 'version' or not.
-     */
-    boolean isRdp = false;
-
-    /*
      * This flag indicates whether this is the SPICE 'version' or not.
      */
     boolean isSpice = true;
@@ -191,7 +175,6 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
         
         decoder = new Decoder (this);
         
-        isRdp   = getContext().getPackageName().contains("RDP");
         isSpice = true;
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
@@ -260,8 +243,6 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
                     
                     if (isSpice) {
                         startSpiceConnection();
-                    } else if (isRdp) {
-                        startRdpConnection();
                     } else {
                         startVncConnection();
                     }
@@ -332,69 +313,6 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
         spicecomm.connect(address, Integer.toString(port), Integer.toString(tport),
                             connection.getPassword(), connection.getCaCertPath(),
                             connection.getCertSubject(), connection.getEnableSound());
-    }
-    
-    
-    /**
-     * Starts an RDP connection using the FreeRDP library.
-     * @throws Exception
-     */
-    private void startRdpConnection() throws Exception {
-        // Get the address and port (based on whether an SSH tunnel is being established or not).
-        String address = getAddress();
-        int rdpPort = getPort(connection.getPort());
-        
-        // This is necessary because it initializes a synchronizedMap referenced later.
-        freeRdpApp = new GlobalApp();
-        
-        // Create a manual bookmark and populate it from settings.
-        BookmarkBase bookmark = new ManualBookmark();
-        bookmark.<ManualBookmark>get().setLabel(connection.getNickname());
-        bookmark.<ManualBookmark>get().setHostname(address);
-        bookmark.<ManualBookmark>get().setPort(rdpPort);
-        bookmark.<ManualBookmark>get().setUsername(connection.getUserName());
-        bookmark.<ManualBookmark>get().setDomain(connection.getRdpDomain());
-        bookmark.<ManualBookmark>get().setPassword(connection.getPassword());
-        
-        // Create a session based on the bookmark
-        session = GlobalApp.createSession(bookmark);
-        
-        // Set a writable data directory
-        LibFreeRDP.setDataDirectory(session.getInstance(), getContext().getFilesDir().toString());
-        
-        // Set screen settings to native res if instructed to, or if height or width are too small.
-        BookmarkBase.ScreenSettings screenSettings = session.getBookmark().getActiveScreenSettings();
-        waitUntilInflated();
-        int remoteWidth  = getRemoteWidth(getWidth(), getHeight());
-        int remoteHeight = getRemoteHeight(getWidth(), getHeight());
-        screenSettings.setWidth(remoteWidth);
-        screenSettings.setHeight(remoteHeight);
-        screenSettings.setColors(16);
-        
-        // Set performance flags.
-        BookmarkBase.PerformanceFlags performanceFlags = session.getBookmark().getPerformanceFlags();
-        performanceFlags.setRemoteFX(connection.getRemoteFx());
-        performanceFlags.setWallpaper(connection.getDesktopBackground());
-        performanceFlags.setFontSmoothing(connection.getFontSmoothing());
-        performanceFlags.setDesktopComposition(connection.getDesktopComposition());
-        performanceFlags.setFullWindowDrag(connection.getWindowContents());
-        performanceFlags.setMenuAnimations(connection.getMenuAnimation());
-        performanceFlags.setTheming(connection.getVisualStyles());
-        
-        BookmarkBase.AdvancedSettings advancedSettings = session.getBookmark().getAdvancedSettings();
-        advancedSettings.setRedirectSDCard(connection.getRedirectSdCard());
-        advancedSettings.setConsoleMode(connection.getConsoleMode());
-        
-        rdpcomm = new RdpCommunicator (session);
-        rfbconn = rdpcomm;
-        pointer = new RemoteRdpPointer (rfbconn, RemoteCanvas.this, handler);
-        keyboard = new RemoteRdpKeyboard (rfbconn, RemoteCanvas.this, handler);
-        
-        session.setUIEventListener(RemoteCanvas.this);
-        LibFreeRDP.setEventListener(RemoteCanvas.this);
-        
-        session.connect();
-        pd.dismiss();
     }
     
     
@@ -1275,23 +1193,17 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     
     @Override
     public void OnConnectionSuccess(int instance) {
-        rdpcomm.setIsInNormalProtocol(true);
         Log.v(TAG, "OnConnectionSuccess");
     }
     
     @Override
     public void OnConnectionFailure(int instance) {
-        rdpcomm.setIsInNormalProtocol(false);
         Log.v(TAG, "OnConnectionFailure");
-        // free session
-        // TODO: Causes segfault in libfreerdp-android. Needs to be fixed.
-        //GlobalApp.freeSession(instance);
         showFatalMessageAndQuit (getContext().getString(R.string.error_rdp_unable_to_connect));
     }
     
     @Override
     public void OnDisconnecting(int instance) {
-        rdpcomm.setIsInNormalProtocol(false);
         Log.v(TAG, "OnDisconnecting");
         // Only display an error message if we were trying to maintain the connection (not disconnecting).
         if (maintainConnection) {
@@ -1301,10 +1213,7 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     
     @Override
     public void OnDisconnected(int instance) {
-        rdpcomm.setIsInNormalProtocol(false);
         Log.v(TAG, "OnDisconnected");
-        // TODO: Causes segfault in libfreerdp-android. Needs to be fixed.
-        //GlobalApp.freeSession(instance);
     }
     
     //////////////////////////////////////////////////////////////////////////////////
@@ -1393,14 +1302,8 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     @Override
     public void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.e(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
-        if (isRdp) {
-            synchronized (bitmapData.mbitmap) {
-                LibFreeRDP.updateGraphics(session.getInstance(), bitmapData.mbitmap, x, y, width, height);
-            }
-        } else {
-            synchronized (bitmapData.mbitmap) {
-                spicecomm.UpdateBitmap(bitmapData.mbitmap, x, y, width, height);
-            }
+        synchronized (bitmapData.mbitmap) {
+            spicecomm.UpdateBitmap(bitmapData.mbitmap, x, y, width, height);
         }
         
         reDraw(x, y, width, height);

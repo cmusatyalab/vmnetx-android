@@ -919,8 +919,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
      * @return
      */
     AbstractInputHandler getInputHandlerById(int id) {
-        boolean isRdp = getPackageName().contains("RDP");
-
         if (inputModeHandlers == null) {
             inputModeHandlers = new AbstractInputHandler[inputModeIds.length];
         }
@@ -946,16 +944,16 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                         break;
  */                    
                     case R.id.itemInputTouchPanZoomMouse:
-                        inputModeHandlers[i] = new TouchMouseSwipePanInputHandler(this, canvas, isRdp);
+                        inputModeHandlers[i] = new TouchMouseSwipePanInputHandler(this, canvas);
                         break;
                     case R.id.itemInputDragPanZoomMouse:
-                        inputModeHandlers[i] = new TouchMouseDragPanInputHandler(this, canvas, isRdp);
+                        inputModeHandlers[i] = new TouchMouseDragPanInputHandler(this, canvas);
                         break;
                     case R.id.itemInputTouchpad:
-                        inputModeHandlers[i] = new SimulatedTouchpadInputHandler(this, canvas, isRdp);
+                        inputModeHandlers[i] = new SimulatedTouchpadInputHandler(this, canvas);
                         break;
                     case R.id.itemInputSingleHanded:
-                        inputModeHandlers[i] = new SingleHandedInputHandler(this, canvas, isRdp);
+                        inputModeHandlers[i] = new SingleHandedInputHandler(this, canvas);
                         break;
 
                     }

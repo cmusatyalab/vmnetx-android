@@ -7,7 +7,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import com.iiordanov.bVNC.MetaKeyBean;
-import com.iiordanov.bVNC.RdpCommunicator;
 import com.iiordanov.bVNC.RfbConnectable;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.tigervnc.rfb.UnicodeToKeysym;
@@ -124,7 +123,7 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
         int y = pointer.getY();
         
         if (meta.isMouseClick()) {
-            //android.util.Log.e("RemoteRdpKeyboard", "is a mouse click");
+            //android.util.Log.e("RemoteSpiceKeyboard", "is a mouse click");
             int button = meta.getMouseButtons();
             switch (button) {
             case RemoteVncPointer.MOUSE_BUTTON_LEFT:

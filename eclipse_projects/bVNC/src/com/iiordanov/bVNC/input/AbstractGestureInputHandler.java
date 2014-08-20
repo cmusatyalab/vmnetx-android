@@ -128,7 +128,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     protected boolean secondPointerWasDown = false;
     protected boolean thirdPointerWasDown  = false;
     
-    AbstractGestureInputHandler(RemoteCanvasActivity c, RemoteCanvas v, boolean slowScrolling)
+    AbstractGestureInputHandler(RemoteCanvasActivity c, RemoteCanvas v)
     {
         activity = c;
         canvas = v;
@@ -142,10 +142,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         
         distXQueue = new LinkedList<Float>();
         distYQueue = new LinkedList<Float>();
-        
-        if (slowScrolling) {
-            maxSwipeSpeed = 2;
-        }
     }
 
     /**

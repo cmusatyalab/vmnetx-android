@@ -19,8 +19,8 @@ public class SimulatedTouchpadInputHandler extends AbstractGestureInputHandler {
     /**
      * @param c
      */
-    public SimulatedTouchpadInputHandler(RemoteCanvasActivity va, RemoteCanvas v, boolean slowScrolling) {
-        super(va, v, slowScrolling);
+    public SimulatedTouchpadInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
+        super(va, v);
         acceleration = activity.getAccelerationEnabled();
         sensitivity = activity.getSensitivity();
     }

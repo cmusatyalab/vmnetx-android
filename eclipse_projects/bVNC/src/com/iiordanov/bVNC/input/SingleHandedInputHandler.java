@@ -35,8 +35,8 @@ public class SingleHandedInputHandler extends TouchMouseSwipePanInputHandler {
     /**
      * @param c
      */
-    public SingleHandedInputHandler(RemoteCanvasActivity va, RemoteCanvas v, boolean slowScrolling) {
-        super(va, v, slowScrolling);
+    public SingleHandedInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
+        super(va, v);
         initializeButtons();
     }
 
