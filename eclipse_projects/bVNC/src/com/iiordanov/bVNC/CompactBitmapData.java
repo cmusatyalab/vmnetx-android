@@ -31,7 +31,7 @@ class CompactBitmapData extends AbstractBitmapData {
      * safety factor
      */
     static final int CAPACITY_MULTIPLIER = 7;
-    boolean isSpice = false;
+    boolean isSpice = true;
     Bitmap.Config cfg = Bitmap.Config.RGB_565;
     
     class CompactBitmapDrawable extends AbstractBitmapDrawable {

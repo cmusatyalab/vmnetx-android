@@ -15,9 +15,9 @@
         android:smallScreens="true"
         android:anyDensity="true"/>
 		
-    <application android:icon="@drawable/icon" android:label="bVNC" android:debuggable="false" android:theme="@style/AppTheme" >
+    <application android:icon="@drawable/icon" android:label="aSPICE" android:debuggable="false" android:theme="@style/AppTheme" >
                 <activity android:label="@string/app_name"
-                          android:name="bVNC"
+                          android:name="aSPICE"
                           android:screenOrientation="unspecified"
                           android:configChanges="orientation|keyboardHidden"
                           android:windowSoftInputMode="stateHidden|adjustResize"

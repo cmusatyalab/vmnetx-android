@@ -171,7 +171,7 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
     /*
      * This flag indicates whether this is the SPICE 'version' or not.
      */
-    boolean isSpice = false;
+    boolean isSpice = true;
     boolean spiceUpdateReceived = false;
     
     /*
@@ -192,7 +192,7 @@ public class RemoteCanvas extends ImageView implements LibFreeRDP.UIEventListene
         decoder = new Decoder (this);
         
         isRdp   = getContext().getPackageName().contains("RDP");
-        isSpice = getContext().getPackageName().contains("SPICE");
+        isSpice = true;
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
         displayWidth  = display.getWidth();
