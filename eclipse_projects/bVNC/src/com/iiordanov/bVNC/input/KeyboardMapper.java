@@ -13,7 +13,7 @@ package com.iiordanov.bVNC.input;
 import android.content.Context;
 import android.view.KeyEvent;
 
-public class RdpKeyboardMapper
+public class KeyboardMapper
 {
     public static final int KEYBOARD_TYPE_FUNCTIONKEYS = 1;
     public static final int KEYBOARD_TYPE_NUMPAD = 2;

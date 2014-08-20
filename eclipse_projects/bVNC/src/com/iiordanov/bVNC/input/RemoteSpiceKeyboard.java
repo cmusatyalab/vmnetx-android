@@ -10,7 +10,7 @@ import com.iiordanov.bVNC.MetaKeyBean;
 import com.iiordanov.bVNC.RfbConnectable;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.tigervnc.rfb.UnicodeToKeysym;
-import com.iiordanov.bVNC.input.RdpKeyboardMapper;
+import com.iiordanov.bVNC.input.KeyboardMapper;
 
 
 public class RemoteSpiceKeyboard extends RemoteKeyboard {
@@ -21,9 +21,9 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
         
         context = v.getContext();
         
-        keyboardMapper = new RdpKeyboardMapper();
+        keyboardMapper = new KeyboardMapper();
         keyboardMapper.init(context);
-        keyboardMapper.setKeyProcessingListener((RdpKeyboardMapper.KeyProcessingListener)r);
+        keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener)r);
     }
     
     public boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState) {

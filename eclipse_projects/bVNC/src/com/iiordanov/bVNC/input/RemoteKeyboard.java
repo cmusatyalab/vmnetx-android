@@ -37,7 +37,7 @@ public abstract class RemoteKeyboard {
     protected Handler handler;
     protected RfbConnectable rfb;
     protected Context context;
-    protected RdpKeyboardMapper keyboardMapper;
+    protected KeyboardMapper keyboardMapper;
     protected KeyRepeater keyRepeater;
 
     // Variable holding the state of any pressed hardware meta keys (Ctrl, Alt...)

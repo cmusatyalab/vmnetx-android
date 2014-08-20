@@ -4,12 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 
-import com.iiordanov.bVNC.input.RdpKeyboardMapper;
+import com.iiordanov.bVNC.input.KeyboardMapper;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
 import com.iiordanov.bVNC.input.RemoteSpicePointer;
 import com.gstreamer.*;
 
-public class SpiceCommunicator implements RfbConnectable, RdpKeyboardMapper.KeyProcessingListener {
+public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProcessingListener {
     private final static String TAG = "SpiceCommunicator";
 
     public native int  SpiceClientConnect (String ip, String port, String tport, String password, String ca_file, String cert_subj, boolean sound);
