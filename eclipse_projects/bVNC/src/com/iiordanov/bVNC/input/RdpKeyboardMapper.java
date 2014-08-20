@@ -10,8 +10,6 @@
 
 package com.iiordanov.bVNC.input;
 
-import com.freerdp.freerdpcore.R;
-
 import android.content.Context;
 import android.view.KeyEvent;
 
@@ -30,14 +28,11 @@ public class RdpKeyboardMapper
     public interface KeyProcessingListener {
         abstract void processVirtualKey(int virtualKeyCode, boolean down);
         abstract void processUnicodeKey(int unicodeKey);
-        abstract void switchKeyboard(int keyboardType);
-        abstract void modifiersChanged();
     }
 
     private KeyProcessingListener listener = null;
 
     private static int[] keymapAndroid;
-    private static int[] keymapExt;
     private static boolean initialized = false;
 
     final static int VK_LBUTTON = 0x01;
@@ -233,19 +228,6 @@ public class RdpKeyboardMapper
     // Indicates we should add shift to the event.
     private static final int KEY_FLAG_SHIFT = 0x20000000;
 
-    private boolean shiftPressed = false;
-    private boolean ctrlPressed = false;
-    private boolean altPressed = false;
-    private boolean winPressed = false;
-    
-    private long lastModifierTime;
-    private int lastModifierKeyCode = -1;
-
-    private boolean isShiftLocked = false;
-    private boolean isCtrlLocked = false;
-    private boolean isAltLocked = false;
-    private boolean isWinLocked = false;
-    
     public void init(Context context)
     {
         if(initialized == true)
@@ -371,87 +353,7 @@ public class RdpKeyboardMapper
 //        keymapAndroid[KeyEvent.KEYCODE_SLASH] = (KEY_FLAG_UNICODE | 47);
 //        keymapAndroid[KeyEvent.KEYCODE_STAR] = (KEY_FLAG_UNICODE | 42);        
         
-        // special keys mapping
-        keymapExt = new int[256];
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F1)] = VK_F1;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F2)] = VK_F2;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F3)] = VK_F3;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F4)] = VK_F4;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F5)] = VK_F5;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F6)] = VK_F6;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F7)] = VK_F7;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F8)] = VK_F8;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F9)] = VK_F9;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F10)] = VK_F10;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F11)] = VK_F11;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_F12)] = VK_F12;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_tab)] = VK_TAB;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_print)] = VK_PRINT;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_insert)] = VK_INSERT | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_delete)] = VK_DELETE | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_home)] = VK_HOME | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_end)] = VK_END | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_pgup)] = VK_PRIOR | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_pgdn)] = VK_NEXT | VK_EXT_KEY;
-    
-        // numpad mapping
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_0)] = VK_NUMPAD0;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_1)] = VK_NUMPAD1;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_2)] = VK_NUMPAD2;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_3)] = VK_NUMPAD3;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_4)] = VK_NUMPAD4;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_5)] = VK_NUMPAD5;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_6)] = VK_NUMPAD6;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_7)] = VK_NUMPAD7;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_8)] = VK_NUMPAD8;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_9)] = VK_NUMPAD9;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_numlock)] = VK_NUMLOCK;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_add)] = VK_ADD;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_comma)] = VK_DECIMAL;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_divide)] = VK_DIVIDE | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_enter)] = VK_RETURN | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_multiply)] = VK_MULTIPLY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_subtract)] = VK_SUBTRACT;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_equals)] = (KEY_FLAG_UNICODE | 61);
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_left_paren)] = (KEY_FLAG_UNICODE | 40);
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_right_paren)] = (KEY_FLAG_UNICODE | 41);
-
-        // cursor key codes
-        keymapExt[context.getResources().getInteger(R.integer.keycode_up)] = VK_UP | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_down)] = VK_DOWN | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_left)] = VK_LEFT | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_right)] = VK_RIGHT | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_enter)] = VK_RETURN | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_backspace)] = VK_BACK;
-
-        // shared keys
-        keymapExt[context.getResources().getInteger(R.integer.keycode_win)] = VK_LWIN | VK_EXT_KEY;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_menu)] = VK_APPS | VK_EXT_KEY;    
-        keymapExt[context.getResources().getInteger(R.integer.keycode_esc)] = VK_ESCAPE;
-        
-/*        keymapExt[context.getResources().getInteger(R.integer.keycode_modifier_ctrl)] = VK_LCONTROL;        
-        keymapExt[context.getResources().getInteger(R.integer.keycode_modifier_alt)] = VK_LMENU;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_modifier_shift)] = VK_LSHIFT;        
-*/
-        // get custom keyboard key codes
-        keymapExt[context.getResources().getInteger(R.integer.keycode_specialkeys_keyboard)] = EXTKEY_KBFUNCTIONKEYS;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_numpad_keyboard)] = EXTKEY_KBNUMPAD;
-        keymapExt[context.getResources().getInteger(R.integer.keycode_cursor_keyboard)] = EXTKEY_KBCURSOR;
-
-        keymapExt[context.getResources().getInteger(R.integer.keycode_toggle_shift)] = (KEY_FLAG_TOGGLE | VK_LSHIFT);        
-        keymapExt[context.getResources().getInteger(R.integer.keycode_toggle_ctrl)] = (KEY_FLAG_TOGGLE | VK_LCONTROL);        
-        keymapExt[context.getResources().getInteger(R.integer.keycode_toggle_alt)] = (KEY_FLAG_TOGGLE | VK_LMENU);
-        keymapExt[context.getResources().getInteger(R.integer.keycode_toggle_win)] = (KEY_FLAG_TOGGLE | VK_LWIN);    
-
         initialized = true;
-    }
-
-    public void reset(KeyProcessingListener listener) {
-        shiftPressed = false;
-        ctrlPressed = false;
-        altPressed = false;
-        winPressed = false;
-        setKeyProcessingListener(listener);
     }
 
     public void setKeyProcessingListener(KeyProcessingListener listener)  {
@@ -469,7 +371,6 @@ public class RdpKeyboardMapper
             
             case KeyEvent.ACTION_DOWN:
             {    
-                boolean modifierActive = isModifierPressed();                
                 // if a modifier is pressed we will send a VK event (if possible) so that key combinations will be 
                 // recognized correctly. Otherwise we will send the unicode key. At the end we will reset all modifiers
                 // and notifiy our listener.
@@ -500,9 +401,6 @@ public class RdpKeyboardMapper
                 else
                     return false;
                              
-                // reset any pending toggle states if a modifier was pressed
-                if(modifierActive)
-                    resetModifierKeysAfterInput(false);
                 return true;
             }
 
@@ -520,37 +418,6 @@ public class RdpKeyboardMapper
         return false;
     }
     
-    public void processCustomKeyEvent(int keycode) {
-        int extCode = getExtendedKeyCode(keycode);
-        if(extCode == 0)
-            return;
-        
-        // toggle button pressed?
-        if((extCode & KEY_FLAG_TOGGLE) != 0)
-        {
-            processToggleButton(extCode & (~KEY_FLAG_TOGGLE));
-            return;
-        }
-        
-        // keyboard switch button pressed?
-        if(extCode == EXTKEY_KBFUNCTIONKEYS || extCode == EXTKEY_KBNUMPAD || extCode == EXTKEY_KBCURSOR)
-        {
-            switchKeyboard(extCode);
-            return;
-        }
-        
-        // nope - see if we got a unicode or vk
-        if((extCode & KEY_FLAG_UNICODE) != 0)
-            listener.processUnicodeKey(extCode & (~KEY_FLAG_UNICODE));
-        else
-        {
-            listener.processVirtualKey(extCode, true);            
-            listener.processVirtualKey(extCode, false);            
-        }
-        
-        resetModifierKeysAfterInput(false);
-    }
-    
     public void sendAltF4()
     {
         listener.processVirtualKey(VK_LMENU, true);            
@@ -559,188 +426,10 @@ public class RdpKeyboardMapper
         listener.processVirtualKey(VK_LMENU, false);                    
     }
 
-    private boolean isModifierPressed() {
-        return (shiftPressed || ctrlPressed || altPressed || winPressed);
-    }
-    
-    public int getModifierState(int keycode) {
-        int modifierCode = getExtendedKeyCode(keycode);
-        
-        // check and get real modifier keycode
-        if((modifierCode & KEY_FLAG_TOGGLE) == 0)
-            return -1;
-        modifierCode = modifierCode & (~KEY_FLAG_TOGGLE);
-        
-        switch(modifierCode)
-        {
-            case VK_LSHIFT:
-            {
-                return (shiftPressed ? (isShiftLocked ? KEYSTATE_LOCKED : KEYSTATE_ON) : KEYSTATE_OFF);
-            }
-            case VK_LCONTROL:
-            {
-                return (ctrlPressed ? (isCtrlLocked ? KEYSTATE_LOCKED : KEYSTATE_ON) : KEYSTATE_OFF);
-            }
-            case VK_LMENU:
-            {
-                return (altPressed ? (isAltLocked ? KEYSTATE_LOCKED : KEYSTATE_ON) : KEYSTATE_OFF);
-            }
-            case VK_LWIN:
-            {
-                return (winPressed ? (isWinLocked ? KEYSTATE_LOCKED : KEYSTATE_ON) : KEYSTATE_OFF);
-            }
-        }
-        
-        return -1;
-    }
-    
     private int getVirtualKeyCode(int keycode) {
         if(keycode >= 0 && keycode <= 0xFF)
             return keymapAndroid[keycode];
         return 0;
     }
-    
-    private int getExtendedKeyCode(int keycode) {
-        if(keycode >= 0 && keycode <= 0xFF)
-            return keymapExt[keycode];
-        return 0;        
-    }
-
-    private void processToggleButton(int keycode) {
-        switch(keycode)
-        {
-            case VK_LSHIFT:
-            {
-                if(!checkToggleModifierLock(VK_LSHIFT))
-                {
-                    isShiftLocked = false;
-                    shiftPressed = !shiftPressed;
-                    listener.processVirtualKey(VK_LSHIFT, shiftPressed);
-                }
-                else
-                    isShiftLocked = true;
-                break;
-            }
-            case VK_LCONTROL:
-            {
-                if(!checkToggleModifierLock(VK_LCONTROL))
-                {
-                    isCtrlLocked = false;
-                    ctrlPressed = !ctrlPressed;
-                    listener.processVirtualKey(VK_LCONTROL, ctrlPressed);
-                }
-                else
-                    isCtrlLocked = true;
-                break;
-            }
-            case VK_LMENU:
-            {
-                if(!checkToggleModifierLock(VK_LMENU))
-                {
-                    isAltLocked = false;
-                    altPressed = !altPressed;
-                    listener.processVirtualKey(VK_LMENU, altPressed);
-                }
-                else
-                    isAltLocked = true;
-                break;
-            }
-            case VK_LWIN:
-            {
-                if(!checkToggleModifierLock(VK_LWIN))
-                {
-                    isWinLocked = false;
-                    winPressed = !winPressed;
-                    listener.processVirtualKey(VK_LWIN | VK_EXT_KEY, winPressed);
-                }
-                else
-                    isWinLocked = true;                    
-                break;
-            }
-        }
-        listener.modifiersChanged();
-    }
-    
-    public void clearlAllModifiers() 
-    {
-        resetModifierKeysAfterInput(true);
-    }
-    
-    private void resetModifierKeysAfterInput(boolean force) {
-        if(shiftPressed && (!isShiftLocked || force))
-        {
-            listener.processVirtualKey(VK_LSHIFT, false);
-            shiftPressed = false;
-        }
-        if(ctrlPressed && (!isCtrlLocked || force))
-        {
-            listener.processVirtualKey(VK_LCONTROL, false);
-            ctrlPressed = false;
-        }
-        if(altPressed && (!isAltLocked || force))
-        {
-            listener.processVirtualKey(VK_LMENU, false);
-            altPressed = false;
-        }
-        if(winPressed && (!isWinLocked || force))
-        {
-            listener.processVirtualKey(VK_LWIN | VK_EXT_KEY, false);
-            winPressed = false;
-        }
-
-        if(listener != null)
-            listener.modifiersChanged();
-    }
-    
-    private void switchKeyboard(int keycode) {
-        switch(keycode)
-        {
-            case EXTKEY_KBFUNCTIONKEYS:
-            {
-                listener.switchKeyboard(KEYBOARD_TYPE_FUNCTIONKEYS);
-                break;
-            }
-        
-            case EXTKEY_KBNUMPAD:
-            {
-                listener.switchKeyboard(KEYBOARD_TYPE_NUMPAD);
-                break;
-            }
-
-            case EXTKEY_KBCURSOR:
-            {
-                listener.switchKeyboard(KEYBOARD_TYPE_CURSOR);
-                break;
-            }
-            
-            default:
-                break;
-        }
-    }
-    
-    private boolean checkToggleModifierLock(int keycode) {
-        long now = System.currentTimeMillis();
-        
-        // was the same modifier hit?
-        if(lastModifierKeyCode != keycode)
-        {
-            lastModifierKeyCode = keycode;
-            lastModifierTime = now;
-            return false;                    
-        }
-        
-        // within a certain time interval?
-        if(lastModifierTime + 800 > now) 
-        {
-            lastModifierTime = 0;
-            return true;
-        }
-        else
-        {
-            lastModifierTime = now;
-            return false;
-        }
-    }
-    
 }
 

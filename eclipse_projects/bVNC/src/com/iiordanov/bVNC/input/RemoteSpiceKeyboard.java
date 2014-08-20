@@ -23,7 +23,7 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
         
         keyboardMapper = new RdpKeyboardMapper();
         keyboardMapper.init(context);
-        keyboardMapper.reset((RdpKeyboardMapper.KeyProcessingListener)r);
+        keyboardMapper.setKeyProcessingListener((RdpKeyboardMapper.KeyProcessingListener)r);
     }
     
     public boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState) {

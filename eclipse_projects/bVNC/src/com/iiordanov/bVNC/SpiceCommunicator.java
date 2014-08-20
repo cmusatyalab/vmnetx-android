@@ -305,16 +305,6 @@ public class SpiceCommunicator implements RfbConnectable, RdpKeyboardMapper.KeyP
     }
 
     @Override
-    public void switchKeyboard(int keyboardType) {
-        // This is functionality specific to aFreeRDP.
-    }
-
-    @Override
-    public void modifiersChanged() {
-        // This is functionality specific to aFreeRDP.
-    }
-    
-    @Override
     public void requestResolution(int x, int y) {
         SpiceRequestResolution (x, y);        
     }
