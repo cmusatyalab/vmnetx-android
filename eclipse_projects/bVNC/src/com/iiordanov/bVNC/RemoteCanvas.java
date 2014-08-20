@@ -66,7 +66,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 
-import com.freerdp.freerdpcore.services.LibFreeRDP;
 import com.iiordanov.android.bc.BCFactory;
 import com.iiordanov.bVNC.input.RemoteSpiceKeyboard;
 import com.iiordanov.bVNC.input.RemoteSpicePointer;
@@ -77,7 +76,7 @@ import com.iiordanov.bVNC.input.RemotePointer;
 
 import com.iiordanov.tigervnc.vncviewer.CConn;
 
-public class RemoteCanvas extends ImageView implements UIEventListener, LibFreeRDP.EventListener {
+public class RemoteCanvas extends ImageView implements UIEventListener {
     private final static String TAG = "VncCanvas";
     
     public AbstractScaling scaling;
@@ -1184,36 +1183,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener, LibFreeR
                 this.notify();
             }
         }
-    }
-    
-    //////////////////////////////////////////////////////////////////////////////////
-    //  Implementation of LibFreeRDP.EventListener.  Through the functions implemented
-    //  below, FreeRDP communicates connection state information.
-    //////////////////////////////////////////////////////////////////////////////////
-    
-    @Override
-    public void OnConnectionSuccess(int instance) {
-        Log.v(TAG, "OnConnectionSuccess");
-    }
-    
-    @Override
-    public void OnConnectionFailure(int instance) {
-        Log.v(TAG, "OnConnectionFailure");
-        showFatalMessageAndQuit (getContext().getString(R.string.error_rdp_unable_to_connect));
-    }
-    
-    @Override
-    public void OnDisconnecting(int instance) {
-        Log.v(TAG, "OnDisconnecting");
-        // Only display an error message if we were trying to maintain the connection (not disconnecting).
-        if (maintainConnection) {
-            showFatalMessageAndQuit (getContext().getString(R.string.error_rdp_connection_failed));
-        }
-    }
-    
-    @Override
-    public void OnDisconnected(int instance) {
-        Log.v(TAG, "OnDisconnected");
     }
     
     //////////////////////////////////////////////////////////////////////////////////
