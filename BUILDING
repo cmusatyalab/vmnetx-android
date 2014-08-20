@@ -40,7 +40,7 @@
    checkmarks on projects).
 
 6. To build and successfully run aSPICE, you need to:
-   - Install gstreamer-sdk into /opt/gstreamer
+   - Install gstreamer-sdk (0.10.x, not 1.x) into /opt/gstreamer
    - Edit AndroidManifest.xml and change android:label="bVNC" and android:name="bVNC"
      to android:label="aSPICE" and android:name="aSPICE" respectively.
    - cd bVNC/eclipse_projects/bVNC
