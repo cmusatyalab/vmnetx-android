@@ -3,7 +3,6 @@
 	<name>bVNC</name>
 	<comment></comment>
 	<projects>
-		<project>FreeRDPCore</project>
 		<project>PubkeyGenerator</project>
 		<project>ZoomerWithKeys</project>
 	</projects>

@@ -4,38 +4,25 @@
    NOTE: I've been told by a user that he had to "downgrade to"
          eclipse_site_0.1.16.
 
-2. Clone the FreeRDP project in the parent directory of where you
-   cloned bVNC project:
-   git clone git://github.com/FreeRDP/FreeRDP.git
-
-   Check out a commit known to work with bVNC:
-   git checkout stable-1.1
-
-   You should now have bVNC and FreeRDP side by side in the same
-   directory.
-
-   Add bVNC, ZoomerWithKeys and PubkeyGenerator from the
+2. Add bVNC, ZoomerWithKeys and PubkeyGenerator from the
    bVNC/eclipse_projects/ directory to Eclipse as existing Android
    projects.
-  
-   Add FreeRDPCore from the FreeRDP/client/Android/ directory
-   to Eclipse as an Existing Android Project.
 
-3. Ensure ZoomerWithKeys, PubkeyGenerator, and FreeRDPCore projects
+3. Ensure ZoomerWithKeys and PubkeyGenerator projects
    are called exactly as written here by right-clicking 
    on each of them, then selecting Refactor->Rename
 
-3. Add the ZoomerWithKeys, PubkeyGenerator, and FreeRDPCore projects
+3. Add the ZoomerWithKeys and PubkeyGenerator projects
    as Library References to bVNC (right-click on the bVNC project
    and select Properties -> Android -> Library). If they are not,
    add them.
 
-4. Ensure that ZoomerWithKeys, PubkeyGenerator, and FreeRDPCore 
+4. Ensure that ZoomerWithKeys and PubkeyGenerator
    are specified as "Required projects on the build path" (right-
    click on the bVNC project, and select Properties -> Java Build
    Path -> Projects). If they are not, add them.
 
-5. Ensure that ZoomerWithKeys, PubkeyGenerator, and FreeRDPCore
+5. Ensure that ZoomerWithKeys and PubkeyGenerator
    are referenced in Properties -> Project References (put
    checkmarks on projects).
 
