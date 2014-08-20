@@ -41,7 +41,6 @@ import com.iiordanov.bVNC.Utils;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
 import com.iiordanov.bVNC.Constants;
-import com.iiordanov.bVNC.bVNC;
 import com.iiordanov.tigervnc.rdr.*;
 import org.apache.commons.*;
 

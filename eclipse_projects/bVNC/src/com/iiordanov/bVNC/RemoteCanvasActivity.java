@@ -188,7 +188,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             {
                 if (connection.Gen_read(database.getReadableDatabase(), port))
                 {
-                    MostRecentBean bean = bVNC.getMostRecent(database.getReadableDatabase());
+                    MostRecentBean bean = aSPICE.getMostRecent(database.getReadableDatabase());
                     if (bean != null)
                     {
                         bean.setConnectionId(connection.get_Id());
