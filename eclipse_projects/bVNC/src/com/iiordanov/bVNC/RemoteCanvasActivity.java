@@ -991,9 +991,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         canvas.getKeyboard().setAfterMenu(true);
         switch (item.getItemId()) {
-        case R.id.itemInfo:
-            canvas.showConnectionInfo();
-            return true;
         case R.id.itemSpecialKeys:
             showDialog(R.layout.metakey);
             return true;

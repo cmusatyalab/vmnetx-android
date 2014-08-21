@@ -407,7 +407,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         scaling          = null;
         drawableSetter   = null;
         screenMessage    = null;
-        desktopInfo      = null;
         
         disposeDrawable ();
     }
@@ -598,16 +597,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     
     /**
-     * This runnable causes a toast with information about the current connection to be shown.
-     */
-    private Runnable desktopInfo = new Runnable() {
-        public void run() {
-            showConnectionInfo();
-        }
-    };
-    
-    
-    /**
      * Causes a redraw of the bitmapData to happen at the indicated coordinates.
      */
     public void reDraw(int x, int y, int w, int h) {
@@ -632,28 +621,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         postInvalidate ((int)((shiftedX-1.f)*scale),   (int)((shiftedY-1.f)*scale),
                         (int)((shiftedX+w+1.f)*scale), (int)((shiftedY+h+1.f)*scale));
     }
-    
-    /**
-     * Displays connection info in a toast message.
-     */
-    public void showConnectionInfo() {
-        if (rfbconn == null)
-            return;
-        
-        String msg = null;
-        int idx = rfbconn.desktopName().indexOf("(");
-        if (idx > 0) {
-            // Breakup actual desktop name from IP addresses for improved
-            // readability
-            String dn = rfbconn.desktopName().substring(0, idx).trim();
-            String ip = rfbconn.desktopName().substring(idx).trim();
-            msg = dn + "\n" + ip;
-        } else
-            msg = rfbconn.desktopName();
-        msg += "\n" + rfbconn.framebufferWidth() + "x" + rfbconn.framebufferHeight();
-        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-    }
-    
     
     /**
      * Invalidates (to redraw) the location of the remote pointer.
@@ -879,7 +846,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         // Set the drawable for the canvas, now that we have it (re)initialized.
         handler.post(drawableSetter);
         handler.post(setModes);
-        handler.post(desktopInfo);
         
         // Set the new bitmap in the native layer.
         spiceUpdateReceived = true;

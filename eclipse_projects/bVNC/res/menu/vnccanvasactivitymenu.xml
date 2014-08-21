@@ -33,7 +33,6 @@
     	<item android:title="@string/mouse_follow_pan" android:id="@+id/itemFollowPan"/>
     </group> -->
     <item android:numericShortcut="2" android:alphabeticShortcut="m" android:id="@+id/itemCenterMouse" android:title="@string/center_mouse" android:icon="@android:drawable/ic_menu_mylocation"/>    
-    <item android:numericShortcut="9" android:alphabeticShortcut="i" android:id="@+id/itemInfo" android:title="@string/info" android:icon="@android:drawable/ic_menu_info_details"></item>
     <item android:id="@+id/itemHelpInputMode" android:title="@string/input_mode_help" android:icon="@android:drawable/ic_menu_help"/>
     <!-- <item android:id="@+id/itemOpenDoc" android:title="@string/open_doc" android:icon="@android:drawable/ic_menu_help"/> -->
 </menu>
