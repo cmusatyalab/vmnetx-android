@@ -36,9 +36,7 @@ import com.iiordanov.bVNC.input.AbstractInputHandler;
 import com.iiordanov.bVNC.input.Panner;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
 import com.iiordanov.bVNC.input.SimulatedTouchpadInputHandler;
-import com.iiordanov.bVNC.input.SingleHandedInputHandler;
 import com.iiordanov.bVNC.input.TouchMouseDragPanInputHandler;
-import com.iiordanov.bVNC.input.TouchMouseSwipePanInputHandler;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -94,16 +92,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private MenuItem[] scalingModeMenuItems;
     private AbstractInputHandler inputModeHandlers[];
     private ConnectionBean connection;
-/*    private static final int inputModeIds[] = { R.id.itemInputFitToScreen,
-        R.id.itemInputTouchpad,
-        R.id.itemInputMouse, R.id.itemInputPan,
-        R.id.itemInputTouchPanTrackballMouse,
-        R.id.itemInputDPadPanTouchMouse, R.id.itemInputTouchPanZoomMouse };
- */
     private static final int inputModeIds[] = { R.id.itemInputTouchpad,
-                                                R.id.itemInputTouchPanZoomMouse,
-                                                R.id.itemInputDragPanZoomMouse,
-                                                R.id.itemInputSingleHanded };
+                                                R.id.itemInputDragPanZoomMouse };
     private static final int scalingModeIds[] = { R.id.itemZoomable, R.id.itemFitToScreen,
                                                   R.id.itemOneToOne};
 
@@ -327,7 +317,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         });
         panner = new Panner(this, canvas.handler);
 
-        inputHandler = getInputHandlerById(R.id.itemInputTouchPanZoomMouse);
+        inputHandler = getInputHandlerById(R.id.itemInputDragPanZoomMouse);
     }
 
     
@@ -913,36 +903,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             if (inputModeIds[i] == id) {
                 if (inputModeHandlers[i] == null) {
                     switch (id) {
-/*                    case R.id.itemInputFitToScreen:
-                        inputModeHandlers[i] = new FitToScreenMode();
-                        break;
-                    case R.id.itemInputPan:
-                        inputModeHandlers[i] = new PanMode();
-                        break;
-                    case R.id.itemInputTouchPanTrackballMouse:
-                        inputModeHandlers[i] = new TouchPanTrackballMouse();
-                        break;
-                    case R.id.itemInputMouse:
-                        inputModeHandlers[i] = new MouseMode();
-                        break; 
-
-                    case R.id.itemInputDPadPanTouchMouse:
-                        inputModeHandlers[i] = new DPadPanTouchMouseMode();
-                        break;
- */                    
-                    case R.id.itemInputTouchPanZoomMouse:
-                        inputModeHandlers[i] = new TouchMouseSwipePanInputHandler(this, canvas);
-                        break;
                     case R.id.itemInputDragPanZoomMouse:
                         inputModeHandlers[i] = new TouchMouseDragPanInputHandler(this, canvas);
                         break;
                     case R.id.itemInputTouchpad:
                         inputModeHandlers[i] = new SimulatedTouchpadInputHandler(this, canvas);
                         break;
-                    case R.id.itemInputSingleHanded:
-                        inputModeHandlers[i] = new SingleHandedInputHandler(this, canvas);
-                        break;
-
                     }
                 }
                 return inputModeHandlers[i];
@@ -971,7 +937,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             }
         }
         if (result == null) {
-            result = getInputHandlerById(R.id.itemInputTouchPanZoomMouse);
+            result = getInputHandlerById(R.id.itemInputDragPanZoomMouse);
         }
         return result;
     }
@@ -981,7 +947,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             if (handler == getInputHandlerById(id))
                 return id;
         }
-        return R.id.itemInputTouchPanZoomMouse;
+        return R.id.itemInputDragPanZoomMouse;
     }
 
     @Override

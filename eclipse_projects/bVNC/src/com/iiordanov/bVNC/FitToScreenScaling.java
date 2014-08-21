@@ -51,7 +51,7 @@ class FitToScreenScaling extends AbstractScaling {
      */
     @Override
     int getDefaultHandlerId() {
-        return R.id.itemInputTouchPanZoomMouse;
+        return R.id.itemInputDragPanZoomMouse;
     }
 
     /* (non-Javadoc)

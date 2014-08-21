@@ -14,7 +14,7 @@ import com.iiordanov.bVNC.R.string;
 
 public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
     static final String TAG = "TouchMouseDragPanInputHandler";
-    static final String TOUCH_ZOOM_MODE_DRAG_PAN = "TOUCH_ZOOM_MODE_DRAG_PAN";
+    public static final String TOUCH_ZOOM_MODE_DRAG_PAN = "TOUCH_ZOOM_MODE_DRAG_PAN";
 
     /**
      * Divide stated fling velocity by this amount to get initial velocity

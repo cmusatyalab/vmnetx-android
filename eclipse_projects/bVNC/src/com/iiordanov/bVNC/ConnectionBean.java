@@ -27,7 +27,7 @@ import android.widget.ImageView.ScaleType;
 import com.antlersoft.android.db.FieldAccessor;
 import com.antlersoft.android.dbimpl.NewInstance;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
-import com.iiordanov.bVNC.input.TouchMouseSwipePanInputHandler;
+import com.iiordanov.bVNC.input.TouchMouseDragPanInputHandler;
 
 import java.lang.Comparable;
 import android.content.Context;
@@ -60,7 +60,7 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setTlsPort(-1);
         setCertSubject("");
         setScaleMode(ScaleType.MATRIX);
-        setInputMode(TouchMouseSwipePanInputHandler.TOUCH_ZOOM_MODE);
+        setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);
         setRotateDpad(false);
         setUsePortrait(false);
