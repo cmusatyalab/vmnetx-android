@@ -28,7 +28,6 @@
     <item android:numericShortcut="1" android:alphabeticShortcut="k" android:id="@+id/itemSpecialKeys" android:title="@string/special_keys" android:icon="@android:drawable/ic_dialog_dialer"/>
     <item android:alphabeticShortcut="g" android:id="@+id/itemSendKeyAgain" android:title="@string/send_key_again"/>
     <item android:numericShortcut="8" android:alphabeticShortcut="r" android:id="@+id/itemCtrlAltDel" android:title="@string/ctrl_alt_del" android:icon="@android:drawable/ic_menu_share"/>
-    <item android:id="@+id/itemEnterText" android:alphabeticShortcut="e" android:title="@string/enter_text" android:icon="@android:drawable/ic_menu_edit" />
     <!-- <group android:checkableBehavior="all">
     	<item android:numericShortcut="6" android:alphabeticShortcut="f" android:id="@+id/itemFollowMouse" android:title="@string/pan_follow_mouse"/>
     	<item android:title="@string/mouse_follow_pan" android:id="@+id/itemFollowPan"/>

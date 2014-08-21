@@ -32,7 +32,6 @@ import java.util.TimerTask;
 import com.iiordanov.android.bc.BCFactory;
 
 import com.iiordanov.android.zoomer.ZoomControls;
-import com.iiordanov.bVNC.dialogs.EnterTextDialog;
 import com.iiordanov.bVNC.dialogs.MetaKeyDialog;
 import com.iiordanov.bVNC.input.AbstractInputHandler;
 import com.iiordanov.bVNC.input.Panner;
@@ -714,8 +713,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-        case R.layout.entertext:
-            return new EnterTextDialog(this);
         case R.id.itemHelpInputMode:
             return createHelpDialog ();
         }
@@ -1015,9 +1012,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         case R.id.itemDisconnect:
             canvas.closeConnection();
             finish();
-            return true;
-        case R.id.itemEnterText:
-            showDialog(R.layout.entertext);
             return true;
         case R.id.itemCtrlAltDel:
             canvas.getKeyboard().sendMetaKey(MetaKeyBean.keyCtrlAltDel);

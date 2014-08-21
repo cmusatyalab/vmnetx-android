@@ -58,7 +58,6 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(MostRecentBean.GEN_CREATE);
         db.execSQL(MetaList.GEN_CREATE);
         db.execSQL(AbstractMetaKeyBean.GEN_CREATE);
-        db.execSQL(SentTextBean.GEN_CREATE);
         
         db.execSQL("INSERT INTO "+MetaList.GEN_TABLE_NAME+" VALUES ( 1, 'DEFAULT')");
     }
