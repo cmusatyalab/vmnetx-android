@@ -79,8 +79,6 @@ interface IConnectionBean {
     boolean getFollowMouse();
     @FieldAccessor
     boolean getUseRepeater();
-    @FieldAccessor
-    long getMetaListId();
     @FieldAccessor(Name="LAST_META_KEY_ID")
     long getLastMetaKeyId();
     @FieldAccessor(DefaultValue="false")

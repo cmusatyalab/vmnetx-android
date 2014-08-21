@@ -32,8 +32,6 @@ public interface IMetaKey {
     @FieldAccessor
     long get_Id();
     @FieldAccessor
-    long getMetaListId();
-    @FieldAccessor
     String getKeyDesc();
     @FieldAccessor
     int getMetaFlags();

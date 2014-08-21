@@ -32,7 +32,6 @@ import java.util.TimerTask;
 import com.iiordanov.android.bc.BCFactory;
 
 import com.iiordanov.android.zoomer.ZoomControls;
-import com.iiordanov.bVNC.dialogs.MetaKeyDialog;
 import com.iiordanov.bVNC.input.AbstractInputHandler;
 import com.iiordanov.bVNC.input.Panner;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
@@ -714,11 +713,9 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     protected Dialog onCreateDialog(int id) {
         switch (id) {
         case R.id.itemHelpInputMode:
+        default:
             return createHelpDialog ();
         }
-        
-        // Default to meta key dialog
-        return new MetaKeyDialog(this);
     }
 
     /**
@@ -991,9 +988,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         canvas.getKeyboard().setAfterMenu(true);
         switch (item.getItemId()) {
-        case R.id.itemSpecialKeys:
-            showDialog(R.layout.metakey);
-            return true;
             // Following sets one of the scaling options
         case R.id.itemZoomable:
         case R.id.itemOneToOne:
@@ -1040,9 +1034,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             vncCanvas.sendMetaKey(MetaKeyBean.keyArrowDown);
             return true;
 */
-        case R.id.itemSendKeyAgain:
-            sendSpecialKeyAgain();
-            return true;
         // Disabling Manual/Wiki Menu item as the original does not correspond to this project anymore.
         //case R.id.itemOpenDoc:
         //    Utils.showDocumentation(this);
@@ -1086,30 +1077,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private MetaKeyBean lastSentKey;
-
-    private void sendSpecialKeyAgain() {
-        if (lastSentKey == null
-                || lastSentKey.get_Id() != connection.getLastMetaKeyId()) {
-            ArrayList<MetaKeyBean> keys = new ArrayList<MetaKeyBean>();
-            Cursor c = database.getReadableDatabase().rawQuery(
-                    MessageFormat.format("SELECT * FROM {0} WHERE {1} = {2}",
-                            MetaKeyBean.GEN_TABLE_NAME,
-                            MetaKeyBean.GEN_FIELD__ID, connection
-                                    .getLastMetaKeyId()),
-                    MetaKeyDialog.EMPTY_ARGS);
-            MetaKeyBean.Gen_populateFromCursor(c, keys, MetaKeyBean.NEW);
-            c.close();
-            if (keys.size() > 0) {
-                lastSentKey = keys.get(0);
-            } else {
-                lastSentKey = null;
-            }
-        }
-        if (lastSentKey != null)
-            canvas.getKeyboard().sendMetaKey(lastSentKey);
     }
 
     @Override

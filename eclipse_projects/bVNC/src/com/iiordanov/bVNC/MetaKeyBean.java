@@ -159,13 +159,11 @@ public class MetaKeyBean extends AbstractMetaKeyBean implements Comparable<MetaK
             setMouseButtons(toCopy.getMouseButtons());
         else
             setKeySym(toCopy.getKeySym());
-        setMetaListId(toCopy.getMetaListId());
         setMetaFlags(toCopy.getMetaFlags());
     }
     
     public MetaKeyBean(long listId, int metaFlags, MetaKeyBase base)
     {
-        setMetaListId(listId);
         setKeyBase(base);
         setMetaFlags(metaFlags);
         _regenDesc = true;
