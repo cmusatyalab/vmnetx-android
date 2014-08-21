@@ -388,55 +388,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     
     /**
-     * Initializes the drawable and bitmap into which the remote desktop is drawn.
-     * @param dx
-     * @param dy
-     * @throws IOException
-     */
-    void initializeBitmap (int dx, int dy) throws IOException {
-        Log.i(TAG, "Desktop name is " + rfbconn.desktopName());
-        Log.i(TAG, "Desktop size is " + rfbconn.framebufferWidth() + " x " + rfbconn.framebufferHeight());
-        int fbsize = rfbconn.framebufferWidth() * rfbconn.framebufferHeight();
-        capacity = BCFactory.getInstance().getBCActivityManager().getMemoryClass(Utils.getActivityManager(getContext()));
-        
-        if (connection.getForceFull() == BitmapImplHint.AUTO) {
-            if (fbsize * CompactBitmapData.CAPACITY_MULTIPLIER <= capacity*1024*1024) {
-                useFull = true;
-                compact = true;
-            } else if (fbsize * FullBufferBitmapData.CAPACITY_MULTIPLIER <= capacity*1024*1024) {
-                useFull = true;
-            } else {
-                useFull = false;
-            }
-        } else
-            useFull = (connection.getForceFull() == BitmapImplHint.FULL);
-        
-        if (!useFull) {
-            bitmapData=new LargeBitmapData(rfbconn, this, dx, dy, capacity);
-            android.util.Log.i(TAG, "Using LargeBitmapData.");
-        } else {
-            try {
-                // TODO: Remove this if Android 4.2 receives a fix for a bug which causes it to stop drawing
-                // the bitmap in CompactBitmapData when under load (say playing a video over VNC).
-                if (!compact) {
-                    bitmapData=new FullBufferBitmapData(rfbconn, this, capacity);
-                    android.util.Log.i(TAG, "Using FullBufferBitmapData.");
-                } else {
-                    bitmapData=new CompactBitmapData(rfbconn, this);
-                    android.util.Log.i(TAG, "Using CompactBufferBitmapData.");
-                }
-            } catch (Throwable e) { // If despite our efforts we fail to allocate memory, use LBBM.
-                disposeDrawable ();
-                
-                useFull = false;
-                bitmapData=new LargeBitmapData(rfbconn, this, dx, dy, capacity);
-                android.util.Log.i(TAG, "Using LargeBitmapData.");
-            }
-        }
-    }
-    
-    
-    /**
      * Disposes of the old drawable which holds the remote desktop data.
      */
     private void disposeDrawable () {
@@ -444,47 +395,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
             bitmapData.dispose();
         bitmapData = null;
         System.gc();
-    }
-    
-    
-    /**
-     * The remote desktop's size has changed and this method
-     * reinitializes local data structures to match.
-     */
-    public void updateFBSize () {
-        try {
-            bitmapData.frameBufferSizeChanged ();
-        } catch (Throwable e) {
-            boolean useLBBM = false;
-            
-            // If we've run out of memory, try using another bitmapdata type.
-            if (e instanceof OutOfMemoryError) {
-                disposeDrawable ();
-                
-                // If we were using CompactBitmapData, try FullBufferBitmapData.
-                if (compact == true) {
-                    compact = false;
-                    try {
-                        bitmapData = new FullBufferBitmapData(rfbconn, this, capacity);
-                    } catch (Throwable e2) {
-                        useLBBM = true;
-                    }
-                } else
-                    useLBBM = true;
-                
-                // Failing FullBufferBitmapData or if we weren't using CompactBitmapData, try LBBM.
-                if (useLBBM) {
-                    disposeDrawable ();
-                    
-                    useFull = false;
-                    bitmapData = new LargeBitmapData(rfbconn, this, getWidth(), getHeight(), capacity);
-                }
-            }
-        }
-        handler.post(drawableSetter);
-        handler.post(setModes);
-        handler.post(desktopInfo);        
-        bitmapData.syncScroll();
     }
     
     
