@@ -42,15 +42,6 @@
                                 <data android:scheme="vnc" />
                        </intent-filter>
                 </activity>
-                <activity android:name=".ConnectionListActivity"
-                          android:label="@string/shortcut_label"
-                          android:windowSoftInputMode="stateHidden|adjustResize"
-                          android:theme="@android:style/Theme.DeviceDefault">
-                       <intent-filter>
-                                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-                                <category android:name="android.intent.category.DEFAULT" />
-                       </intent-filter>
-                </activity>
                 <uses-library android:required="false" name="com.sec.android.app.multiwindow"> </uses-library>
                 <meta-data android:name="com.sec.android.support.multiwindow"
                            android:value="true" />
