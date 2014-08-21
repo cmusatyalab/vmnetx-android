@@ -56,7 +56,6 @@ import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.iiordanov.bVNC.dialogs.ImportTlsCaDialog;
-import com.iiordanov.bVNC.dialogs.IntroTextDialog;
 
 /**
  * aSPICE is the Activity for setting up SPICE connections.
@@ -82,17 +81,12 @@ public class aSPICE extends Activity implements MainConfiguration {
     private CheckBox checkboxUseDpadAsArrows;
     private CheckBox checkboxRotateDpad;
     private CheckBox checkboxLocalCursor;
-    private boolean isFree;
-    private boolean startingOrHasPaused = true;
-    private boolean isConnecting = false;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         System.gc();
         setContentView(R.layout.main_spice);
-
-        isFree = this.getPackageName().contains("free");
 
         ipText = (EditText) findViewById(R.id.textIP);
         portText = (EditText) findViewById(R.id.textPORT);
@@ -496,8 +490,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         spinnerConnection.setSelection(connectionIndex, false);
         selected = connections.get(connectionIndex);
         updateViewFromSelected();
-        IntroTextDialog.showIntroTextIfNecessary(this, database, isFree&&startingOrHasPaused);
-        startingOrHasPaused = false;
     }
     
     protected void onStop() {
@@ -513,11 +505,6 @@ public class aSPICE extends Activity implements MainConfiguration {
     protected void onPause() {
         Log.e(TAG, "onPause called");
         super.onPause();
-        if (!isConnecting) {
-            startingOrHasPaused = true;
-        } else {
-            isConnecting = false;
-        }
     }
     
     public Database getDatabaseHelper() {
@@ -564,7 +551,6 @@ public class aSPICE extends Activity implements MainConfiguration {
      * desktop.
      */
     private void start () {
-        isConnecting = true;
         updateSelectedFromView();
         saveAndWriteRecent();
         Intent intent = new Intent(this, RemoteCanvasActivity.class);
