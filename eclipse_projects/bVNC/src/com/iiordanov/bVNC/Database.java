@@ -152,8 +152,6 @@ public class Database extends SQLiteOpenHelper {
         
         if (oldVersion == DBV_2_1_0) {
             Log.i(TAG,"Doing upgrade from 329 to 335");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_ENABLESOUND + " BOOLEAN DEFAULT FALSE");
             oldVersion = DBV_2_1_1;
         }
         

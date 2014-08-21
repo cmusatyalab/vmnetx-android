@@ -86,7 +86,6 @@ public class aSPICE extends Activity implements MainConfiguration {
     private boolean isFree;
     private boolean startingOrHasPaused = true;
     private boolean isConnecting = false;
-    private CheckBox checkboxEnableSound;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -115,7 +114,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         checkboxUseDpadAsArrows = (CheckBox) findViewById(R.id.checkboxUseDpadAsArrows);
         checkboxRotateDpad = (CheckBox) findViewById(R.id.checkboxRotateDpad);
         checkboxLocalCursor = (CheckBox) findViewById(R.id.checkboxUseLocalCursor);
-        checkboxEnableSound = (CheckBox) findViewById(R.id.checkboxEnableSound);
         
         spinnerConnection = (Spinner) findViewById(R.id.spinnerConnection);
         spinnerConnection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -337,7 +335,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         checkboxUseDpadAsArrows.setChecked(selected.getUseDpadAsArrows());
         checkboxRotateDpad.setChecked(selected.getRotateDpad());
         checkboxLocalCursor.setChecked(selected.getUseLocalCursor());
-        checkboxEnableSound.setChecked(selected.getEnableSound());
         textNickname.setText(selected.getNickname());
         spinnerGeometry.setSelection(selected.getRdpResType());
         resWidth.setText(Integer.toString(selected.getRdpWidth()));
@@ -444,7 +441,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         selected.setUseDpadAsArrows(checkboxUseDpadAsArrows.isChecked());
         selected.setRotateDpad(checkboxRotateDpad.isChecked());
         selected.setUseLocalCursor(checkboxLocalCursor.isChecked());
-        selected.setEnableSound(checkboxEnableSound.isChecked());
     }
 
     protected void onStart() {

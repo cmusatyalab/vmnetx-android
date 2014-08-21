@@ -120,7 +120,5 @@ interface IConnectionBean {
     @FieldAccessor
     boolean getConsoleMode();
     @FieldAccessor
-    boolean getEnableSound();
-    @FieldAccessor
     boolean getViewOnly();
 }

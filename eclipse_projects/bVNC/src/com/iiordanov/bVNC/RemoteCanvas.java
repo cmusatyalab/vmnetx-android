@@ -246,7 +246,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         spicecomm.setHandler(handler);
         spicecomm.connect(address, Integer.toString(port), Integer.toString(tport),
                             connection.getPassword(), connection.getCaCertPath(),
-                            connection.getCertSubject(), connection.getEnableSound());
+                            connection.getCertSubject());
     }
     
     

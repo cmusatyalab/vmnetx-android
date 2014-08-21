@@ -121,7 +121,7 @@ gboolean getJvmAndMethodReferences (JNIEnv *env) {
 
 JNIEXPORT jint JNICALL
 Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jstring h, jstring p,
-                                                                       jstring tp, jstring pw, jstring cf, jstring cs, jboolean sound)
+                                                                       jstring tp, jstring pw, jstring cf, jstring cs)
 {
 	const gchar *host = NULL;
 	const gchar *port = NULL;
@@ -142,7 +142,7 @@ Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobje
 	ca_file   = (*env)->GetStringUTFChars(env, cf, NULL);
 	cert_subj = (*env)->GetStringUTFChars(env, cs, NULL);
 
-	result = spiceClientConnect (host, port, tls_port, password, ca_file, NULL, cert_subj, sound);
+	result = spiceClientConnect (host, port, tls_port, password, ca_file, NULL, cert_subj);
 
 	jvm                  = NULL;
 	jni_connector_class  = NULL;
@@ -154,11 +154,10 @@ Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobje
 
 int spiceClientConnect (const gchar *h, const gchar *p, const gchar *tp,
 		                   const gchar *pw, const gchar *cf, GByteArray *cc,
-                           const gchar *cs, const gboolean sound)
+                           const gchar *cs)
 {
 	spice_connection *conn;
 
-    soundEnabled = sound;
     conn = connection_new();
 	spice_session_setup(conn->session, h, p, tp, pw, cf, cc, cs);
 	return connectSession(conn);
@@ -298,7 +297,7 @@ Java_com_iiordanov_bVNC_SpiceCommunicator_CreateOvirtSession(JNIEnv *env,
                                                                      jobject obj,
                                                                      jstring URI, jstring user, jstring pass,
                                                                      jstring sslCaFile,
-                                                                     jboolean sound, jboolean sslStrict) {
+                                                                     jboolean sslStrict) {
     __android_log_write(6, "CreateOvirtSession", "Starting.");
 
     const gchar *uri = NULL;
@@ -311,12 +310,12 @@ Java_com_iiordanov_bVNC_SpiceCommunicator_CreateOvirtSession(JNIEnv *env,
     password           = (*env)->GetStringUTFChars(env, pass, NULL);
     ovirt_ca_file      = (*env)->GetStringUTFChars(env, sslCaFile, NULL);
 
-    return CreateOvirtSession(env, obj, uri, username, password, ovirt_ca_file, sound, sslStrict);
+    return CreateOvirtSession(env, obj, uri, username, password, ovirt_ca_file, sslStrict);
 }
 
 
 int CreateOvirtSession(JNIEnv *env, jobject obj, const gchar *uri, const gchar *user, const gchar *password,
-                          const gchar *ovirt_ca_file, const gboolean sound, const gboolean sslStrict) {
+                          const gchar *ovirt_ca_file, const gboolean sslStrict) {
 
     OvirtApi *api = NULL;
     OvirtCollection *vms = NULL;
@@ -482,7 +481,7 @@ int CreateOvirtSession(JNIEnv *env, jobject obj, const gchar *uri, const gchar *
     	g_object_get(G_OBJECT(proxy), "ca-cert", &ca_cert, NULL);
 
     	// We are ready to start the SPICE connection.
-    	success = spiceClientConnect (ghost, gport, gtlsport, ticket, NULL, ca_cert, spice_host_subject, sound);
+    	success = spiceClientConnect (ghost, gport, gtlsport, ticket, NULL, ca_cert, spice_host_subject);
     }
 
 error:

@@ -81,7 +81,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setVisualStyles(false);
         setConsoleMode(false);
         setRedirectSdCard(false);
-        setEnableSound(false);
         setViewOnly(false);
         c = context;
     }

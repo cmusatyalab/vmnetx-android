@@ -12,7 +12,7 @@ import com.gstreamer.*;
 public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProcessingListener {
     private final static String TAG = "SpiceCommunicator";
 
-    public native int  SpiceClientConnect (String ip, String port, String tport, String password, String ca_file, String cert_subj, boolean sound);
+    public native int  SpiceClientConnect (String ip, String port, String tport, String password, String ca_file, String cert_subj);
     public native void SpiceClientDisconnect ();
     public native void SpiceButtonEvent (int x, int y, int metaState, int pointerMask);
     public native void SpiceKeyEvent (boolean keyDown, int virtualKeyCode);
@@ -45,13 +45,11 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
     private SpiceThread spicehread = null;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, ConnectionBean connection) {
-        if (connection.getEnableSound()) {
-            try {
-                GStreamer.init(context);
-            } catch (Exception e) {
-                e.printStackTrace();
-                canvas.displayShortToastMessage(e.getMessage());
-            }
+        try {
+            GStreamer.init(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+            canvas.displayShortToastMessage(e.getMessage());
         }
     }
 
@@ -70,9 +68,9 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
         return handler;
     }
 
-    public void connect(String ip, String port, String tport, String password, String cf, String cs, boolean sound) {
+    public void connect(String ip, String port, String tport, String password, String cf, String cs) {
         android.util.Log.e(TAG, ip + ", " + port + ", " + tport + ", " + password + ", " + cf + ", " + cs);
-        spicehread = new SpiceThread(ip, port, tport, password, cf, cs, sound);
+        spicehread = new SpiceThread(ip, port, tport, password, cf, cs);
         spicehread.start();
     }
     
@@ -83,20 +81,18 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
 
     class SpiceThread extends Thread {
         private String ip, port, tport, password, cf, cs;
-        boolean sound;
 
-        public SpiceThread(String ip, String port, String tport, String password, String cf, String cs, boolean sound) {
+        public SpiceThread(String ip, String port, String tport, String password, String cf, String cs) {
             this.ip = ip;
             this.port = port;
             this.tport = tport;
             this.password = password;
             this.cf = cf;
             this.cs = cs;
-            this.sound = sound;
         }
 
         public void run() {
-            SpiceClientConnect (ip, port, tport, password, cf, cs, sound);
+            SpiceClientConnect (ip, port, tport, password, cf, cs);
             android.util.Log.e(TAG, "SpiceClientConnect returned.");
 
             // If we've exited SpiceClientConnect, the connection was

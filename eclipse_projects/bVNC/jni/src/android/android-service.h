@@ -35,7 +35,6 @@
 	jmethodID  jni_graphics_update = NULL;
 	GMainLoop            *mainloop = NULL;
 	int                connections = 0;
-	gboolean          soundEnabled = FALSE;
 	const gchar*         oVirtUser = NULL;
 	const gchar*     oVirtPassword = NULL;
 #else
@@ -47,7 +46,6 @@
 	extern jmethodID  jni_graphics_update;
 	extern GMainLoop*            mainloop;
 	extern int                connections;
-	extern gboolean          soundEnabled;
 	extern gchar*               oVirtUser;
 	extern gchar*           oVirtPassword;
 #endif
@@ -57,15 +55,14 @@ void detachThreadFromJvm ();
 
 int spiceClientConnect (const gchar *h, const gchar *p, const gchar *tp,
 		                   const gchar *pw, const gchar *cf, GByteArray *cc,
-                           const gchar *cs, const gboolean sound);
+                           const gchar *cs);
 
 int connectSession (spice_connection *conn);
 
 int SpiceClientConnect(JNIEnv *env, jobject obj, const gchar *h, const gchar *p,
-                           const gchar *tp, const gchar *pw, const gchar *cf, GByteArray *cc, const gchar *cs,
-                           const gboolean sound, VirtViewerFile *vv_file);
+                           const gchar *tp, const gchar *pw, const gchar *cf, GByteArray *cc, const gchar *cs);
 int CreateOvirtSession(JNIEnv *env, jobject obj, const gchar *uri, const gchar *user, const gchar *password,
-                          const gchar *ovirt_ca_file, const gboolean sound, const gboolean sslStrict);
+                          const gchar *ovirt_ca_file, const gboolean sslStrict);
 
 extern void __android_log_write(int, char*, char*);
 
