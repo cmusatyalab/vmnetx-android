@@ -58,31 +58,19 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.iiordanov.bVNC.dialogs.ImportExportDialog;
 import com.iiordanov.bVNC.dialogs.ImportTlsCaDialog;
 import com.iiordanov.bVNC.dialogs.IntroTextDialog;
-import com.iiordanov.pubkeygenerator.GeneratePubkeyActivity;
 
 /**
  * aSPICE is the Activity for setting up SPICE connections.
  */
 public class aSPICE extends Activity implements MainConfiguration {
     private final static String TAG = "aSPICE";
-    private Spinner connectionType;
-    private int selectedConnType;
-    private TextView sshCaption;
-    private LinearLayout sshCredentials;
-    private LinearLayout layoutUseSshPubkey;
-    private LinearLayout sshServerEntry;
     private LinearLayout layoutAdvancedSettings;
-    private EditText sshServer;
-    private EditText sshPort;
-    private EditText sshUser;
-    private EditText sshPassword;
     private EditText ipText;
     private EditText portText;
     private Button buttonImportCa;
     private EditText tlsPort;
     private EditText passwordText;
     private Button goButton;
-    private Button buttonGeneratePubkey;
     private ToggleButton toggleAdvancedSettings;
     private Spinner spinnerConnection;
     private Spinner spinnerGeometry;
@@ -95,7 +83,6 @@ public class aSPICE extends Activity implements MainConfiguration {
     private CheckBox checkboxUseDpadAsArrows;
     private CheckBox checkboxRotateDpad;
     private CheckBox checkboxLocalCursor;
-    private CheckBox checkboxUseSshPubkey;
     private boolean isFree;
     private boolean startingOrHasPaused = true;
     private boolean isConnecting = false;
@@ -110,14 +97,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         isFree = this.getPackageName().contains("free");
 
         ipText = (EditText) findViewById(R.id.textIP);
-        sshServer = (EditText) findViewById(R.id.sshServer);
-        sshPort = (EditText) findViewById(R.id.sshPort);
-        sshUser = (EditText) findViewById(R.id.sshUser);
-        sshPassword = (EditText) findViewById(R.id.sshPassword);
-        sshCredentials = (LinearLayout) findViewById(R.id.sshCredentials);
-        sshCaption = (TextView) findViewById(R.id.sshCaption);
-        layoutUseSshPubkey = (LinearLayout) findViewById(R.id.layoutUseSshPubkey);
-        sshServerEntry = (LinearLayout) findViewById(R.id.sshServerEntry);
         portText = (EditText) findViewById(R.id.textPORT);
         tlsPort = (EditText) findViewById(R.id.tlsPort);
         passwordText = (EditText) findViewById(R.id.textPASSWORD);
@@ -132,54 +111,6 @@ public class aSPICE extends Activity implements MainConfiguration {
             }
         });
         
-        // Here we say what happens when the Pubkey Checkbox is
-        // checked/unchecked.
-        checkboxUseSshPubkey = (CheckBox) findViewById(R.id.checkboxUseSshPubkey);
-        checkboxUseSshPubkey
-                .setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView,
-                            boolean isChecked) {
-                        selected.setUseSshPubKey(isChecked);
-                        setSshPasswordHint(isChecked);
-                        sshPassword.setText("");
-                    }
-                });
-
-        // Here we say what happens when the Pubkey Generate button is pressed.
-        buttonGeneratePubkey = (Button) findViewById(R.id.buttonGeneratePubkey);
-        buttonGeneratePubkey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                generatePubkey();
-            }
-        });
-
-        // Define what happens when somebody selects different VNC connection
-        // types.
-        connectionType = (Spinner) findViewById(R.id.connectionType);
-        connectionType
-                .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> ad, View view,
-                            int itemIndex, long id) {
-
-                        selectedConnType = itemIndex;
-                        if (selectedConnType == Constants.CONN_TYPE_PLAIN) {
-                            setVisibilityOfSshWidgets(View.GONE);
-                        } else if (selectedConnType == Constants.CONN_TYPE_SSH) {
-                            setVisibilityOfSshWidgets(View.VISIBLE);
-                            if (ipText.getText().toString().equals(""))
-                                ipText.setText("localhost");
-                            setSshPasswordHint(checkboxUseSshPubkey.isChecked());
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> ad) {
-                    }
-                });
-
         checkboxKeepPassword = (CheckBox) findViewById(R.id.checkboxKeepPassword);
         checkboxUseDpadAsArrows = (CheckBox) findViewById(R.id.checkboxUseDpadAsArrows);
         checkboxRotateDpad = (CheckBox) findViewById(R.id.checkboxRotateDpad);
@@ -258,16 +189,6 @@ public class aSPICE extends Activity implements MainConfiguration {
     }
 
     /**
-     * Makes the ssh-related widgets visible/invisible.
-     */
-    private void setVisibilityOfSshWidgets(int visibility) {
-        sshCredentials.setVisibility(visibility);
-        sshCaption.setVisibility(visibility);
-        layoutUseSshPubkey.setVisibility(visibility);
-        sshServerEntry.setVisibility(visibility);
-    }
-
-    /**
      * Enables and disables the EditText boxes for width and height of remote desktop.
      */
     private void setRemoteWidthAndHeight () {
@@ -280,17 +201,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         }
     }
     
-    /**
-     * Sets the ssh password/passphrase hint appropriately.
-     */
-    private void setSshPasswordHint(boolean isPassphrase) {
-        if (isPassphrase) {
-            sshPassword.setHint(R.string.ssh_passphrase_hint);
-        } else {
-            sshPassword.setHint(R.string.password_hint_ssh);
-        }
-    }
-
     protected void onDestroy() {
         database.close();
         System.gc();
@@ -405,20 +315,8 @@ public class aSPICE extends Activity implements MainConfiguration {
     public void updateViewFromSelected() {
         if (selected == null)
             return;
-        selectedConnType = selected.getConnectionType();
-        connectionType.setSelection(selectedConnType);
-        sshServer.setText(selected.getSshServer());
-        sshPort.setText(Integer.toString(selected.getSshPort()));
-        sshUser.setText(selected.getSshUser());
 
-        checkboxUseSshPubkey.setChecked(selected.getUseSshPubKey());
-        setSshPasswordHint(checkboxUseSshPubkey.isChecked());
-
-        if (selectedConnType == Constants.CONN_TYPE_SSH
-                && selected.getAddress().equals(""))
-            ipText.setText("localhost");
-        else
-            ipText.setText(selected.getAddress());
+        ipText.setText(selected.getAddress());
 
         if (selected.getPort() < 0) {
             portText.setText("");
@@ -514,7 +412,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         if (selected == null) {
             return;
         }
-        selected.setConnectionType(selectedConnType);
         selected.setAddress(ipText.getText().toString());
         
         String port = portText.getText().toString();
@@ -535,22 +432,8 @@ public class aSPICE extends Activity implements MainConfiguration {
             selected.setTlsPort(-1);
         }
         
-        try {
-            selected.setSshPort(Integer.parseInt(sshPort.getText().toString()));
-        } catch (NumberFormatException nfe) {
-        }
-        
         selected.setNickname(textNickname.getText().toString());
-        selected.setSshServer(sshServer.getText().toString());
-        selected.setSshUser(sshUser.getText().toString());
 
-        selected.setKeepSshPassword(false);
-
-        // If we are using an SSH key, then the ssh password box is used
-        // for the key pass-phrase instead.
-        selected.setUseSshPubKey(checkboxUseSshPubkey.isChecked());
-        selected.setSshPassPhrase(sshPassword.getText().toString());
-        selected.setSshPassword(sshPassword.getText().toString());
         selected.setRdpResType(spinnerGeometry.getSelectedItemPosition());
         try    {
             selected.setRdpWidth(Integer.parseInt(resWidth.getText().toString()));
@@ -668,11 +551,9 @@ public class aSPICE extends Activity implements MainConfiguration {
     }
 
     public void saveAndWriteRecent() {
-        // We need server address or SSH server to be filled out to save. Otherwise,
+        // We need server address to be filled out to save. Otherwise,
         // we keep adding empty connections.
-        if (selected.getConnectionType() == Constants.CONN_TYPE_SSH
-            && selected.getSshServer().equals("")
-            || selected.getAddress().equals(""))
+        if (selected.getAddress().equals(""))
             return;
         
         SQLiteDatabase db = database.getWritableDatabase();
@@ -706,44 +587,5 @@ public class aSPICE extends Activity implements MainConfiguration {
         Intent intent = new Intent(this, RemoteCanvasActivity.class);
         intent.putExtra(Constants.CONNECTION, selected.Gen_getValues());
         startActivity(intent);
-    }
-
-    /**
-     * Starts the activity which manages keys.
-     */
-    private void generatePubkey() {
-        updateSelectedFromView();
-        saveAndWriteRecent();
-        Intent intent = new Intent(this, GeneratePubkeyActivity.class);
-        intent.putExtra("PrivateKey", selected.getSshPrivKey());
-        startActivityForResult(intent, Constants.ACTIVITY_GEN_KEY);
-    }
-
-    /**
-     * This function is used to retrieve data returned by activities started
-     * with startActivityForResult.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-        case (Constants.ACTIVITY_GEN_KEY):
-            if (resultCode == Activity.RESULT_OK) {
-                Bundle b = data.getExtras();
-                String privateKey = (String) b.get("PrivateKey");
-                if (!privateKey.equals(selected.getSshPrivKey())
-                        && privateKey.length() != 0)
-                    Toast.makeText(
-                            getBaseContext(),
-                            "New key generated/imported successfully. Tap 'Generate/Export Key' "
-                                    + " button to share, copy to clipboard, or export the public key now.",
-                            Toast.LENGTH_LONG).show();
-                selected.setSshPrivKey(privateKey);
-                selected.setSshPubKey((String) b.get("PublicKey"));
-                saveAndWriteRecent();
-            } else
-                Log.i(TAG, "The user cancelled SSH key generation.");
-            break;
-        }
     }
 }

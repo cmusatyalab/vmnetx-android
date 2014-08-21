@@ -51,34 +51,7 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setPassword("");
         setKeepPassword(true);
         setNickname("");
-        // TODO: Switch away from using a hard-coded numeric value for the connection type.
-        setConnectionType(0);
-        setSshServer("");
-        setSshPort(22);
-        setSshUser("");
-        setSshPassword("");
-        setKeepSshPassword(false);
-        setSshPubKey("");
-        setSshPrivKey("");
-        setSshPassPhrase("");
-        setUseSshPubKey(false);
         setSshHostKey("");
-        setSshRemoteCommandOS(0);
-        setSshRemoteCommandType(0);
-        setSshRemoteCommand("");
-        setSshRemoteCommandTimeout(5);
-        setAutoXType(0);
-        setAutoXCommand("");
-        setAutoXEnabled(false);
-        setAutoXResType(0);
-        setAutoXWidth(0);
-        setAutoXHeight(0);
-        setAutoXSessionProg("");
-        setAutoXSessionType(0);
-        setAutoXUnixpw(false);
-        setAutoXUnixAuth(false);
-        setAutoXRandFileNm("");
-        setUseSshRemoteCommand(false);
         setUserName("");
         setRdpDomain("");
         setPort(5900);
@@ -121,8 +94,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     public synchronized void save(SQLiteDatabase database) {
         ContentValues values=Gen_getValues();
         values.remove(GEN_FIELD__ID);
-        // Never save the SSH password.
-        values.put(GEN_FIELD_SSHPASSWORD, "");
         if ( ! getKeepPassword()) {
             values.put(GEN_FIELD_PASSWORD, "");
         }
@@ -155,11 +126,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         if (!getNickname().equals(""))
             result += getNickname()+":";
         
-        // If this is an VNC over SSH connection, add the SSH server:port in parentheses
-        // TODO: Switch away from numeric representation of position in list.
-        if (getConnectionType() == 1)
-            result += "(" + getSshServer() + ":" + getSshPort() + ")" + ":";
-
         // Add the VNC server and port.
         result += getAddress()+":"+getPort();
         return result;
@@ -172,19 +138,10 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     public int compareTo(ConnectionBean another) {
         int result = getNickname().compareTo(another.getNickname());
         if (result == 0) {
-            result = getConnectionType() - another.getConnectionType();
-        }        
-        if (result == 0) {
             result = getAddress().compareTo(another.getAddress());
         }
         if ( result == 0) {
             result = getPort() - another.getPort();
-        }
-        if (result == 0) {
-            result = getSshServer().compareTo(another.getSshServer());
-        }
-        if (result == 0) {
-            result = getSshPort() - another.getSshPort();
         }
         return result;
     }

@@ -111,7 +111,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     ZoomControls zoomer;
     Panner panner;
-    SSHConnection sshConnection;
     Handler handler;
 
     RelativeLayout layoutKeys;
@@ -218,9 +217,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             if (connection.getPort() == 0)
                 connection.setPort(5900);
             
-            if (connection.getSshPort() == 0)
-                connection.setSshPort(22);
-
             // Parse a HOST:PORT entry
             String host = connection.getAddress();
             if (host.indexOf(':') > -1) {

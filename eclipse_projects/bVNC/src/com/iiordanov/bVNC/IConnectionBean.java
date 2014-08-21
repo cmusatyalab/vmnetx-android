@@ -34,58 +34,6 @@ interface IConnectionBean {
     @FieldAccessor
     String getNickname();
     @FieldAccessor
-    int getConnectionType();
-    @FieldAccessor
-    String getSshServer();
-    @FieldAccessor
-    int getSshPort();
-    @FieldAccessor
-    String getSshUser();
-    @FieldAccessor
-    String getSshPassword();
-    @FieldAccessor
-    boolean getKeepSshPassword();
-    @FieldAccessor
-    String getSshPubKey();
-    @FieldAccessor
-    String getSshPrivKey();
-    @FieldAccessor
-    String getSshPassPhrase();
-    @FieldAccessor
-    boolean getUseSshPubKey();
-    @FieldAccessor
-    int getSshRemoteCommandOS();
-    @FieldAccessor
-    int getSshRemoteCommandType();
-    @FieldAccessor
-    int getAutoXType();
-    @FieldAccessor
-    String getAutoXCommand();
-    @FieldAccessor
-    boolean getAutoXEnabled();
-    @FieldAccessor
-    int getAutoXResType();
-    @FieldAccessor
-    int getAutoXWidth();
-    @FieldAccessor
-    int getAutoXHeight();
-    @FieldAccessor
-    String getAutoXSessionProg();
-    @FieldAccessor
-    int getAutoXSessionType();
-    @FieldAccessor
-    boolean getAutoXUnixpw();
-    @FieldAccessor
-    boolean getAutoXUnixAuth();
-    @FieldAccessor
-    String getAutoXRandFileNm();
-    @FieldAccessor
-    String getSshRemoteCommand();
-    @FieldAccessor
-    int getSshRemoteCommandTimeout();
-    @FieldAccessor
-    boolean getUseSshRemoteCommand();
-    @FieldAccessor
     String getSshHostKey();
     @FieldAccessor
     String getAddress();
@@ -141,8 +89,6 @@ interface IConnectionBean {
     String getUserName();
     @FieldAccessor
     String getRdpDomain();
-    @FieldAccessor
-    String getSecureConnectionType();
     @FieldAccessor(DefaultValue="true")
     boolean getShowZoomButtons();
     @FieldAccessor(Name="DOUBLE_TAP_ACTION")

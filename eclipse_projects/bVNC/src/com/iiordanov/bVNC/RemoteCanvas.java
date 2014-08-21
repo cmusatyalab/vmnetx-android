@@ -83,7 +83,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     // Connection parameters
     ConnectionBean connection;
     Database database;
-    private SSHConnection sshConnection = null;
     
     // VNC protocol connection
     public RfbConnectable rfbconn   = null;
@@ -206,22 +205,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         Thread t = new Thread () {
             public void run() {
                 try {
-                    // Initialize SSH key if necessary
-                    if (connection.getConnectionType() == Constants.CONN_TYPE_SSH &&
-                        connection.getSshHostKey().equals("")) {
-                        handler.sendEmptyMessage(Constants.DIALOG_SSH_CERT);
-                        
-                        // Block while user decides whether to accept certificate or not.
-                        // The activity ends if the user taps "No", so we block indefinitely here.
-                        synchronized (RemoteCanvas.this) {
-                            while (connection.getSshHostKey().equals("")) {
-                                try {
-                                    RemoteCanvas.this.wait();
-                                } catch (InterruptedException e) { e.printStackTrace(); }
-                            }
-                        }
-                    }
-                    
                     startSpiceConnection();
                 } catch (Throwable e) {
                     if (maintainConnection) {
@@ -270,16 +253,9 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      */
     private void startSpiceConnection() throws Exception {
         // Get the address and port (based on whether an SSH tunnel is being established or not).
-        String address = getAddress();
-        // To prevent an SSH tunnel being created when port or TLS port is not set, we only
-        // getPort when port/tport are positive.
+        String address = connection.getAddress();
         int port = connection.getPort();
-        if (port > 0)
-            port = getPort(port);
-        
         int tport = connection.getTlsPort();
-        if (tport > 0)
-            tport = getPort(tport);
         
         spicecomm = new SpiceCommunicator (getContext(), this, connection);
         rfbconn = spicecomm;
@@ -346,44 +322,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
                 Utils.showFatalErrorMessage(getContext(), error);
             }
         });
-    }
-    
-    
-    /** 
-     * If necessary, initializes an SSH tunnel and returns local forwarded port, or
-     * if SSH tunneling is not needed, returns the given port.
-     * @return
-     * @throws Exception
-     */
-    int getPort(int port) throws Exception {
-        int result = 0;
-        
-        if (connection.getConnectionType() == Constants.CONN_TYPE_SSH) {
-            if (sshConnection == null) {
-                sshConnection = new SSHConnection(connection, getContext());
-            }
-            // TODO: Take the AutoX stuff out to a separate function.
-            int newPort = sshConnection.initializeSSHTunnel ();
-            if (newPort > 0)
-                port = newPort;
-            result = sshConnection.createLocalPortForward(port);
-        } else {
-            result = port;
-        }
-        return result;
-    }
-    
-    
-    /** 
-     * Returns localhost if using SSH tunnel or saved VNC address.
-     * @return
-     * @throws Exception
-     */
-    String getAddress() {
-        if (connection.getConnectionType() == Constants.CONN_TYPE_SSH) {
-            return new String("127.0.0.1");
-        } else
-            return connection.getAddress();
     }
     
     
@@ -482,12 +420,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         if (rfbconn != null)
             rfbconn.close();
         
-        
-        // Close the SSH tunnel.
-        if (sshConnection != null) {
-            sshConnection.terminateSSHTunnel();
-            sshConnection = null;
-        }
         onDestroy();
     }
     
@@ -1061,9 +993,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
             case Constants.DIALOG_X509_CERT:
                 validateX509Cert ((X509Certificate)msg.obj);
                 break;
-            case Constants.DIALOG_SSH_CERT:
-                initializeSshHostKey();
-                break;
             case Constants.DIALOG_RDP_CERT:
                 Bundle s = (Bundle)msg.obj;
                 validateRdpCert (s.getString("subject"), s.getString("issuer"), s.getString("fingerprint"));
@@ -1213,53 +1142,5 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
                         "\nFingerprint:  " + fingerprint + 
                         getContext().getString(R.string.info_cert_signatures_identical),
                         signatureYes, signatureNo);
-    }
-    
-    
-    /**
-     * Function used to initialize an empty SSH HostKey for a new VNC over SSH connection.
-     */
-    private void initializeSshHostKey() {
-        // If the SSH HostKey is empty, then we need to grab the HostKey from the server and save it.
-        Log.d(TAG, "Attempting to initialize SSH HostKey.");
-        
-        displayShortToastMessage(getContext().getString(R.string.info_ssh_initializing_hostkey));
-        
-        sshConnection = new SSHConnection(connection, getContext());
-        if (!sshConnection.connect()) {
-            // Failed to connect, so show error message and quit activity.
-            showFatalMessageAndQuit(getContext().getString(R.string.error_ssh_unable_to_connect));
-        } else {
-            // Show a dialog with the key signature.
-            DialogInterface.OnClickListener signatureNo = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // We were told to not continue, so stop the activity
-                    sshConnection.terminateSSHTunnel();
-                    pd.dismiss();
-                    ((Activity) getContext()).finish();
-                }   
-            };
-            DialogInterface.OnClickListener signatureYes = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // We were told to go ahead with the connection.
-                    connection.setSshHostKey(sshConnection.getServerHostKey());
-                    connection.save(database.getWritableDatabase());
-                    database.close();
-                    sshConnection.terminateSSHTunnel();
-                    sshConnection = null;
-                    synchronized (RemoteCanvas.this) {
-                        RemoteCanvas.this.notify();
-                    }
-                }
-            };
-            
-            Utils.showYesNoPrompt(getContext(),
-                    getContext().getString(R.string.info_continue_connecting) + connection.getSshServer() + "?",
-                    getContext().getString(R.string.info_ssh_key_fingerprint) + sshConnection.getHostKeySignature() +
-                    getContext().getString(R.string.info_ssh_key_fingerprint_identical),
-                    signatureYes, signatureNo);
-        }
     }
 }

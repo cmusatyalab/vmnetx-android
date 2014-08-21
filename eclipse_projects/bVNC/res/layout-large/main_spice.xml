@@ -42,82 +42,9 @@ android:layout_height="fill_parent">
 				android:layout_height="wrap_content"/> 
 		</TableRow>
 		<TableRow>
-			<Spinner 
-			    android:id="@+id/connectionType" 
-			    android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:entries="@array/spice_connection_type"
-				android:textAppearance="?android:attr/textAppearanceLarge"/>
-		</TableRow>
-		<TableRow>
 			<EditText android:id="@+id/textNickname" android:layout_width="fill_parent" android:layout_height="wrap_content"
 				android:singleLine="true" android:layout_weight="1" android:textAppearance="?android:attr/textAppearanceLarge"
 				android:hint="@string/nickname_caption_hint"/>
-		</TableRow>
-		<TableRow>
-		    <TextView
-			    android:id="@+id/sshCaption" 
-				android:text="SSH Tunnel Settings"
-				android:textAppearance="?android:attr/textAppearanceLarge"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"/> 
-		</TableRow>
-		<TableRow>
-	    	<LinearLayout
-	    	    android:id="@+id/sshServerEntry"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_weight="1"
-				android:visibility="gone">
-				<EditText android:id="@+id/sshServer" android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:singleLine="true" android:layout_weight="1" android:textAppearance="?android:attr/textAppearanceLarge"
-					android:hint="@string/address_caption_ssh_hint"	android:inputType="textNoSuggestions|textVisiblePassword"
-					android:nextFocusDown="@+id/sshPort"/>
-				<EditText android:id="@+id/sshPort"
-					android:text="22" android:hint="@string/port_ssh_hint" android:layout_width="wrap_content" 
-					android:layout_height="wrap_content" android:singleLine="true" android:layout_weight="0"
-					android:textAppearance="?android:attr/textAppearanceLarge" android:nextFocusDown="@+id/sshUser"
-					android:inputType="textNoSuggestions|textVisiblePassword"/>
-			</LinearLayout>
-		</TableRow>
-		<TableRow>
-	    	<LinearLayout
-	    	    android:id="@+id/sshCredentials"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_weight="1"
-				android:visibility="gone">
-				<EditText android:id="@+id/sshUser"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:singleLine="true" android:layout_weight=".5" android:textAppearance="?android:attr/textAppearanceLarge"
-					android:hint="@string/username_hint_ssh" android:inputType="textNoSuggestions|textVisiblePassword"
-					android:nextFocusDown="@+id/sshPassword"/>
-				<EditText android:id="@+id/sshPassword"
-				    android:password="true"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:singleLine="true" android:layout_weight=".5" android:textAppearance="?android:attr/textAppearanceLarge"
-					android:hint="@string/password_hint_ssh" android:inputType="textNoSuggestions"/>
-			</LinearLayout>
-		</TableRow>
-		<TableRow>
-	    	<LinearLayout
-				android:id="@+id/layoutUseSshPubkey"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_weight="1"
-				android:visibility="gone">
-				<Button	android:id="@+id/buttonGeneratePubkey" android:text="@string/ssh_pubkey_button"
-					android:textAppearance="?android:attr/textAppearanceLarge" android:enabled="true"
-					android:layout_width="fill_parent"	android:layout_weight=".4" android:layout_height="wrap_content"/>
-				<CheckBox android:id="@+id/checkboxUseSshPubkey"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:text="@string/ssh_use_pubkey" android:layout_weight=".6" android:checked="false"
-					android:textAppearance="?android:attr/textAppearanceLarge" android:singleLine="true"/>
-			</LinearLayout>					
 		</TableRow>
 		<TableRow>
 		    <TextView
