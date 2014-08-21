@@ -17,5 +17,4 @@ public interface UIEventListener
 	boolean OnVerifiyCertificate(String subject, String issuer, String fingerprint);
 	void OnGraphicsUpdate(int x, int y, int width, int height);		
 	void OnGraphicsResize(int width, int height, int bpp);		
-	void OnRemoteClipboardChanged(String data);
 }

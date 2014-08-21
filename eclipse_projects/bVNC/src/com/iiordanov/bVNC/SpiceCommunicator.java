@@ -176,12 +176,6 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
     }
 
     @Override
-    public void writeClientCutText(String text) {
-        // TODO Auto-generated method stub
-
-    }
-    
-    @Override
     public void setIsInNormalProtocol(boolean state) {
         isInNormalProtocol = state;        
     }

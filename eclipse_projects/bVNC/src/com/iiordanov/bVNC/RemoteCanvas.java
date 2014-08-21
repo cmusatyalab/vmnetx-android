@@ -47,7 +47,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
@@ -104,12 +103,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     // Progress dialog shown at connection time.
     ProgressDialog pd;
     
-    // Used to set the contents of the clipboard.
-    ClipboardManager clipboard;
-    Timer clipboardMonitorTimer;
-    ClipboardMonitor clipboardMonitor;
-    public boolean serverJustCutText = false;
-    
     private Runnable setModes;
     
     // This variable indicates whether or not the user has accepted an untrusted
@@ -155,8 +148,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      */
     public RemoteCanvas(final Context context, AttributeSet attrs) {
         super(context, attrs);
-        
-        clipboard = (ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
         displayWidth  = display.getWidth();
@@ -234,16 +225,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
             }
         };
         t.start();
-
-        clipboardMonitor = new ClipboardMonitor(getContext(), this);
-        if (clipboardMonitor != null) {
-            clipboardMonitorTimer = new Timer ();
-            if (clipboardMonitorTimer != null) {
-                try {
-                    clipboardMonitorTimer.schedule(clipboardMonitor, 0, 500);
-                } catch (NullPointerException e){}
-            }
-        }
     }
     
     
@@ -395,17 +376,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     
     /**
-     * Set the device clipboard text with the string parameter.
-     * @param readServerCutText set the device clipboard to the text in this parameter.
-     */
-    public void setClipboardText(String s) {
-        if (s != null && s.length() > 0) {
-            clipboard.setText(s);
-        }
-    }
-    
-    
-    /**
      * Method that disconnects from the remote server.
      */
     public void closeConnection() {
@@ -431,14 +401,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         Log.v(TAG, "Cleaning up resources");
         
         removeCallbacksAndMessages();
-        if (clipboardMonitorTimer != null) {
-            clipboardMonitorTimer.cancel();
-            // Occasionally causes a NullPointerException
-            //clipboardMonitorTimer.purge();
-            clipboardMonitorTimer = null;
-        }
-        clipboardMonitor = null;
-        clipboard        = null;
         setModes         = null;
         database         = null;
         connection       = null;
@@ -976,12 +938,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         OnSettingsChanged(width, height, bpp);
     }
     
-    @Override
-    public void OnRemoteClipboardChanged(String data) {
-        serverJustCutText = true;
-        setClipboardText(data);
-    }
-
     /** 
      * Handler for the dialogs that display the x509/RDP/SSH key signatures to the user.
      * Also shows the dialogs which show various connection failures.
