@@ -31,8 +31,7 @@ class CompactBitmapData extends AbstractBitmapData {
      * safety factor
      */
     static final int CAPACITY_MULTIPLIER = 7;
-    boolean isSpice = true;
-    Bitmap.Config cfg = Bitmap.Config.RGB_565;
+    static final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
     
     class CompactBitmapDrawable extends AbstractBitmapDrawable {
         
@@ -54,7 +53,7 @@ class CompactBitmapData extends AbstractBitmapData {
         }
     }
     
-    CompactBitmapData(RfbConnectable rfb, RemoteCanvas c, boolean trueColor)
+    CompactBitmapData(RfbConnectable rfb, RemoteCanvas c)
     {
         super(rfb,c);
         bitmapwidth=framebufferwidth;
@@ -63,9 +62,6 @@ class CompactBitmapData extends AbstractBitmapData {
         if (bitmapwidth  == 0) bitmapwidth  = 1;
         if (bitmapheight == 0) bitmapheight = 1;
 
-        if (trueColor)
-            cfg = Bitmap.Config.ARGB_8888;
-        
         mbitmap = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
         mbitmap.setHasAlpha(false);
 

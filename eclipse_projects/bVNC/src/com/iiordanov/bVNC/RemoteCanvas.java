@@ -142,10 +142,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     int displayHeight = 0;
     float displayDensity = 0;
     
-    /*
-     * This flag indicates whether this is the SPICE 'version' or not.
-     */
-    boolean isSpice = true;
     boolean spiceUpdateReceived = false;
     
     /*
@@ -162,8 +158,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         super(context, attrs);
         
         clipboard = (ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        
-        isSpice = true;
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
         displayWidth  = display.getWidth();
@@ -428,7 +422,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
                     bitmapData=new FullBufferBitmapData(rfbconn, this, capacity);
                     android.util.Log.i(TAG, "Using FullBufferBitmapData.");
                 } else {
-                    bitmapData=new CompactBitmapData(rfbconn, this, isSpice);
+                    bitmapData=new CompactBitmapData(rfbconn, this);
                     android.util.Log.i(TAG, "Using CompactBufferBitmapData.");
                 }
             } catch (Throwable e) { // If despite our efforts we fail to allocate memory, use LBBM.
@@ -1054,23 +1048,21 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     public void OnSettingsChanged(int width, int height, int bpp) {
         android.util.Log.e(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
-        // If this is aSPICE, we need to initialize the communicator and remote keyboard and mouse now.
-        if (isSpice) {
-            spicecomm.setFramebufferWidth(width);
-            spicecomm.setFramebufferHeight(height);
-            waitUntilInflated();
-            int remoteWidth  = getRemoteWidth(getWidth(), getHeight());
-            int remoteHeight = getRemoteHeight(getWidth(), getHeight());
-            if (width != remoteWidth || height != remoteHeight) {
-                android.util.Log.e(TAG, "Requesting new res: " + remoteWidth + "x" + remoteHeight);
-                rfbconn.requestResolution(remoteWidth, remoteHeight);
-            }
+        // We need to initialize the communicator and remote keyboard and mouse now.
+        spicecomm.setFramebufferWidth(width);
+        spicecomm.setFramebufferHeight(height);
+        waitUntilInflated();
+        int remoteWidth  = getRemoteWidth(getWidth(), getHeight());
+        int remoteHeight = getRemoteHeight(getWidth(), getHeight());
+        if (width != remoteWidth || height != remoteHeight) {
+            android.util.Log.e(TAG, "Requesting new res: " + remoteWidth + "x" + remoteHeight);
+            rfbconn.requestResolution(remoteWidth, remoteHeight);
         }
         
         disposeDrawable ();
         try {
             // TODO: Use frameBufferSizeChanged instead.
-            bitmapData = new CompactBitmapData(rfbconn, this, isSpice);
+            bitmapData = new CompactBitmapData(rfbconn, this);
         } catch (Throwable e) {
             showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
             return;
@@ -1085,12 +1077,10 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         handler.post(setModes);
         handler.post(desktopInfo);
         
-        // If this is aSPICE, set the new bitmap in the native layer.
-        if (isSpice) {
-            spiceUpdateReceived = true;
-            rfbconn.setIsInNormalProtocol(true);
-            handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
-        }
+        // Set the new bitmap in the native layer.
+        spiceUpdateReceived = true;
+        rfbconn.setIsInNormalProtocol(true);
+        handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 
     @Override
