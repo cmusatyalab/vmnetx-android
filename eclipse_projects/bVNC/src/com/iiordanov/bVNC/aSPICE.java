@@ -55,7 +55,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import com.iiordanov.bVNC.dialogs.ImportExportDialog;
 import com.iiordanov.bVNC.dialogs.ImportTlsCaDialog;
 import com.iiordanov.bVNC.dialogs.IntroTextDialog;
 
@@ -174,16 +173,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         });
         
         database = new Database(this);
-
-        // Define what happens when the Import/Export button is pressed.
-        ((Button) findViewById(R.id.buttonImportExport))
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        android.util.Log.e(TAG, "import/export!!");
-                        showDialog(R.layout.importexport);
-                    }
-                });
     }
 
     /**
@@ -213,8 +202,6 @@ public class aSPICE extends Activity implements MainConfiguration {
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-        case R.layout.importexport:
-            return new ImportExportDialog(this);
         case R.id.itemMainScreenHelp:
             return createHelpDialog();
         case R.layout.import_tls_ca_dialog:
