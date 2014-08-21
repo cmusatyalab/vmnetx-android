@@ -56,99 +56,6 @@ inline void detachThreadFromJvm() {
 	(*jvm)->DetachCurrentThread(jvm);
 }
 
-static void
-spice_session_setup_from_vv(VirtViewerFile *file, SpiceSession *session)
-{
-    g_return_if_fail(VIRT_VIEWER_IS_FILE(file));
-    g_return_if_fail(SPICE_IS_SESSION(session));
-
-    if (virt_viewer_file_is_set(file, "host")) {
-        gchar *val = virt_viewer_file_get_host(file);
-        g_object_set(G_OBJECT(session), "host", val, NULL);
-        g_free(val);
-    }
-
-    if (virt_viewer_file_is_set(file, "port")) {
-        gchar *port = g_strdup_printf("%d", virt_viewer_file_get_port(file));
-        g_object_set(G_OBJECT(session), "port", port, NULL);
-        g_free(port);
-    }
-    if (virt_viewer_file_is_set(file, "tls-port")) {
-        gchar *tls_port = g_strdup_printf("%d", virt_viewer_file_get_tls_port(file));
-        g_object_set(G_OBJECT(session), "tls-port", tls_port, NULL);
-        g_free(tls_port);
-    }
-    if (virt_viewer_file_is_set(file, "password")) {
-        gchar *val = virt_viewer_file_get_password(file);
-        g_object_set(G_OBJECT(session), "password", val, NULL);
-        g_free(val);
-    }
-
-    if (virt_viewer_file_is_set(file, "tls-ciphers")) {
-        gchar *val = virt_viewer_file_get_tls_ciphers(file);
-        g_object_set(G_OBJECT(session), "ciphers", val, NULL);
-        g_free(val);
-    }
-
-    if (virt_viewer_file_is_set(file, "ca")) {
-        gchar *ca = virt_viewer_file_get_ca(file);
-        g_return_if_fail(ca != NULL);
-
-        GByteArray *ba = g_byte_array_new_take((guint8 *)ca, strlen(ca) + 1);
-        g_object_set(G_OBJECT(session), "ca", ba, NULL);
-        g_byte_array_unref(ba);
-    }
-
-    if (virt_viewer_file_is_set(file, "host-subject")) {
-        gchar *val = virt_viewer_file_get_host_subject(file);
-        g_object_set(G_OBJECT(session), "cert-subject", val, NULL);
-        g_free(val);
-    }
-
-    if (virt_viewer_file_is_set(file, "proxy")) {
-        gchar *val = virt_viewer_file_get_proxy(file);
-        g_object_set(G_OBJECT(session), "proxy", val, NULL);
-        g_free(val);
-    }
-
-    if (virt_viewer_file_is_set(file, "enable-smartcard")) {
-        g_object_set(G_OBJECT(session),
-                     "enable-smartcard", virt_viewer_file_get_enable_smartcard(file), NULL);
-    }
-
-    if (virt_viewer_file_is_set(file, "enable-usbredir")) {
-        g_object_set(G_OBJECT(session),
-                     "enable-usbredir", virt_viewer_file_get_enable_usbredir(file), NULL);
-    }
-
-    if (virt_viewer_file_is_set(file, "color-depth")) {
-        g_object_set(G_OBJECT(session),
-                     "color-depth", virt_viewer_file_get_color_depth(file), NULL);
-    }
-
-    if (virt_viewer_file_is_set(file, "disable-effects")) {
-        gchar **disabled = virt_viewer_file_get_disable_effects(file, NULL);
-        g_object_set(G_OBJECT(session), "disable-effects", disabled, NULL);
-        g_strfreev(disabled);
-    }
-
-    if (virt_viewer_file_is_set(file, "enable-usb-autoshare")) {
-        //gboolean enabled = virt_viewer_file_get_enable_usb_autoshare(file);
-        //SpiceGtkSession *gtk = spice_gtk_session_get(session);
-        //g_object_set(G_OBJECT(gtk), "auto-usbredir", enabled, NULL);
-    }
-
-    if (virt_viewer_file_is_set(file, "secure-channels")) {
-        gchar **channels = virt_viewer_file_get_secure_channels(file, NULL);
-        g_object_set(G_OBJECT(session), "secure-channels", channels, NULL);
-        g_strfreev(channels);
-    }
-
-    if (virt_viewer_file_is_set(file, "disable-channels")) {
-        //DEBUG_LOG("FIXME: disable-channels is not supported atm");
-    }
-}
-
 void spice_session_setup(SpiceSession *session, const char *host, const char *port,
                             const char *tls_port, const char *password, const char *ca_file,
                             GByteArray *ca_cert, const char *cert_subj) {
@@ -254,16 +161,6 @@ int spiceClientConnect (const gchar *h, const gchar *p, const gchar *tp,
     soundEnabled = sound;
     conn = connection_new();
 	spice_session_setup(conn->session, h, p, tp, pw, cf, cc, cs);
-	return connectSession(conn);
-}
-
-int spiceClientConnectVv (VirtViewerFile *vv_file, const gboolean sound)
-{
-    spice_connection *conn;
-
-    soundEnabled = sound;
-    conn = connection_new();
-	spice_session_setup_from_vv(vv_file, conn->session);
 	return connectSession(conn);
 }
 
@@ -393,43 +290,6 @@ authenticationCallback(RestProxy *proxy, G_GNUC_UNUSED RestProxyAuth *auth,
         g_object_set(G_OBJECT(proxy), "username", oVirtUser, "password", oVirtPassword, NULL);
 	}
     return !retrying;
-}
-
-
-JNIEXPORT jint JNICALL
-Java_com_iiordanov_bVNC_SpiceCommunicator_StartSessionFromVvFile(JNIEnv *env, jobject obj, jstring vvFileName, jboolean sound) {
-    __android_log_write(6, "StartSessionFromVvFile", "Starting.");
-
-    gchar *vv_file_name = NULL;
-    VirtViewerFile *vv_file = NULL;
-    GError *error = NULL;
-    int result = 0;
-
-    if (!getJvmAndMethodReferences (env)) {
-    	result = -1;
-    	goto error;
-    }
-
-    vv_file_name = (gchar*) (*env)->GetStringUTFChars(env, vvFileName, NULL);
-    vv_file = virt_viewer_file_new(vv_file_name, &error);
-    if (error) {
-        __android_log_write(6, "StartSessionFromVvFile", "Error creating vv_file object, error:");
-        __android_log_write(6, "StartSessionFromVvFile", error->message);
-        sendMessage (env, 11); /* Constants.VV_FILE_ERROR */
-        result = -1;
-        goto error;
-    }
-
-    result = spiceClientConnectVv (vv_file, sound);
-
-error:
-    if (vv_file != NULL)
-        g_object_unref(vv_file);
-    if (error != NULL)
-        g_object_unref(error);
-    if (vv_file_name != NULL)
-        g_free(vv_file_name);
-    return result;
 }
 
 

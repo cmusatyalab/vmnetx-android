@@ -59,8 +59,6 @@ int spiceClientConnect (const gchar *h, const gchar *p, const gchar *tp,
 		                   const gchar *pw, const gchar *cf, GByteArray *cc,
                            const gchar *cs, const gboolean sound);
 
-int spiceClientConnectVv (VirtViewerFile *vv_file, const gboolean sound);
-
 int connectSession (spice_connection *conn);
 
 int SpiceClientConnect(JNIEnv *env, jobject obj, const gchar *h, const gchar *p,
