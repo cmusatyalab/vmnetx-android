@@ -202,10 +202,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 connection.setPort(port);
                 List<String> path = data.getPathSegments();
                 if (path.size() >= 1) {
-                    connection.setColorModel(path.get(0));
-                }
-                if (path.size() >= 2) {
-                    connection.setPassword(path.get(1));
+                    connection.setPassword(path.get(0));
                 }
                 connection.save(database.getWritableDatabase());
                 database.close();
@@ -1007,9 +1004,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         case R.id.itemSpecialKeys:
             showDialog(R.layout.metakey);
             return true;
-        case R.id.itemColorMode:
-            selectColorModel();
-            return true;
             // Following sets one of the scaling options
         case R.id.itemZoomable:
         case R.id.itemOneToOne:
@@ -1234,39 +1228,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         return super.onGenericMotionEvent(event);
     }
 
-    private void selectColorModel() {
-
-        String[] choices = new String[COLORMODEL.values().length];
-        int currentSelection = -1;
-        for (int i = 0; i < choices.length; i++) {
-            COLORMODEL cm = COLORMODEL.values()[i];
-            choices[i] = cm.toString();
-            if (canvas.isColorModel(cm))
-                currentSelection = i;
-        }
-
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        ListView list = new ListView(this);
-        list.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_checked, choices));
-        list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        list.setItemChecked(currentSelection, true);
-        list.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                dialog.dismiss();
-                COLORMODEL cm = COLORMODEL.values()[arg2];
-                canvas.setColorModel(cm);
-                connection.setColorModel(cm.nameString());
-                connection.save(database.getWritableDatabase());
-                database.close();
-                Toast.makeText(RemoteCanvasActivity.this, getString(R.string.info_update_color_model_to) + cm.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        dialog.setContentView(list);
-        dialog.show();
-    }
-    
     long hideZoomAfterMs;
     static final long ZOOM_HIDE_DELAY_MS = 2500;
     HideZoomRunnable hideZoomInstance = new HideZoomRunnable();

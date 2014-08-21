@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import com.iiordanov.bVNC.MetaKeyBean;
 import com.iiordanov.bVNC.RfbConnectable;
 import com.iiordanov.bVNC.RemoteCanvas;
-import com.iiordanov.tigervnc.rfb.UnicodeToKeysym;
 import com.iiordanov.bVNC.input.KeyboardMapper;
 
 

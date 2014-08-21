@@ -192,12 +192,6 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
     }
 
     @Override
-    public String getEncoding() {
-        // TODO Auto-generated method stub
-        return "";
-    }
-
-    @Override
     public void writePointerEvent(int x, int y, int metaState, int pointerMask) {
         this.metaState = metaState; 
         if ((pointerMask & RemoteSpicePointer.PTRFLAGS_DOWN) != 0)

@@ -26,7 +26,6 @@ import android.widget.ImageView.ScaleType;
 
 import com.antlersoft.android.db.FieldAccessor;
 import com.antlersoft.android.dbimpl.NewInstance;
-import com.iiordanov.bVNC.COLORMODEL;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
 import com.iiordanov.bVNC.input.TouchMouseSwipePanInputHandler;
 
@@ -87,8 +86,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setCaCertPath("");
         setTlsPort(-1);
         setCertSubject("");
-        setColorModel(COLORMODEL.C24bit.nameString());
-        setPrefEncoding(RfbProto.EncodingTight);
         setScaleMode(ScaleType.MATRIX);
         setInputMode(TouchMouseSwipePanInputHandler.TOUCH_ZOOM_MODE);
         setUseDpadAsArrows(true);

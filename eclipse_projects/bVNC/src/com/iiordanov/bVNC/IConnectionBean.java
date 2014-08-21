@@ -102,10 +102,6 @@ interface IConnectionBean {
     @FieldAccessor
     String getPassword();
     @FieldAccessor
-    String getColorModel();
-    @FieldAccessor
-    int getPrefEncoding();
-    @FieldAccessor
     int getExtraKeysToggleType();
     /**
      * Records bitmap data implementation selection.  0 for auto, 1 for force full bitmap, 2 for force tiled

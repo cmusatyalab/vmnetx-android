@@ -69,12 +69,8 @@ import android.graphics.RectF;
 import com.iiordanov.android.bc.BCFactory;
 import com.iiordanov.bVNC.input.RemoteSpiceKeyboard;
 import com.iiordanov.bVNC.input.RemoteSpicePointer;
-import com.iiordanov.bVNC.input.RemoteVncKeyboard;
-import com.iiordanov.bVNC.input.RemoteVncPointer;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
 import com.iiordanov.bVNC.input.RemotePointer;
-
-import com.iiordanov.tigervnc.vncviewer.CConn;
 
 public class RemoteCanvas extends ImageView implements UIEventListener {
     private final static String TAG = "VncCanvas";
@@ -91,15 +87,10 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     // VNC protocol connection
     public RfbConnectable rfbconn   = null;
-    private RfbProto rfb            = null;
-    private CConn cc                = null;
     private SpiceCommunicator spicecomm = null;
     private Socket sock             = null;
     
     boolean maintainConnection = true;
-    
-    // RFB Decoder
-    Decoder decoder = null;
     
     // The remote pointer and keyboard
     RemotePointer pointer;
@@ -172,8 +163,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         
         clipboard = (ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         
-        decoder = new Decoder (this);
-        
         isSpice = true;
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
@@ -201,7 +190,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         this.setModes = setModes;
         connection = bean;
         database = db;
-        decoder.setColorModel(COLORMODEL.valueOf(bean.getColorModel()));
 
         // Startup the connection thread with a progress dialog
         pd = ProgressDialog.show(getContext(), getContext().getString(R.string.info_progress_dialog_connecting),
@@ -240,11 +228,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
                         }
                     }
                     
-                    if (isSpice) {
-                        startSpiceConnection();
-                    } else {
-                        startVncConnection();
-                    }
+                    startSpiceConnection();
                 } catch (Throwable e) {
                     if (maintainConnection) {
                         Log.e(TAG, e.toString());
@@ -312,110 +296,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         spicecomm.connect(address, Integer.toString(port), Integer.toString(tport),
                             connection.getPassword(), connection.getCaCertPath(),
                             connection.getCertSubject(), connection.getEnableSound());
-    }
-    
-    
-    /**
-     * Starts a VNC connection using the TightVNC backend.
-     * @throws Exception
-     */
-    private void startVncConnection() throws Exception {
-        Log.i(TAG, "Connecting to: " + connection.getAddress() + ", port: " + connection.getPort());
-        
-        String address = getAddress();
-        int vncPort = getPort(connection.getPort());
-        try {
-            rfb = new RfbProto(decoder, this, address, vncPort,
-                               connection.getPrefEncoding(), connection.getViewOnly(), connection.getUseLocalCursor());
-            Log.v(TAG, "Connected to server: " + address + " at port: " + vncPort);
-            rfb.initializeAndAuthenticate(connection.getUserName(), connection.getPassword(),
-                                          connection.getUseRepeater(), connection.getRepeaterId(),
-                                          connection.getConnectionType(), connection.getSshHostKey());
-        } catch (Exception e) {
-            throw new Exception (getContext().getString(R.string.error_vnc_unable_to_connect) + e.getLocalizedMessage());
-        }
-        
-        rfbconn = rfb;
-        pointer = new RemoteVncPointer (rfbconn, RemoteCanvas.this, handler);
-        keyboard = new RemoteVncKeyboard (rfbconn, RemoteCanvas.this, handler);
-        
-        rfb.writeClientInit();
-        rfb.readServerInit();
-        initializeBitmap (displayWidth, displayHeight);
-        decoder.setPixelFormat(rfb);
-        
-        handler.post(new Runnable() {
-            public void run() {
-                pd.setMessage(getContext().getString(R.string.info_progress_dialog_downloading));
-            }
-        });
-        
-        sendUnixAuth ();
-        if (connection.getUseLocalCursor())
-            initializeSoftCursor();
-        
-        handler.post(drawableSetter);
-        handler.post(setModes);
-        handler.post(desktopInfo);
-        
-        // Hide progress dialog
-        if (pd.isShowing())
-            pd.dismiss();
-        
-        rfb.processProtocol();
-    }
-    
-    
-    /**
-     * Sends over the unix username and password if this is VNC over SSH connectio and automatic sending of 
-     * UNIX credentials is enabled for AutoX (for x11vnc's "-unixpw" option).
-     */
-    void sendUnixAuth () {
-        // If the type of connection is ssh-tunneled and we are told to send the unix credentials, then do so.
-        if (connection.getConnectionType() == Constants.CONN_TYPE_SSH && connection.getAutoXUnixAuth()) {
-            keyboard.processLocalKeyEvent(KeyEvent.KEYCODE_UNKNOWN, new KeyEvent(SystemClock.uptimeMillis(),
-                                            connection.getSshUser(), 0, 0));
-            keyboard.processLocalKeyEvent(KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-            keyboard.processLocalKeyEvent(KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
-            
-            keyboard.processLocalKeyEvent(KeyEvent.KEYCODE_UNKNOWN, new KeyEvent(SystemClock.uptimeMillis(),
-                                            connection.getSshPassword(), 0, 0));
-            keyboard.processLocalKeyEvent(KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-            keyboard.processLocalKeyEvent(KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
-        }
-    }
-    
-    
-    /**
-     * Starts a VeNCrypt connection using the TigerVNC backend.
-     * @throws Exception
-     */
-    private void startVencryptConnection() throws Exception {
-        cc = new CConn(RemoteCanvas.this, sock, null, false, connection);
-        rfbconn = cc;
-        pointer = new RemoteVncPointer (rfbconn, RemoteCanvas.this, handler);
-        keyboard = new RemoteVncKeyboard (rfbconn, RemoteCanvas.this, handler);
-        initializeBitmap(displayWidth, displayHeight);
-        
-        // Initialize the protocol before we dismiss the progress dialog and request for the right
-        // modes to be set.
-        for (int i = 0; i < 6; i++)
-            cc.processMsg();
-        
-        handler.post(new Runnable() {
-            public void run() {
-                pd.setMessage(getContext().getString(R.string.info_progress_dialog_downloading));
-            }
-        });
-        
-        for (int i = 0; i < 3; i++)
-            cc.processMsg();
-        
-        // Hide progress dialog
-        if (pd.isShowing())
-            pd.dismiss();
-        
-        cc.processProtocol();
     }
     
     
@@ -559,8 +439,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
                 android.util.Log.i(TAG, "Using LargeBitmapData.");
             }
         }
-        
-        decoder.setBitmapData(bitmapData);
     }
     
     
@@ -607,7 +485,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
                     useFull = false;
                     bitmapData = new LargeBitmapData(rfbconn, this, getWidth(), getHeight(), capacity);
                 }
-                decoder.setBitmapData(bitmapData);
             }
         }
         handler.post(drawableSetter);
@@ -727,7 +604,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         clipboardMonitor = null;
         clipboard        = null;
         setModes         = null;
-        decoder          = null;
         database         = null;
         connection       = null;
         scaling          = null;
@@ -977,14 +853,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         } else
             msg = rfbconn.desktopName();
         msg += "\n" + rfbconn.framebufferWidth() + "x" + rfbconn.framebufferHeight();
-        String enc = rfbconn.getEncoding();
-        // Encoding might not be set when we display this message
-        if (decoder.getColorModel() != null) {
-            if (enc != null && !enc.equals(""))
-                msg += ", " + rfbconn.getEncoding() + getContext().getString(R.string.info_encoding) + decoder.getColorModel().toString();
-            else 
-                msg += ", " + decoder.getColorModel().toString();
-        }
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
     
@@ -1138,14 +1006,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     public float getDisplayDensity() {
         return displayDensity;
-    }
-    
-    public boolean isColorModel(COLORMODEL cm) {
-        return (decoder.getColorModel() != null) && decoder.getColorModel().equals(cm);
-    }
-    
-    public void setColorModel(COLORMODEL cm) {
-        decoder.setColorModel(cm);
     }
     
     public boolean getMouseFollowPan() {
