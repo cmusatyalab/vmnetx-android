@@ -1002,10 +1002,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             item.setChecked(true);
             showPanningState(false);
             return true;
-        case R.id.itemCenterMouse:
-            canvas.getPointer().warpMouse(canvas.absoluteXPosition + canvas.getVisibleWidth()  / 2,
-                                             canvas.absoluteYPosition + canvas.getVisibleHeight() / 2);
-            return true;
         case R.id.itemDisconnect:
             canvas.closeConnection();
             finish();
