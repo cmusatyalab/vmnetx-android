@@ -4,26 +4,25 @@
    NOTE: I've been told by a user that he had to "downgrade to"
          eclipse_site_0.1.16.
 
-2. Add bVNC, ZoomerWithKeys and PubkeyGenerator from the
+2. Add bVNC and ZoomerWithKeys from the
    bVNC/eclipse_projects/ directory to Eclipse as existing Android
    projects.
 
-3. Ensure ZoomerWithKeys and PubkeyGenerator projects
-   are called exactly as written here by right-clicking 
+3. Ensure ZoomerWithKeys project
+   is called exactly as written here by right-clicking 
    on each of them, then selecting Refactor->Rename
 
-3. Add the ZoomerWithKeys and PubkeyGenerator projects
+3. Add the ZoomerWithKeys project
    as Library References to bVNC (right-click on the bVNC project
-   and select Properties -> Android -> Library). If they are not,
-   add them.
+   and select Properties -> Android -> Library).
 
-4. Ensure that ZoomerWithKeys and PubkeyGenerator
-   are specified as "Required projects on the build path" (right-
+4. Ensure that ZoomerWithKeys
+   is specified as "Required projects on the build path" (right-
    click on the bVNC project, and select Properties -> Java Build
-   Path -> Projects). If they are not, add them.
+   Path -> Projects).
 
-5. Ensure that ZoomerWithKeys and PubkeyGenerator
-   are referenced in Properties -> Project References (put
+5. Ensure that ZoomerWithKeys
+   is referenced in Properties -> Project References (put
    checkmarks on projects).
 
 6. To build and successfully run aSPICE, you need to:

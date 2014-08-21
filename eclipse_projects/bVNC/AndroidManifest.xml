@@ -51,11 +51,6 @@
                                 <category android:name="android.intent.category.DEFAULT" />
                        </intent-filter>
                 </activity>
-		<activity android:name="com.iiordanov.pubkeygenerator.GeneratePubkeyActivity"
-                  android:configChanges="keyboardHidden|orientation"
-                  android:windowSoftInputMode="stateHidden|adjustResize"
-                  android:screenOrientation="unspecified"
-                  android:theme="@android:style/Theme.DeviceDefault"/>
                 <uses-library android:required="false" name="com.sec.android.app.multiwindow"> </uses-library>
                 <meta-data android:name="com.sec.android.support.multiwindow"
                            android:value="true" />
