@@ -57,8 +57,7 @@ inline void detachThreadFromJvm() {
 }
 
 void spice_session_setup(SpiceSession *session, const char *host, const char *port,
-                            const char *tls_port, const char *password, const char *ca_file,
-                            GByteArray *ca_cert, const char *cert_subj) {
+                            const char *password) {
 
     g_return_if_fail(SPICE_IS_SESSION(session));
 
@@ -67,16 +66,8 @@ void spice_session_setup(SpiceSession *session, const char *host, const char *po
     // If we receive "-1" for a port, we assume the port is not set.
     if (port && strcmp (port, "-1") != 0)
        g_object_set(session, "port", port, NULL);
-    if (tls_port && strcmp (tls_port, "-1") != 0)
-        g_object_set(session, "tls-port", tls_port, NULL);
     if (password)
         g_object_set(session, "password", password, NULL);
-    if (ca_file)
-        g_object_set(session, "ca-file", ca_file, NULL);
-    if (ca_cert)
-        g_object_set(session, "ca", ca_cert, NULL);
-    if (cert_subj)
-        g_object_set(session, "cert-subject", cert_subj, NULL);
 }
 
 static void signal_handler(int signal, siginfo_t *info, void *reserved) {
@@ -121,14 +112,11 @@ gboolean getJvmAndMethodReferences (JNIEnv *env) {
 
 JNIEXPORT jint JNICALL
 Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jstring h, jstring p,
-                                                                       jstring tp, jstring pw, jstring cf, jstring cs)
+                                                                       jstring pw)
 {
 	const gchar *host = NULL;
 	const gchar *port = NULL;
-	const gchar *tls_port = NULL;
 	const gchar *password = NULL;
-	const gchar *ca_file = NULL;
-	const gchar *cert_subj = NULL;
 	int result = 0;
 
     if (!getJvmAndMethodReferences (env)) {
@@ -137,12 +125,9 @@ Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobje
 
 	host = (*env)->GetStringUTFChars(env, h, NULL);
 	port = (*env)->GetStringUTFChars(env, p, NULL);
-	tls_port  = (*env)->GetStringUTFChars(env, tp, NULL);
 	password  = (*env)->GetStringUTFChars(env, pw, NULL);
-	ca_file   = (*env)->GetStringUTFChars(env, cf, NULL);
-	cert_subj = (*env)->GetStringUTFChars(env, cs, NULL);
 
-	result = spiceClientConnect (host, port, tls_port, password, ca_file, NULL, cert_subj);
+	result = spiceClientConnect (host, port, password);
 
 	jvm                  = NULL;
 	jni_connector_class  = NULL;
@@ -152,14 +137,12 @@ Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobje
 }
 
 
-int spiceClientConnect (const gchar *h, const gchar *p, const gchar *tp,
-		                   const gchar *pw, const gchar *cf, GByteArray *cc,
-                           const gchar *cs)
+int spiceClientConnect (const gchar *h, const gchar *p, const gchar *pw)
 {
 	spice_connection *conn;
 
     conn = connection_new();
-	spice_session_setup(conn->session, h, p, tp, pw, cf, cc, cs);
+	spice_session_setup(conn->session, h, p, pw);
 	return connectSession(conn);
 }
 

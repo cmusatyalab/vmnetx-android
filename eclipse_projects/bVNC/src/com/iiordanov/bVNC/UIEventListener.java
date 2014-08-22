@@ -14,7 +14,6 @@ public interface UIEventListener
 {
 	void OnSettingsChanged(int width, int height, int bpp);
 	boolean OnAuthenticate(StringBuilder username, StringBuilder domain, StringBuilder password);
-	boolean OnVerifiyCertificate(String subject, String issuer, String fingerprint);
 	void OnGraphicsUpdate(int x, int y, int width, int height);		
 	void OnGraphicsResize(int width, int height, int bpp);		
 }

@@ -32,10 +32,6 @@ package com.iiordanov.bVNC;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
 import java.util.Timer;
 
 import android.app.Activity;
@@ -51,7 +47,6 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -104,11 +99,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     ProgressDialog pd;
     
     private Runnable setModes;
-    
-    // This variable indicates whether or not the user has accepted an untrusted
-    // security certificate. Used to control progress while the dialog asking the user
-    // to confirm the authenticity of a certificate is displayed.
-    public boolean certificateAccepted = false;
     
     /*
      * Position of the top left portion of the <i>visible</i> part of the screen, in
@@ -236,7 +226,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         // Get the address and port (based on whether an SSH tunnel is being established or not).
         String address = connection.getAddress();
         int port = connection.getPort();
-        int tport = connection.getTlsPort();
         
         spicecomm = new SpiceCommunicator (getContext(), this, connection);
         rfbconn = spicecomm;
@@ -244,9 +233,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         keyboard = new RemoteSpiceKeyboard (rfbconn, RemoteCanvas.this, handler);
         spicecomm.setUIEventListener(RemoteCanvas.this);
         spicecomm.setHandler(handler);
-        spicecomm.connect(address, Integer.toString(port), Integer.toString(tport),
-                            connection.getPassword(), connection.getCaCertPath(),
-                            connection.getCertSubject());
+        spicecomm.connect(address, Integer.toString(port), connection.getPassword());
     }
     
     
@@ -841,34 +828,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     }
 
     @Override
-    public boolean OnVerifiyCertificate(String subject, String issuer, String fingerprint) {
-        android.util.Log.e(TAG, "OnVerifiyCertificate called.");
-        
-        // Send a message containing the certificate to our handler.
-        Message m = new Message();
-        m.setTarget(handler);
-        m.what = Constants.DIALOG_RDP_CERT;
-        Bundle strings = new Bundle();
-        strings.putString("subject", subject);
-        strings.putString("issuer", issuer);
-        strings.putString("fingerprint", fingerprint);
-        m.obj = strings;
-        handler.sendMessage(m);
-
-        // Block while user decides whether to accept certificate or not.
-        // The activity ends if the user taps "No", so we block indefinitely here.
-        synchronized (RemoteCanvas.this) {
-            while (!certificateAccepted) {
-                try {
-                    RemoteCanvas.this.wait();
-                } catch (InterruptedException e) { e.printStackTrace(); }
-            }
-        }
-
-        return true;
-    }
-
-    @Override
     public void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.e(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
         synchronized (bitmapData.mbitmap) {
@@ -892,13 +851,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-            case Constants.DIALOG_X509_CERT:
-                validateX509Cert ((X509Certificate)msg.obj);
-                break;
-            case Constants.DIALOG_RDP_CERT:
-                Bundle s = (Bundle)msg.obj;
-                validateRdpCert (s.getString("subject"), s.getString("issuer"), s.getString("fingerprint"));
-                break;
             case Constants.SPICE_CONNECT_SUCCESS:
                 if (pd != null && pd.isShowing()) {
                     pd.dismiss();
@@ -919,130 +871,4 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
             }
         }
     };
-    
-    /**
-     * If there is a saved cert, checks the one given against it. Otherwise, presents the
-     * given cert's signature to the user for approval.
-     * @param cert the given cert.
-     */
-    private void validateX509Cert (final X509Certificate cert) {
-
-        // If there has been no key approved by the user previously, ask for approval, else
-        // check the saved key against the one we are presented with.
-        if (connection.getSshHostKey().equals("")) {
-            // Show a dialog with the key signature for approval.
-            DialogInterface.OnClickListener signatureNo = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // We were told not to continue, so stop the activity
-                    closeConnection();
-                    ((Activity) getContext()).finish();
-                }
-            };
-            DialogInterface.OnClickListener signatureYes = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // We were told to go ahead with the connection, so save the key into the database.
-                    String certificate = null;
-                    try {
-                        certificate = Base64.encodeToString(cert.getEncoded(), Base64.DEFAULT);
-                    } catch (CertificateEncodingException e) {
-                        e.printStackTrace();
-                        showFatalMessageAndQuit(getContext().getString(R.string.error_x509_could_not_generate_encoding));
-                    }
-                    connection.setSshHostKey(certificate);
-                    connection.save(database.getWritableDatabase());
-                    database.close();
-                    // Indicate the certificate was accepted.
-                    certificateAccepted = true;
-                    synchronized (RemoteCanvas.this) {
-                        RemoteCanvas.this.notifyAll();
-                    }
-                }
-            };
-
-            // Generate a sha1 signature of the certificate.
-            MessageDigest sha1;
-            MessageDigest md5;
-            try {
-                sha1 = MessageDigest.getInstance("SHA1");
-                md5 = MessageDigest.getInstance("MD5");
-                sha1.update(cert.getEncoded());
-                Utils.showYesNoPrompt(getContext(), getContext().getString(R.string.info_continue_connecting) + connection.getAddress () + "?",
-                                      getContext().getString(R.string.info_cert_signatures)   +
-                                        "\nSHA1:  " + Utils.toHexString(sha1.digest()) +
-                                        "\nMD5:  "  + Utils.toHexString(md5.digest())  + 
-                                        getContext().getString(R.string.info_cert_signatures_identical),
-                                        signatureYes, signatureNo);
-            } catch (NoSuchAlgorithmException e2) {
-                e2.printStackTrace();
-                showFatalMessageAndQuit(getContext().getString(R.string.error_x509_could_not_generate_signature));
-            } catch (CertificateEncodingException e) {
-                e.printStackTrace();
-                showFatalMessageAndQuit(getContext().getString(R.string.error_x509_could_not_generate_encoding));
-            }
-        } else {
-            // Compare saved with obtained certificate and quit if they don't match.
-            try {
-                if (!connection.getSshHostKey().equals(Base64.encodeToString(cert.getEncoded(), Base64.DEFAULT))) {
-                    showFatalMessageAndQuit(getContext().getString(R.string.error_cert_does_not_match));
-                } else {
-                    // In case we need to display information about the certificate, we can reconstruct it like this:
-                    //CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-                    //ByteArrayInputStream in = new ByteArrayInputStream(Base64.decode(connection.getSshHostKey(), Base64.DEFAULT));
-                    //X509Certificate c = (X509Certificate)certFactory.generateCertificate(in);
-                    //android.util.Log.e("  Subject ", c.getSubjectDN().toString());
-                    //android.util.Log.e("   Issuer  ", c.getIssuerDN().toString());
-                    
-                    // The certificate matches, so we proceed.
-                    certificateAccepted = true;
-                    synchronized (RemoteCanvas.this) {
-                        RemoteCanvas.this.notifyAll();
-                    }
-                }
-            } catch (CertificateEncodingException e) {
-                e.printStackTrace();
-                showFatalMessageAndQuit(getContext().getString(R.string.error_x509_could_not_generate_encoding));
-            }
-        }
-    }
-    
-    
-    /**
-     * Permits the user to validate an RDP certificate.
-     * @param subject
-     * @param issuer
-     * @param fingerprint
-     */
-    private void validateRdpCert (String subject, String issuer, final String fingerprint) {
-        // Since LibFreeRDP handles saving accepted certificates, if we ever get here, we must
-        // present the user with a query whether to accept the certificate or not.
-
-        // Show a dialog with the key signature for approval.
-        DialogInterface.OnClickListener signatureNo = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // We were told not to continue, so stop the activity
-                closeConnection();
-                ((Activity) getContext()).finish();
-            }
-        };
-        DialogInterface.OnClickListener signatureYes = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Indicate the certificate was accepted.
-                certificateAccepted = true;
-                synchronized (RemoteCanvas.this) {
-                    RemoteCanvas.this.notifyAll();
-                }
-            }
-        };
-        Utils.showYesNoPrompt(getContext(), getContext().getString(R.string.info_continue_connecting) + connection.getAddress () + "?",
-                getContext().getString(R.string.info_cert_signatures) +
-                        "\nSubject:      " + subject +
-                        "\nIssuer:       " + issuer +
-                        "\nFingerprint:  " + fingerprint + 
-                        getContext().getString(R.string.info_cert_signatures_identical),
-                        signatureYes, signatureNo);
-    }
 }

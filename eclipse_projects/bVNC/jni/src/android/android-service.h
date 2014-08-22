@@ -49,14 +49,12 @@
 gboolean attachThreadToJvm (JNIEnv** env);
 void detachThreadFromJvm ();
 
-int spiceClientConnect (const gchar *h, const gchar *p, const gchar *tp,
-		                   const gchar *pw, const gchar *cf, GByteArray *cc,
-                           const gchar *cs);
+int spiceClientConnect (const gchar *h, const gchar *p, const gchar *pw);
 
 int connectSession (spice_connection *conn);
 
 int SpiceClientConnect(JNIEnv *env, jobject obj, const gchar *h, const gchar *p,
-                           const gchar *tp, const gchar *pw, const gchar *cf, GByteArray *cc, const gchar *cs);
+                           const gchar *pw);
 
 extern void __android_log_write(int, char*, char*);
 

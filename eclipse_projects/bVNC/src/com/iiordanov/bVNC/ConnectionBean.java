@@ -51,14 +51,9 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setPassword("");
         setKeepPassword(true);
         setNickname("");
-        setSshHostKey("");
         setUserName("");
         setRdpDomain("");
         setPort(5900);
-        setCaCert("");
-        setCaCertPath("");
-        setTlsPort(-1);
-        setCertSubject("");
         setScaleMode(ScaleType.MATRIX);
         setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);

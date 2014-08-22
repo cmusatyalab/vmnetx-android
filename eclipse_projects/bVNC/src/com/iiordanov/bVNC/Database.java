@@ -66,8 +66,6 @@ public class Database extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == DBV_0_5_0) {
             Log.i(TAG,"Doing upgrade from 12 to 20");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_SSHHOSTKEY + " TEXT");
             oldVersion = DBV_1_2_0;
         }
         
@@ -129,14 +127,6 @@ public class Database extends SQLiteOpenHelper {
         
         if (oldVersion == DBV_2_0_0) {
             Log.i(TAG,"Doing upgrade from 309 to 329");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_CACERT + " TEXT");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_CACERTPATH + " TEXT");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_TLSPORT + " INTEGER");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_CERTSUBJECT + " TEXT");
             oldVersion = DBV_2_1_0;
         }
         

@@ -55,8 +55,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import com.iiordanov.bVNC.dialogs.ImportTlsCaDialog;
-
 /**
  * aSPICE is the Activity for setting up SPICE connections.
  */
@@ -65,8 +63,6 @@ public class aSPICE extends Activity implements MainConfiguration {
     private LinearLayout layoutAdvancedSettings;
     private EditText ipText;
     private EditText portText;
-    private Button buttonImportCa;
-    private EditText tlsPort;
     private EditText passwordText;
     private Button goButton;
     private ToggleButton toggleAdvancedSettings;
@@ -87,19 +83,9 @@ public class aSPICE extends Activity implements MainConfiguration {
 
         ipText = (EditText) findViewById(R.id.textIP);
         portText = (EditText) findViewById(R.id.textPORT);
-        tlsPort = (EditText) findViewById(R.id.tlsPort);
         passwordText = (EditText) findViewById(R.id.textPASSWORD);
         textNickname = (EditText) findViewById(R.id.textNickname);
 
-        buttonImportCa = (Button) findViewById(R.id.buttonImportCa);
-        buttonImportCa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                aSPICE.this.updateSelectedFromView();
-                showDialog(R.layout.import_tls_ca_dialog);
-            }
-        });
-        
         checkboxKeepPassword = (CheckBox) findViewById(R.id.checkboxKeepPassword);
         checkboxUseDpadAsArrows = (CheckBox) findViewById(R.id.checkboxUseDpadAsArrows);
         checkboxRotateDpad = (CheckBox) findViewById(R.id.checkboxRotateDpad);
@@ -125,7 +111,7 @@ public class aSPICE extends Activity implements MainConfiguration {
             @Override
             public void onClick(View view) {
                 if (ipText.getText().length() != 0
-                        && (portText.getText().length() != 0 || tlsPort.getText().length() != 0))
+                        && portText.getText().length() != 0)
                     canvasStart();
                 else
                     Toast.makeText(view.getContext(),
@@ -167,8 +153,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         switch (id) {
         case R.id.itemMainScreenHelp:
             return createHelpDialog();
-        case R.layout.import_tls_ca_dialog:
-            return new ImportTlsCaDialog(this);
         }
         return null;
     }
@@ -271,11 +255,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         } else {
             portText.setText(Integer.toString(selected.getPort()));
         }
-        if (selected.getTlsPort() < 0) {
-            tlsPort.setText("");
-        } else {
-            tlsPort.setText(Integer.toString(selected.getTlsPort()));
-        }
 
         if (selected.getKeepPassword() || selected.getPassword().length() > 0) {
             passwordText.setText(selected.getPassword());
@@ -286,23 +265,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         checkboxRotateDpad.setChecked(selected.getRotateDpad());
         checkboxLocalCursor.setChecked(selected.getUseLocalCursor());
         textNickname.setText(selected.getNickname());
-        
-        // Write out CA to file if it doesn't exist.
-        String caCertData = selected.getCaCert();
-        try {
-            // If a cert has been set, write out a unique file containing the cert and save the path to that file to give to libspice.
-            String filename = getFilesDir() + "/ca" + Integer.toString(selected.getCaCert().hashCode()) + ".pem";
-            selected.setCaCertPath(filename);
-            File file = new File(filename);
-            if (!file.exists() && !caCertData.equals("")) {
-                android.util.Log.e(TAG, filename);
-                PrintWriter fout = new PrintWriter(filename);
-                fout.println(selected.getCaCert().toString());
-                fout.close();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -364,15 +326,6 @@ public class aSPICE extends Activity implements MainConfiguration {
             } catch (NumberFormatException nfe) { }
         } else {
             selected.setPort(-1);
-        }
-        
-        String tlsport = tlsPort.getText().toString();
-        if (!tlsport.equals("")) {
-            try {
-                selected.setTlsPort(Integer.parseInt(tlsPort.getText().toString()));
-            } catch (NumberFormatException nfe) { }
-        } else {
-            selected.setTlsPort(-1);
         }
         
         selected.setNickname(textNickname.getText().toString());

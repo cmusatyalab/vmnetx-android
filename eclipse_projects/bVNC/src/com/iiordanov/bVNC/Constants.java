@@ -32,11 +32,8 @@ public class Constants {
     public static final int CONN_TYPE_ANONTLS      = 3;
     public static final int CONN_TYPE_VENCRYPT     = 4;
 
-    public static final int DIALOG_X509_CERT       = 1;
-    public static final int DIALOG_SSH_CERT        = 2;
-    public static final int DIALOG_RDP_CERT        = 3;
-    public static final int SPICE_CONNECT_SUCCESS  = 4;
-    public static final int SPICE_CONNECT_FAILURE  = 5;
+    public static final int SPICE_CONNECT_SUCCESS  = 1;
+    public static final int SPICE_CONNECT_FAILURE  = 2;
 
     public static final int EXTRA_KEYS_OFF         = 0;
     public static final int EXTRA_KEYS_ON          = 1;
