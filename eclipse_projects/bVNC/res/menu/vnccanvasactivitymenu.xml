@@ -28,6 +28,5 @@
     	<item android:numericShortcut="6" android:alphabeticShortcut="f" android:id="@+id/itemFollowMouse" android:title="@string/pan_follow_mouse"/>
     	<item android:title="@string/mouse_follow_pan" android:id="@+id/itemFollowPan"/>
     </group> -->
-    <item android:id="@+id/itemHelpInputMode" android:title="@string/input_mode_help" android:icon="@android:drawable/ic_menu_help"/>
     <!-- <item android:id="@+id/itemOpenDoc" android:title="@string/open_doc" android:icon="@android:drawable/ic_menu_help"/> -->
 </menu>

@@ -685,50 +685,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     
     /**
      * Set modes on start to match what is specified in the ConnectionBean;
-     * color mode (already done) scaling, input mode
+     * scaling, input mode
      */
     void setModes() {
         AbstractInputHandler handler = getInputHandlerByName(connection.getInputMode());
         AbstractScaling.getByScaleType(connection.getScaleMode()).setScaleTypeForActivity(this);
         this.inputHandler = handler;
-        showPanningState(false);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onCreateDialog(int)
-     */
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-        case R.id.itemHelpInputMode:
-        default:
-            return createHelpDialog ();
-        }
-    }
-
-    /**
-     * Creates the help dialog for this activity.
-     */
-    private Dialog createHelpDialog() {
-        AlertDialog.Builder adb = new AlertDialog.Builder(this)
-                .setMessage(R.string.input_mode_help_text)
-                .setPositiveButton(R.string.close,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,
-                                    int whichButton) {
-                                // We don't have to do anything.
-                            }
-                        });
-        Dialog d = adb.setView(new ListView (this)).create();
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.copyFrom(d.getWindow().getAttributes());
-        lp.width = WindowManager.LayoutParams.FILL_PARENT;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        d.show();
-        d.getWindow().setAttributes(lp);
-        return d;
     }
 
     /*
@@ -960,7 +922,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         case R.id.itemFitToScreen:
             AbstractScaling.getById(item.getItemId()).setScaleTypeForActivity(this);
             item.setChecked(true);
-            showPanningState(false);
             return true;
         case R.id.itemDisconnect:
             canvas.closeConnection();
@@ -1019,9 +980,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             connection.save(database.getWritableDatabase());
             database.close();
             return true;
-        case R.id.itemHelpInputMode:
-            showDialog(R.id.itemHelpInputMode);
-            return true;
         default:
             AbstractInputHandler input = getInputHandlerById(item.getItemId());
             if (input != null) {
@@ -1036,7 +994,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 }
 
                 item.setChecked(true);
-                showPanningState(true);
                 connection.save(database.getWritableDatabase());
                 database.close();
                 return true;
@@ -1084,24 +1041,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         } catch (NullPointerException e) { }
 
         return consumed;
-    }
-
-    public void showPanningState(boolean showLonger) {
-        if (showLonger) {
-            final Toast t = Toast.makeText(this, inputHandler.getHandlerDescription(), Toast.LENGTH_LONG);
-            TimerTask tt = new TimerTask () {
-                @Override
-                public void run() {
-                    t.show();
-                    try { Thread.sleep(2000); } catch (InterruptedException e) { }
-                    t.show();
-                }};
-            new Timer ().schedule(tt, 2000);
-            t.show();
-        } else {
-            Toast t = Toast.makeText(this, inputHandler.getHandlerDescription(), Toast.LENGTH_SHORT);
-            t.show();
-        }
     }
 
     /*
