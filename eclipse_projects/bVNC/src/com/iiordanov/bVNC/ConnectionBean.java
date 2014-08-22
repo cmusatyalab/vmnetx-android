@@ -51,28 +51,13 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setPassword("");
         setKeepPassword(true);
         setNickname("");
-        setUserName("");
-        setRdpDomain("");
         setPort(5900);
         setScaleMode(ScaleType.MATRIX);
         setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);
         setRotateDpad(false);
-        setUsePortrait(false);
         setUseLocalCursor(false);
-        setRepeaterId("");
         setExtraKeysToggleType(1);
-        setRdpColor(0);
-        setRemoteFx(false);
-        setDesktopBackground(false);
-        setFontSmoothing(false);
-        setDesktopComposition(false);
-        setWindowContents(false);
-        setMenuAnimation(false);
-        setVisualStyles(false);
-        setConsoleMode(false);
-        setRedirectSdCard(false);
-        setViewOnly(false);
         c = context;
     }
     

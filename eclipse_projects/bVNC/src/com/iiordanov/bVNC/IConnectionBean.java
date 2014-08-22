@@ -50,8 +50,6 @@ interface IConnectionBean {
     @FieldAccessor
     long getForceFull();
     @FieldAccessor
-    String getRepeaterId();
-    @FieldAccessor
     String getInputMode();
     @FieldAccessor(Name="SCALEMODE")
     String getScaleModeAsString();
@@ -60,47 +58,11 @@ interface IConnectionBean {
     @FieldAccessor
     boolean getRotateDpad();
     @FieldAccessor
-    boolean getUsePortrait();
-    @FieldAccessor
     boolean getUseLocalCursor();
     @FieldAccessor
     boolean getKeepPassword();
     @FieldAccessor
     boolean getFollowMouse();
-    @FieldAccessor
-    boolean getUseRepeater();
-    @FieldAccessor(Name="LAST_META_KEY_ID")
-    long getLastMetaKeyId();
     @FieldAccessor(DefaultValue="false")
     boolean getFollowPan();
-    @FieldAccessor
-    String getUserName();
-    @FieldAccessor
-    String getRdpDomain();
-    @FieldAccessor(DefaultValue="true")
-    boolean getShowZoomButtons();
-    @FieldAccessor(Name="DOUBLE_TAP_ACTION")
-    String getDoubleTapActionAsString();
-    @FieldAccessor
-    int getRdpColor();
-    @FieldAccessor
-    boolean getRemoteFx();
-    @FieldAccessor
-    boolean getDesktopBackground();
-    @FieldAccessor
-    boolean getFontSmoothing();
-    @FieldAccessor
-    boolean getDesktopComposition();
-    @FieldAccessor
-    boolean getWindowContents();
-    @FieldAccessor
-    boolean getMenuAnimation();
-    @FieldAccessor
-    boolean getVisualStyles();
-    @FieldAccessor
-    boolean getRedirectSdCard();
-    @FieldAccessor
-    boolean getConsoleMode();
-    @FieldAccessor
-    boolean getViewOnly();
 }
