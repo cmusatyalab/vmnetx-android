@@ -821,13 +821,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     }
 
     @Override
-    public boolean OnAuthenticate(StringBuilder username, StringBuilder domain, StringBuilder password) {
-        android.util.Log.e(TAG, "onAuthenticate called.");
-        showFatalMessageAndQuit (getContext().getString(R.string.error_rdp_authentication_failed));
-        return false;
-    }
-
-    @Override
     public void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.e(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
         synchronized (bitmapData.mbitmap) {
@@ -837,12 +830,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         reDraw(x, y, width, height);
     }
 
-    @Override
-    public void OnGraphicsResize(int width, int height, int bpp) {
-        android.util.Log.e(TAG, "OnGraphicsResize called.");
-        OnSettingsChanged(width, height, bpp);
-    }
-    
     /** 
      * Handler for the dialogs that display the x509/RDP/SSH key signatures to the user.
      * Also shows the dialogs which show various connection failures.

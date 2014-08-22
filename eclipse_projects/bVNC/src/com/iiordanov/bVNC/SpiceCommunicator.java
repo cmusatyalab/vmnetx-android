@@ -115,23 +115,11 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
             uiEventListener.OnSettingsChanged(width, height, bpp);
     }
 
-    private static boolean OnAuthenticate(int inst, StringBuilder username, StringBuilder domain, StringBuilder password) {
-        if (uiEventListener != null)
-            return uiEventListener.OnAuthenticate(username, domain, password);
-        return false;
-    }
-
     private static void OnGraphicsUpdate(int inst, int x, int y, int width, int height) {
         if (uiEventListener != null)
             uiEventListener.OnGraphicsUpdate(x, y, width, height);
     }
 
-    private static void OnGraphicsResize(int inst, int width, int height, int bpp) {
-        android.util.Log.e("Connector", "onGraphicsResize, width: " + width + " height: " + height);
-        if (uiEventListener != null)
-            uiEventListener.OnGraphicsResize(width, height, bpp);
-    }
-    
     @Override
     public int framebufferWidth() {
         return width;

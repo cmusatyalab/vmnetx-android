@@ -13,7 +13,5 @@ package com.iiordanov.bVNC;
 public interface UIEventListener
 {
 	void OnSettingsChanged(int width, int height, int bpp);
-	boolean OnAuthenticate(StringBuilder username, StringBuilder domain, StringBuilder password);
 	void OnGraphicsUpdate(int x, int y, int width, int height);		
-	void OnGraphicsResize(int width, int height, int bpp);		
 }
