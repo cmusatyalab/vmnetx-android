@@ -71,12 +71,9 @@ public class aSPICE extends Activity implements MainConfiguration {
     private Button goButton;
     private ToggleButton toggleAdvancedSettings;
     private Spinner spinnerConnection;
-    private Spinner spinnerGeometry;
     private Database database;
     private ConnectionBean selected;
     private EditText textNickname;
-    private EditText resWidth;
-    private EditText resHeight;
     private CheckBox checkboxKeepPassword;
     private CheckBox checkboxUseDpadAsArrows;
     private CheckBox checkboxRotateDpad;
@@ -151,37 +148,9 @@ public class aSPICE extends Activity implements MainConfiguration {
                     }
                 });
 
-        // The geometry type and dimensions boxes.
-        spinnerGeometry = (Spinner) findViewById(R.id.spinnerRdpGeometry);
-        resWidth = (EditText) findViewById(R.id.rdpWidth);
-        resHeight = (EditText) findViewById(R.id.rdpHeight);        
-        spinnerGeometry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener () {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View view, int itemIndex, long id) {
-                selected.setRdpResType(itemIndex);
-                setRemoteWidthAndHeight ();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        });
-        
         database = new Database(this);
     }
 
-    /**
-     * Enables and disables the EditText boxes for width and height of remote desktop.
-     */
-    private void setRemoteWidthAndHeight () {
-        if (selected.getRdpResType() != Constants.RDP_GEOM_SELECT_CUSTOM) {
-            resWidth.setEnabled(false);
-            resHeight.setEnabled(false);
-        } else {
-            resWidth.setEnabled(true);
-            resHeight.setEnabled(true);
-        }
-    }
-    
     protected void onDestroy() {
         database.close();
         System.gc();
@@ -317,10 +286,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         checkboxRotateDpad.setChecked(selected.getRotateDpad());
         checkboxLocalCursor.setChecked(selected.getUseLocalCursor());
         textNickname.setText(selected.getNickname());
-        spinnerGeometry.setSelection(selected.getRdpResType());
-        resWidth.setText(Integer.toString(selected.getRdpWidth()));
-        resHeight.setText(Integer.toString(selected.getRdpHeight()));
-        setRemoteWidthAndHeight ();
         
         // Write out CA to file if it doesn't exist.
         String caCertData = selected.getCaCert();
@@ -412,11 +377,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         
         selected.setNickname(textNickname.getText().toString());
 
-        selected.setRdpResType(spinnerGeometry.getSelectedItemPosition());
-        try    {
-            selected.setRdpWidth(Integer.parseInt(resWidth.getText().toString()));
-            selected.setRdpHeight(Integer.parseInt(resHeight.getText().toString()));
-        } catch (NumberFormatException nfe) {}
         selected.setPassword(passwordText.getText().toString());
         selected.setKeepPassword(checkboxKeepPassword.isChecked());
         selected.setUseDpadAsArrows(checkboxUseDpadAsArrows.isChecked());

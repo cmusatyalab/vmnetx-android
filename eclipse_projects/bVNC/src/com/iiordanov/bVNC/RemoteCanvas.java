@@ -254,17 +254,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * Retreives the requested remote width.
      */
     private int getRemoteWidth (int viewWidth, int viewHeight) {
-        int remoteWidth = 0;
-        int reqWidth  = connection.getRdpWidth();
-        int reqHeight = connection.getRdpHeight();
-        if (connection.getRdpResType() == Constants.RDP_GEOM_SELECT_CUSTOM &&
-            reqWidth >= 2 && reqHeight >= 2) {
-            remoteWidth  = reqWidth;
-        } else if (connection.getRdpResType() == Constants.RDP_GEOM_SELECT_NATIVE_PORTRAIT) {
-            remoteWidth  = Math.min(viewWidth, viewHeight);
-        } else {
-            remoteWidth  = Math.max(viewWidth, viewHeight);
-        }
+        int remoteWidth = Math.max(viewWidth, viewHeight);
         // We make the resolution even if it is odd.
         if (remoteWidth % 2 == 1) remoteWidth--;
         return remoteWidth;
@@ -275,17 +265,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * Retreives the requested remote height.
      */
     private int getRemoteHeight (int viewWidth, int viewHeight) {
-        int remoteHeight = 0;
-        int reqWidth  = connection.getRdpWidth();
-        int reqHeight = connection.getRdpHeight();
-        if (connection.getRdpResType() == Constants.RDP_GEOM_SELECT_CUSTOM &&
-            reqWidth >= 2 && reqHeight >= 2) {
-            remoteHeight = reqHeight;
-        } else if (connection.getRdpResType() == Constants.RDP_GEOM_SELECT_NATIVE_PORTRAIT) {
-            remoteHeight = Math.max(viewWidth, viewHeight);
-        } else {
-            remoteHeight = Math.min(viewWidth, viewHeight);
-        }
+        int remoteHeight = Math.min(viewWidth, viewHeight);
         // We make the resolution even if it is odd.
         if (remoteHeight % 2 == 1) remoteHeight--;
         return remoteHeight;
