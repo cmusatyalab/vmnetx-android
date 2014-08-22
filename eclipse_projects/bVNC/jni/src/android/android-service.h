@@ -35,8 +35,6 @@
 	jmethodID  jni_graphics_update = NULL;
 	GMainLoop            *mainloop = NULL;
 	int                connections = 0;
-	const gchar*         oVirtUser = NULL;
-	const gchar*     oVirtPassword = NULL;
 #else
 	extern SpiceDisplay*   global_display;
 	extern spice_connection*  global_conn;
@@ -46,8 +44,6 @@
 	extern jmethodID  jni_graphics_update;
 	extern GMainLoop*            mainloop;
 	extern int                connections;
-	extern gchar*               oVirtUser;
-	extern gchar*           oVirtPassword;
 #endif
 
 gboolean attachThreadToJvm (JNIEnv** env);
@@ -61,8 +57,6 @@ int connectSession (spice_connection *conn);
 
 int SpiceClientConnect(JNIEnv *env, jobject obj, const gchar *h, const gchar *p,
                            const gchar *tp, const gchar *pw, const gchar *cf, GByteArray *cc, const gchar *cs);
-int CreateOvirtSession(JNIEnv *env, jobject obj, const gchar *uri, const gchar *user, const gchar *password,
-                          const gchar *ovirt_ca_file, const gboolean sslStrict);
 
 extern void __android_log_write(int, char*, char*);
 
