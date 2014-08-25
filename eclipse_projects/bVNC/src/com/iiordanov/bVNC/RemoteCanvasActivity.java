@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.iiordanov.android.bc.BCFactory;
-
 import com.iiordanov.android.zoomer.ZoomControls;
 import com.iiordanov.bVNC.input.AbstractInputHandler;
 import com.iiordanov.bVNC.input.Panner;
