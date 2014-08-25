@@ -125,23 +125,23 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
             //android.util.Log.e("RemoteSpiceKeyboard", "is a mouse click");
             int button = meta.getMouseButtons();
             switch (button) {
-            case RemoteVncPointer.MOUSE_BUTTON_LEFT:
+            case RemoteSpicePointer.MOUSE_BUTTON_LEFT:
                 pointer.processPointerEvent(x, y, MotionEvent.ACTION_DOWN, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
                         true, false, false, false, 0);
                 break;
-            case RemoteVncPointer.MOUSE_BUTTON_RIGHT:
+            case RemoteSpicePointer.MOUSE_BUTTON_RIGHT:
                 pointer.processPointerEvent(x, y, MotionEvent.ACTION_DOWN, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
                         true, true, false, false, 0);
                 break;
-            case RemoteVncPointer.MOUSE_BUTTON_MIDDLE:
+            case RemoteSpicePointer.MOUSE_BUTTON_MIDDLE:
                 pointer.processPointerEvent(x, y, MotionEvent.ACTION_DOWN, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
                         true, false, true, false, 0);
                 break;
-            case RemoteVncPointer.MOUSE_BUTTON_SCROLL_UP:
+            case RemoteSpicePointer.MOUSE_BUTTON_SCROLL_UP:
                 pointer.processPointerEvent(x, y, MotionEvent.ACTION_MOVE, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
                         true, false, false, true, 0);
                 break;
-            case RemoteVncPointer.MOUSE_BUTTON_SCROLL_DOWN:
+            case RemoteSpicePointer.MOUSE_BUTTON_SCROLL_DOWN:
                 pointer.processPointerEvent(x, y, MotionEvent.ACTION_MOVE, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
                         true, false, false, true, 1);
                 break;
