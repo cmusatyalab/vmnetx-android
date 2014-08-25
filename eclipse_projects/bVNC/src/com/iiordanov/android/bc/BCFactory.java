@@ -18,23 +18,6 @@ public class BCFactory {
     private IBCGestureDetector bcGestureDetector;
     
     /**
-     * This is here so checking the static doesn't get optimized away;
-     * note we can't use SDK_INT because that is too new
-     * @return sdk version
-     */
-    int getSdkVersion()
-    {
-        try
-        {
-            return Integer.parseInt(android.os.Build.VERSION.SDK);
-        }
-        catch (NumberFormatException nfe)
-        {
-            return 1;
-        }
-    }
-    
-    /**
      * Return the implementation of IBCGestureDetector appropriate for this SDK level
      * 
      * Since we dropped support of SDK levels < 3, there is only one version at the moment.
@@ -80,19 +63,12 @@ public class BCFactory {
     {
         IBCScaleGestureDetector result;
         
-        if (getSdkVersion() >= 5)
-        {
-            try {
-                result = (IBCScaleGestureDetector)getClass().getClassLoader().
-                    loadClass("com.iiordanov.android.bc.ScaleGestureDetector").
-                    getConstructor(scaleDetectorConstructorArgs).newInstance(new Object[] { context, listener });
-            } catch (Exception e) {
-                throw new RuntimeException("Error instantiating ScaleGestureDetector", e);
-            }
-        }
-        else
-        {
-            result = new DummyScaleGestureDetector();
+        try {
+            result = (IBCScaleGestureDetector)getClass().getClassLoader().
+                loadClass("com.iiordanov.android.bc.ScaleGestureDetector").
+                getConstructor(scaleDetectorConstructorArgs).newInstance(new Object[] { context, listener });
+        } catch (Exception e) {
+            throw new RuntimeException("Error instantiating ScaleGestureDetector", e);
         }
         return result;
     }
