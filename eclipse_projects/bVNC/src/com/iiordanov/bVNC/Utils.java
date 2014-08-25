@@ -52,8 +52,6 @@ public class Utils {
             builder.show();
     }
     
-    private static final Intent docIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://code.google.com/p/android-vnc-viewer/wiki/Documentation")); 
-
     public static ActivityManager getActivityManager(Context context)
     {
         ActivityManager result = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -68,10 +66,6 @@ public class Utils {
         return info;
     }
     
-    public static void showDocumentation(Context c) {
-        c.startActivity(docIntent);
-    }
-
     private static int nextNoticeID = 0;
     public static int nextNoticeID() {
         nextNoticeID++;

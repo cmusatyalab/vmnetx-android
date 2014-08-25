@@ -911,24 +911,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             connection.save(database.getWritableDatabase());
             database.close();
             return true;
- 
-        case R.id.itemArrowLeft:
-            vncCanvas.sendMetaKey(MetaKeyBean.keyArrowLeft);
-            return true;
-        case R.id.itemArrowUp:
-            vncCanvas.sendMetaKey(MetaKeyBean.keyArrowUp);
-            return true;
-        case R.id.itemArrowRight:
-            vncCanvas.sendMetaKey(MetaKeyBean.keyArrowRight);
-            return true;
-        case R.id.itemArrowDown:
-            vncCanvas.sendMetaKey(MetaKeyBean.keyArrowDown);
-            return true;
 */
-        // Disabling Manual/Wiki Menu item as the original does not correspond to this project anymore.
-        //case R.id.itemOpenDoc:
-        //    Utils.showDocumentation(this);
-        //    return true;
         case R.id.itemExtraKeys:
             if (connection.getExtraKeysToggleType() == Constants.EXTRA_KEYS_ON) {
                 connection.setExtraKeysToggleType(Constants.EXTRA_KEYS_OFF);

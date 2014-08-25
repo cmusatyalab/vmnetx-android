@@ -3,10 +3,5 @@
       package="com.iiordanov.android.zoomer"
       android:versionCode="1"
       android:versionName="1.0">
-    <application android:label="@string/app_name">
-
-
-    </application>
     <uses-sdk android:minSdkVersion="3" />
-
 </manifest> 
