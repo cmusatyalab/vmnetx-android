@@ -32,16 +32,6 @@ public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
     /*
      * (non-Javadoc)
      * 
-     * @see com.iiordanov.bVNC.AbstractInputHandler#getHandlerDescription()
-     */
-    @Override
-    public CharSequence getHandlerDescription() {
-        return canvas.getResources().getString(R.string.input_mode_drag_pan_description);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.iiordanov.bVNC.AbstractInputHandler#getName()
      */
     @Override

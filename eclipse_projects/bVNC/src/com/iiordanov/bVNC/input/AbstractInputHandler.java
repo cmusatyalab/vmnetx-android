@@ -57,13 +57,6 @@ public interface AbstractInputHandler {
     boolean onTouchEvent(MotionEvent evt);
 
     /**
-     * Return a user-friendly description for this mode; it will be displayed in a toaster
-     * when changing modes.
-     * @return
-     */
-    CharSequence getHandlerDescription();
-    
-    /**
      * Return an internal name for this handler; this name will be stable across language
      * and version changes
      */

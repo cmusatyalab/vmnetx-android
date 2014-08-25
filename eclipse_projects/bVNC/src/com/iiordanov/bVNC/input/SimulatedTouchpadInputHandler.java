@@ -28,16 +28,6 @@ public class SimulatedTouchpadInputHandler extends AbstractGestureInputHandler {
     /*
      * (non-Javadoc)
      * 
-     * @see com.iiordanov.bVNC.AbstractInputHandler#getHandlerDescription()
-     */
-    @Override
-    public CharSequence getHandlerDescription() {
-        return canvas.getResources().getString(R.string.input_mode_touchpad_description);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.iiordanov.bVNC.AbstractInputHandler#getName()
      */
     @Override
