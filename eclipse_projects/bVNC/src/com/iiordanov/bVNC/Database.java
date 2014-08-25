@@ -55,7 +55,6 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(AbstractConnectionBean.GEN_CREATE);
-        db.execSQL(MostRecentBean.GEN_CREATE);
         db.execSQL(AbstractMetaKeyBean.GEN_CREATE);
     }
 
