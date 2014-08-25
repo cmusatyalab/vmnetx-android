@@ -15,7 +15,7 @@
         android:smallScreens="true"
         android:anyDensity="true"/>
 		
-    <application android:icon="@drawable/icon" android:label="aSPICE" android:debuggable="false" android:theme="@style/AppTheme" >
+    <application android:icon="@drawable/icon" android:label="VMNetX Viewer" android:debuggable="false" android:theme="@style/AppTheme" >
                 <activity android:screenOrientation="unspecified"
                           android:configChanges="orientation|keyboardHidden|keyboard"
 		                  android:name="RemoteCanvasActivity"
