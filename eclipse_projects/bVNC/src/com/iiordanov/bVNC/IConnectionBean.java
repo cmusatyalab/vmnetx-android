@@ -58,8 +58,6 @@ interface IConnectionBean {
     @FieldAccessor
     boolean getRotateDpad();
     @FieldAccessor
-    boolean getUseLocalCursor();
-    @FieldAccessor
     boolean getKeepPassword();
     @FieldAccessor
     boolean getFollowMouse();

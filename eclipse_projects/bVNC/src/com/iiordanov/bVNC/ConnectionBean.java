@@ -56,7 +56,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);
         setRotateDpad(false);
-        setUseLocalCursor(false);
         setExtraKeysToggleType(1);
         c = context;
     }

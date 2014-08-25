@@ -73,7 +73,6 @@ public class aSPICE extends Activity implements MainConfiguration {
     private CheckBox checkboxKeepPassword;
     private CheckBox checkboxUseDpadAsArrows;
     private CheckBox checkboxRotateDpad;
-    private CheckBox checkboxLocalCursor;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -89,7 +88,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         checkboxKeepPassword = (CheckBox) findViewById(R.id.checkboxKeepPassword);
         checkboxUseDpadAsArrows = (CheckBox) findViewById(R.id.checkboxUseDpadAsArrows);
         checkboxRotateDpad = (CheckBox) findViewById(R.id.checkboxRotateDpad);
-        checkboxLocalCursor = (CheckBox) findViewById(R.id.checkboxUseLocalCursor);
         
         spinnerConnection = (Spinner) findViewById(R.id.spinnerConnection);
         spinnerConnection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -263,7 +261,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         checkboxKeepPassword.setChecked(selected.getKeepPassword());
         checkboxUseDpadAsArrows.setChecked(selected.getUseDpadAsArrows());
         checkboxRotateDpad.setChecked(selected.getRotateDpad());
-        checkboxLocalCursor.setChecked(selected.getUseLocalCursor());
         textNickname.setText(selected.getNickname());
     }
 
@@ -334,7 +331,6 @@ public class aSPICE extends Activity implements MainConfiguration {
         selected.setKeepPassword(checkboxKeepPassword.isChecked());
         selected.setUseDpadAsArrows(checkboxUseDpadAsArrows.isChecked());
         selected.setRotateDpad(checkboxRotateDpad.isChecked());
-        selected.setUseLocalCursor(checkboxLocalCursor.isChecked());
     }
 
     protected void onStart() {
