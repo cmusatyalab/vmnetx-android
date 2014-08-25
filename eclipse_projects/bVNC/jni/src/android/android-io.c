@@ -57,7 +57,7 @@ void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int heig
 }
 
 JNIEXPORT void JNICALL
-Java_com_iiordanov_aSPICE_SpiceCommunicator_UpdateBitmap (JNIEnv* env, jobject obj, jobject bitmap, gint x, gint y, gint width, gint height) {
+Java_com_iiordanov_bVNC_SpiceCommunicator_UpdateBitmap (JNIEnv* env, jobject obj, jobject bitmap, gint x, gint y, gint width, gint height) {
     void* pixels;
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(global_display);
 
@@ -133,7 +133,7 @@ static int update_mask (int button, gboolean down) {
 
 
 JNIEXPORT void JNICALL
-Java_com_iiordanov_aSPICE_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, jobject obj, jint x, jint y) {
+Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, jobject obj, jint x, jint y) {
     SpiceDisplay* display = global_display;
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
 
@@ -150,7 +150,7 @@ Java_com_iiordanov_aSPICE_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, 
 
 
 JNIEXPORT void JNICALL
-Java_com_iiordanov_aSPICE_SpiceCommunicator_SpiceKeyEvent(JNIEnv * env, jobject  obj, jboolean down, jint hardware_keycode) {
+Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceKeyEvent(JNIEnv * env, jobject  obj, jboolean down, jint hardware_keycode) {
     SpiceDisplay* display = global_display;
     SpiceDisplayPrivate* d = SPICE_DISPLAY_GET_PRIVATE(display);
     int scancode;
@@ -171,7 +171,7 @@ Java_com_iiordanov_aSPICE_SpiceCommunicator_SpiceKeyEvent(JNIEnv * env, jobject 
 
 
 JNIEXPORT void JNICALL
-Java_com_iiordanov_aSPICE_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject  obj, jint x, jint y, jint metaState, jint type) {
+Java_com_iiordanov_bVNC_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject  obj, jint x, jint y, jint metaState, jint type) {
     SpiceDisplay* display = global_display;
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
     //char buf[60];
