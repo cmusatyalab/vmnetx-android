@@ -40,7 +40,6 @@ void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int heig
             destpix[j + 0] = sourcepix[j + 2];
             destpix[j + 1] = sourcepix[j + 1];
             destpix[j + 2] = sourcepix[j + 0];
-            destpix[j + 3] = 0xFF;
         }
         sourcepix = sourcepix + slen;
         destpix   = destpix + slen;
