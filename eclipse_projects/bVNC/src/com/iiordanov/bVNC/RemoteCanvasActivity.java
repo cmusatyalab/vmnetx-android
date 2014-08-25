@@ -146,10 +146,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         connection = new ConnectionBean(this);
         
         Uri data = i.getData();
-        if ((data != null) && (data.getScheme().equals("vnc"))) {
-            
-            // TODO: Can we also handle VNC over SSH/SSL connections with a new URI format?
-            
+        if ((data != null) && (data.getScheme().equals("vmnetx"))) {
             String host = data.getHost();
             // This should not happen according to Uri contract, but bug introduced in Froyo (2.2)
             // has made this parsing of host necessary
