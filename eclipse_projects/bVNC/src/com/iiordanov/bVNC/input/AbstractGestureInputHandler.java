@@ -133,7 +133,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     {
         activity = c;
         canvas = v;
-        gestures=BCFactory.getInstance().getBCGestureDetector().createGestureDetector(c, this);
+        gestures = new GestureDetector(c, this);
         gestures.setOnDoubleTapListener(this);
         scaleGestures=BCFactory.getInstance().getScaleGestureDetector(c, this);
         useDpadAsArrows = activity.getUseDpadAsArrows();

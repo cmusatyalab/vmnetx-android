@@ -15,36 +15,6 @@ public class BCFactory {
     
     private static BCFactory _theInstance = new BCFactory();
     
-    private IBCGestureDetector bcGestureDetector;
-    
-    /**
-     * Return the implementation of IBCGestureDetector appropriate for this SDK level
-     * 
-     * Since we dropped support of SDK levels < 3, there is only one version at the moment.
-     * @return
-     */
-    public IBCGestureDetector getBCGestureDetector()
-    {
-        if (bcGestureDetector == null)
-        {
-            synchronized (this)
-            {
-                if (bcGestureDetector == null)
-                {
-                    try
-                    {
-                        bcGestureDetector = (IBCGestureDetector)getClass().getClassLoader().loadClass("com.iiordanov.android.bc.BCGestureDetectorDefault").newInstance();
-                    }
-                    catch (Exception ie)
-                    {
-                        throw new RuntimeException("Error instantiating", ie);
-                    }
-                }
-            }
-        }
-        return bcGestureDetector;
-    }
-    
     @SuppressWarnings("unchecked")
     static private Class[] scaleDetectorConstructorArgs = new Class[] { Context.class, OnScaleGestureListener.class };
     
