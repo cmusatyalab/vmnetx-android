@@ -38,9 +38,6 @@ package com.iiordanov.android.bc;
 
 /**
  * The listener for receiving notifications when gestures occur.
- * If you want to listen for all the different gestures then implement
- * this interface. If you only want to listen for a subset it might
- * be easier to extend {@link SimpleOnScaleGestureListener}.
  * 
  * An application will receive events in the following order:
  * <ul>

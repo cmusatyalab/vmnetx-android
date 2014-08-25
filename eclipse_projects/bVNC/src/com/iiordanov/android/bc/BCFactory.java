@@ -15,11 +15,8 @@ public class BCFactory {
     
     private static BCFactory _theInstance = new BCFactory();
     
-    private IBCActivityManager bcActivityManager;
     private IBCGestureDetector bcGestureDetector;
     private IBCHaptic bcHaptic;
-    private IBCMotionEvent bcMotionEvent;
-    private IBCStorageContext bcStorageContext;
     
     /**
      * This is here so checking the static doesn't get optimized away;
@@ -36,40 +33,6 @@ public class BCFactory {
         {
             return 1;
         }
-    }
-    
-    /**
-     * Return the implementation of IBCActivityManager appropriate for this SDK level
-     * @return
-     */
-    public IBCActivityManager getBCActivityManager()
-    {
-        if (bcActivityManager == null)
-        {
-            synchronized (this)
-            {
-                if (bcActivityManager == null)
-                {
-                    if (getSdkVersion() >= 5)
-                    {
-                        try
-                        {
-                            bcActivityManager = (IBCActivityManager)getClass().getClassLoader().loadClass("com.iiordanov.android.bc.BCActivityManagerV5").newInstance();
-                        }
-                        catch (Exception ie)
-                        {
-                            bcActivityManager = new BCActivityManagerDefault();
-                            throw new RuntimeException("Error instantiating", ie);
-                        }
-                    }
-                    else
-                    {
-                        bcActivityManager = new BCActivityManagerDefault();
-                    }
-                }
-            }
-        }
-        return bcActivityManager;
     }
     
     /**
@@ -128,46 +91,6 @@ public class BCFactory {
         return bcHaptic;
     }
     
-    /**
-     * Return the implementation of IBCMotionEvent appropriate for this SDK level
-     * @return
-     */
-    public IBCMotionEvent getBCMotionEvent()
-    {
-        if (bcMotionEvent == null)
-        {
-            synchronized (this)
-            {
-                if (bcMotionEvent == null)
-                {
-                    if (getSdkVersion() >= 5)
-                    {
-                        try
-                        {
-                            bcMotionEvent = (IBCMotionEvent)getClass().getClassLoader().loadClass("com.iiordanov.android.bc.BCMotionEvent5").newInstance();
-                        }
-                        catch (Exception ie)
-                        {
-                            throw new RuntimeException("Error instantiating", ie);
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            bcMotionEvent = (IBCMotionEvent)getClass().getClassLoader().loadClass("com.iiordanov.android.bc.BCMotionEvent4").newInstance();
-                        }
-                        catch (Exception ie)
-                        {
-                            throw new RuntimeException("Error instantiating", ie);
-                        }
-                    }
-                }
-            }
-        }
-        return bcMotionEvent;
-    }
-    
     @SuppressWarnings("unchecked")
     static private Class[] scaleDetectorConstructorArgs = new Class[] { Context.class, OnScaleGestureListener.class };
     
@@ -201,46 +124,6 @@ public class BCFactory {
             result = new DummyScaleGestureDetector();
         }
         return result;
-    }
-    
-    /**
-     * 
-     * @return An implementation of IBCStorageContext appropriate for the running Android release
-     */
-    public IBCStorageContext getStorageContext()
-    {
-        if (bcStorageContext == null)
-        {
-            synchronized (this)
-            {
-                if (bcStorageContext == null)
-                {
-                    if (getSdkVersion() >= 8)
-                    {
-                        try
-                        {
-                            bcStorageContext = (IBCStorageContext)getClass().getClassLoader().loadClass("com.iiordanov.android.bc.BCStorageContext8").newInstance();
-                        }
-                        catch (Exception ie)
-                        {
-                            throw new RuntimeException("Error instantiating", ie);
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            bcStorageContext = (IBCStorageContext)getClass().getClassLoader().loadClass("com.iiordanov.android.bc.BCStorageContext7").newInstance();
-                        }
-                        catch (Exception ie)
-                        {
-                            throw new RuntimeException("Error instantiating", ie);
-                        }
-                    }
-                }
-            }
-        }
-        return bcStorageContext;
     }
     
     /**
