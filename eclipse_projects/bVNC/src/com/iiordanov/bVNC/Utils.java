@@ -30,6 +30,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
+import android.view.View;
+import android.view.HapticFeedbackConstants;
 
 public class Utils {
 
@@ -122,5 +124,10 @@ public class Utils {
         hexChars[j*3] = hexArray[v/16];
         hexChars[j*3 + 1] = hexArray[v%16];
         return new String(hexChars);
+    }
+
+    public static boolean performLongPressHaptic(View v) {
+        return v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS,HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING|HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
+                );
     }
 }

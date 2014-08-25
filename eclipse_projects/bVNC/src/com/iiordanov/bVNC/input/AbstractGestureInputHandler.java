@@ -33,6 +33,7 @@ import com.iiordanov.android.bc.IBCScaleGestureDetector;
 import com.iiordanov.android.bc.OnScaleGestureListener;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
+import com.iiordanov.bVNC.Utils;
 
 /**
  * An AbstractInputHandler that uses GestureDetector to detect standard gestures in touch events
@@ -306,7 +307,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         if (secondPointerWasDown || thirdPointerWasDown)
             return;
         
-        BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+        Utils.performLongPressHaptic(canvas);
         dragMode = true;
         p.processPointerEvent(getX(e), getY(e), e.getActionMasked(), e.getMetaState(), true, false, false, false, 0);
     }

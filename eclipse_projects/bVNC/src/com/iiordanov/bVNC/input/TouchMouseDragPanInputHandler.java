@@ -11,6 +11,7 @@ import com.iiordanov.bVNC.R;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
 import com.iiordanov.bVNC.R.string;
+import com.iiordanov.bVNC.Utils;
 
 public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
     static final String TAG = "TouchMouseDragPanInputHandler";
@@ -83,7 +84,7 @@ public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
         if (secondPointerWasDown || thirdPointerWasDown)
             return;
         
-        BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+        Utils.performLongPressHaptic(canvas);
         canvas.displayShortToastMessage("Panning");
         endDragModesAndScrolling();
         panMode = true;

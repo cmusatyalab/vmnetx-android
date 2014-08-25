@@ -331,7 +331,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 RemoteKeyboard k = canvas.getKeyboard();
                 int key = KeyEvent.KEYCODE_TAB;
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                    Utils.performLongPressHaptic(canvas);
                     keyTab.setImageResource(R.drawable.tabon);
                     k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
                     return true;
@@ -352,7 +352,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 RemoteKeyboard k = canvas.getKeyboard();
                 int key = 111; /* KEYCODE_ESCAPE */
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                    Utils.performLongPressHaptic(canvas);
                     keyEsc.setImageResource(R.drawable.escon);
                     k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
                     return true;
@@ -382,7 +382,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         keyCtrl.setOnLongClickListener(new OnLongClickListener () {
             @Override
             public boolean onLongClick(View arg0) {
-                BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenCtrlToggle();
                 keyCtrlToggled = true;
                 if (on)
@@ -409,7 +409,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         keySuper.setOnLongClickListener(new OnLongClickListener () {
             @Override
             public boolean onLongClick(View arg0) {
-                BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenSuperToggle();
                 keySuperToggled = true;
                 if (on)
@@ -436,7 +436,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         keyAlt.setOnLongClickListener(new OnLongClickListener () {
             @Override
             public boolean onLongClick(View arg0) {
-                BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenAltToggle();
                 keyAltToggled = true;
                 if (on)
@@ -463,7 +463,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         keyShift.setOnLongClickListener(new OnLongClickListener () {
             @Override
             public boolean onLongClick(View arg0) {
-                BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenShiftToggle();
                 keyShiftToggled = true;
                 if (on)
@@ -485,7 +485,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 RemoteKeyboard k = canvas.getKeyboard();
                 int key = KeyEvent.KEYCODE_DPAD_UP;
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                    Utils.performLongPressHaptic(canvas);
                     keyUp.setImageResource(R.drawable.upon);
                     k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
                     return true;
@@ -506,7 +506,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 RemoteKeyboard k = canvas.getKeyboard();
                 int key = KeyEvent.KEYCODE_DPAD_DOWN;
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                    Utils.performLongPressHaptic(canvas);
                     keyDown.setImageResource(R.drawable.downon);
                     k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
                     return true;
@@ -527,7 +527,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 RemoteKeyboard k = canvas.getKeyboard();
                 int key = KeyEvent.KEYCODE_DPAD_LEFT;
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                    Utils.performLongPressHaptic(canvas);
                     keyLeft.setImageResource(R.drawable.lefton);
                     k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
                     return true;
@@ -548,7 +548,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 RemoteKeyboard k = canvas.getKeyboard();
                 int key = KeyEvent.KEYCODE_DPAD_RIGHT;
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    BCFactory.getInstance().getBCHaptic().performLongPressHaptic(canvas);
+                    Utils.performLongPressHaptic(canvas);
                     keyRight.setImageResource(R.drawable.righton);
                     k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
                     return true;    

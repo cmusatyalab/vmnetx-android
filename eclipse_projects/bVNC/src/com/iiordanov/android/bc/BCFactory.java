@@ -16,7 +16,6 @@ public class BCFactory {
     private static BCFactory _theInstance = new BCFactory();
     
     private IBCGestureDetector bcGestureDetector;
-    private IBCHaptic bcHaptic;
     
     /**
      * This is here so checking the static doesn't get optimized away;
@@ -61,34 +60,6 @@ public class BCFactory {
             }
         }
         return bcGestureDetector;
-    }
-    
-    /**
-     * Return the implementation of IBCHaptic appropriate for this SDK level
-     * 
-     * Since we dropped support of SDK levels prior to 3, there is only one version at the moment.
-     * @return
-     */
-    public IBCHaptic getBCHaptic()
-    {
-        if (bcHaptic == null)
-        {
-            synchronized (this)
-            {
-                if (bcHaptic == null)
-                {
-                    try
-                    {
-                        bcHaptic = (IBCHaptic)getClass().getClassLoader().loadClass("com.iiordanov.android.bc.BCHapticDefault").newInstance();
-                    }
-                    catch (Exception ie)
-                    {
-                        throw new RuntimeException("Error instantiating", ie);
-                    }
-                }
-            }
-        }
-        return bcHaptic;
     }
     
     @SuppressWarnings("unchecked")
