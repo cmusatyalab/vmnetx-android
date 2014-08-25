@@ -27,32 +27,23 @@
 #include "android-service.h"
 
 
-void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int height, int buffwidth, int buffheight, int bpp) {
+void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int height, int buffwidth, int buffheight) {
     //char buf[100];
-    //snprintf (buf, 100, "Drawing x: %d, y: %d, w: %d, h: %d, wBuf: %d, hBuf: %d, bpp: %d", x, y, width, height, wBuf, hBuf, bpp);
+    //snprintf (buf, 100, "Drawing x: %d, y: %d, w: %d, h: %d, wBuf: %d, hBuf: %d", x, y, width, height, wBuf, hBuf);
     //__android_log_write(6, "android-io", buf);
-    int plen = width * bpp;
-    int slen = buffwidth * bpp;
-    uchar *sourcepix = (uchar*) &source[(slen * y) + (x * bpp)];
-    uchar *destpix   = (uchar*) &dest[(slen * y) + (x * bpp)];
+    int slen = buffwidth * 4;
+    uchar *sourcepix = (uchar*) &source[(slen * y) + (x * 4)];
+    uchar *destpix   = (uchar*) &dest[(slen * y) + (x * 4)];
 
-    if (bpp == 4) {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width * 4; j += 4) {
-                destpix[j + 0] = sourcepix[j + 2];
-                destpix[j + 1] = sourcepix[j + 1];
-                destpix[j + 2] = sourcepix[j + 0];
-                destpix[j + 3] = 0xFF;
-            }
-            sourcepix = sourcepix + slen;
-            destpix   = destpix + slen;
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width * 4; j += 4) {
+            destpix[j + 0] = sourcepix[j + 2];
+            destpix[j + 1] = sourcepix[j + 1];
+            destpix[j + 2] = sourcepix[j + 0];
+            destpix[j + 3] = 0xFF;
         }
-    } else {
-        for (int i = 0; i < height; i++) {
-            memcpy(destpix, sourcepix, plen);
-            sourcepix = sourcepix + slen;
-            destpix   = destpix + slen;
-        }
+        sourcepix = sourcepix + slen;
+        destpix   = destpix + slen;
     }
 }
 
@@ -66,7 +57,7 @@ Java_com_iiordanov_bVNC_SpiceCommunicator_UpdateBitmap (JNIEnv* env, jobject obj
         return;
     }
     //__android_log_write(6, "android-io", "Copying new data into pixels.");
-    updatePixels (pixels, d->data, x, y, width, height, d->width, d->height, 4);
+    updatePixels (pixels, d->data, x, y, width, height, d->width, d->height);
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
