@@ -218,14 +218,6 @@ class FullBufferBitmapData extends AbstractBitmapData {
     }
     
     /* (non-Javadoc)
-     * @see com.iiordanov.bVNC.AbstractBitmapData#syncScroll()
-     */
-    @Override
-    void syncScroll() {
-        // Don't need to do anything here
-    }
-
-    /* (non-Javadoc)
      * @see com.iiordanov.bVNC.AbstractBitmapData#updateBitmap(int, int, int, int)
      */
     @Override

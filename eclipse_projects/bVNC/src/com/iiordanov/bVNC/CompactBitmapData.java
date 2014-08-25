@@ -185,12 +185,4 @@ class CompactBitmapData extends AbstractBitmapData {
             drawable.startDrawing();
         }
     }
-    
-    /* (non-Javadoc)
-     * @see com.iiordanov.bVNC.AbstractBitmapData#syncScroll()
-     */
-    @Override
-    void syncScroll() {
-        // Don't need anything here either
-    }
 }

@@ -217,7 +217,7 @@ abstract public class AbstractBitmapData {
      * Scroll position has changed.
      * <p>
      * This method is called in the UI thread-- it updates internal status, but does
-     * not change the bitmap data or send a network request until syncScroll is called
+     * not change the bitmap data or send a network request
      * @param newx Position of left edge of visible part in full-frame coordinates
      * @param newy Position of top edge of visible part in full-frame coordinates
      */
@@ -231,11 +231,6 @@ abstract public class AbstractBitmapData {
      */
     public abstract void frameBufferSizeChanged ();
     
-    /**
-     * Sync scroll -- called from network thread; copies scroll changes from UI to network state
-     */
-    abstract void syncScroll();
-
     /**
      * Release resources
      */

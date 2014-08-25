@@ -314,15 +314,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     
     /**
-     * Indicates that RemoteCanvas's scroll position should be synchronized with the
-     * drawable's scroll position (used only in LargeBitmapData)
-     */
-    public void syncScroll () {
-        bitmapData.syncScroll();
-    }
-    
-    
-    /**
      * Requests a remote desktop update at the specified rectangle.
      */
     public void writeFramebufferUpdateRequest (int x, int y, int w, int h, boolean incremental) throws IOException {
