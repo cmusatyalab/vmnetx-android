@@ -3,7 +3,7 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This software is distributed in the hope that it will be useful,
@@ -23,5 +23,3 @@ void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int heig
 
 void uiCallbackInvalidate (SpiceDisplayPrivate *d, gint x, gint y, gint w, gint h);
 void uiCallbackSettingsChanged (gint instance, gint width, gint height, gint bpp);
-
-gint get_display_id(SpiceDisplay *display);
