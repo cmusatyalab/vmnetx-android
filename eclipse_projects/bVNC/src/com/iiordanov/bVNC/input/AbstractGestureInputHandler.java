@@ -27,10 +27,10 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.ScaleGestureDetector.OnScaleGestureListener;
 
 import com.iiordanov.android.bc.BCFactory;
-import com.iiordanov.android.bc.IBCScaleGestureDetector;
-import com.iiordanov.android.bc.OnScaleGestureListener;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
 import com.iiordanov.bVNC.Utils;
@@ -45,7 +45,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     private static final String TAG = "AbstractGestureInputHandler";
 
     protected GestureDetector gestures;
-    protected IBCScaleGestureDetector scaleGestures;
+    protected ScaleGestureDetector scaleGestures;
 
     /**
      * Handles to the VncCanvas view and VncCanvasActivity activity.
@@ -135,7 +135,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         canvas = v;
         gestures = new GestureDetector(c, this);
         gestures.setOnDoubleTapListener(this);
-        scaleGestures=BCFactory.getInstance().getScaleGestureDetector(c, this);
+        scaleGestures = new ScaleGestureDetector(c, this);
         useDpadAsArrows = activity.getUseDpadAsArrows();
         rotateDpad      = activity.getRotateDpad();
         keyHandler = new DPadMouseKeyHandler(activity, canvas.handler, useDpadAsArrows, rotateDpad);
@@ -487,10 +487,10 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     }
 
     /* (non-Javadoc)
-     * @see com.iiordanov.android.bc.OnScaleGestureListener#onScale(com.iiordanov.android.bc.IBCScaleGestureDetector)
+     * @see android.view.ScaleGestureDetector.OnScaleGestureListener#onScale(android.view.ScaleGestureDetector)
      */
     @Override
-    public boolean onScale(IBCScaleGestureDetector detector) {
+    public boolean onScale(ScaleGestureDetector detector) {
 
         boolean consumed = true;
 
@@ -568,10 +568,10 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     }
 
     /* (non-Javadoc)
-     * @see com.iiordanov.android.bc.OnScaleGestureListener#onScaleBegin(com.iiordanov.android.bc.IBCScaleGestureDetector)
+     * @see android.view.ScaleGestureDetector.OnScaleGestureListener#onScaleBegin(android.view.ScaleGestureDetector)
      */
     @Override
-    public boolean onScaleBegin(IBCScaleGestureDetector detector) {
+    public boolean onScaleBegin(ScaleGestureDetector detector) {
 
         xInitialFocus = detector.getFocusX();
         yInitialFocus = detector.getFocusY();
@@ -588,10 +588,10 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     }
 
     /* (non-Javadoc)
-     * @see com.iiordanov.android.bc.OnScaleGestureListener#onScaleEnd(com.iiordanov.android.bc.IBCScaleGestureDetector)
+     * @see android.view.ScaleGestureDetector.OnScaleGestureListener#onScaleEnd(android.view.ScaleGestureDetector)
      */
     @Override
-    public void onScaleEnd(IBCScaleGestureDetector detector) {
+    public void onScaleEnd(ScaleGestureDetector detector) {
         //Log.i(TAG,"scale end");
         inScaling = false;
         inSwiping = false;
