@@ -104,6 +104,7 @@
 <string name="dpad_as_arrows">Use D-Pad for arrows and D-Pad click for Ctrl.</string>
 <string name="disconnect">Disconnect</string>
 <string name="enable_sound">Enable Sound</string>
+<string name="error_connection_type_not_supported">This connection type is not supported.</string>
 <string name="error_no_user_hostname">Please enter at least a user and a hostname or IP address.</string>
 <string name="error_vnc_authentication">VNC authentication failed! Check VNC password (and user if applicable).</string>
 <string name="error_out_of_memory">Unable to allocate sufficient memory to draw remote screen. Try restarting the application, then restart your device. You can also try reducing the size of the remote desktop through the app settings.</string>

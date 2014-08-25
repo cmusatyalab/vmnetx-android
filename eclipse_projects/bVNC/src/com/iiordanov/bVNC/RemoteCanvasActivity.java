@@ -146,73 +146,40 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         connection = new ConnectionBean(this);
         
         Uri data = i.getData();
-        if ((data != null) && (data.getScheme().equals("vmnetx"))) {
-            String host = data.getHost();
-            // This should not happen according to Uri contract, but bug introduced in Froyo (2.2)
-            // has made this parsing of host necessary
-            int index = host.indexOf(':');
-            int port;
-            if (index != -1)
-            {
-                try
-                {
-                    port = Integer.parseInt(host.substring(index + 1));
-                }
-                catch (NumberFormatException nfe)
-                {
-                    port = 0;
-                }
-                host = host.substring(0,index);
-            }
-            else
-            {
-                port = data.getPort();
-            }
-            if (host.equals(Constants.CONNECTION))
-            {
-                if (connection.Gen_read(database.getReadableDatabase(), port))
-                {
-                    MostRecentBean bean = aSPICE.getMostRecent(database.getReadableDatabase());
-                    if (bean != null)
-                    {
-                        bean.setConnectionId(connection.get_Id());
-                        bean.Gen_update(database.getWritableDatabase());
-                        database.close();
-                    }
-                }
-            } else {
-                connection.setAddress(host);
-                connection.setNickname(connection.getAddress());
-                connection.setPort(port);
-                List<String> path = data.getPathSegments();
-                if (path.size() >= 1) {
-                    connection.setPassword(path.get(0));
-                }
-                connection.save(database.getWritableDatabase());
-                database.close();
-            }
-        } else {
-        
-            Bundle extras = i.getExtras();
-
-            if (extras != null) {
-                  connection.Gen_populate((ContentValues) extras
-                      .getParcelable(Constants.CONNECTION));
-            }
-            if (connection.getPort() == 0)
-                connection.setPort(5900);
-            
-            // Parse a HOST:PORT entry
-            String host = connection.getAddress();
-            if (host.indexOf(':') > -1) {
-                String p = host.substring(host.indexOf(':') + 1);
-                try {
-                    connection.setPort(Integer.parseInt(p));
-                } catch (Exception e) {
-                }
-                connection.setAddress(host.substring(0, host.indexOf(':')));
-              }
+        if (data == null || !data.getScheme().equals("vmnetx")) {
+            Utils.showFatalErrorMessage(this, getString(R.string.error_connection_type_not_supported));
         }
+
+        String host = data.getHost();
+        // This should not happen according to Uri contract, but bug introduced in Froyo (2.2)
+        // has made this parsing of host necessary
+        int index = host.indexOf(':');
+        int port;
+        if (index != -1)
+        {
+            try
+            {
+                port = Integer.parseInt(host.substring(index + 1));
+            }
+            catch (NumberFormatException nfe)
+            {
+                port = 0;
+            }
+            host = host.substring(0,index);
+        }
+        else
+        {
+            port = data.getPort();
+        }
+        connection.setAddress(host);
+        connection.setNickname(connection.getAddress());
+        connection.setPort(port);
+        List<String> path = data.getPathSegments();
+        if (path.size() >= 1) {
+            connection.setPassword(path.get(0));
+        }
+        connection.save(database.getWritableDatabase());
+        database.close();
     }
 
     void continueConnecting () {

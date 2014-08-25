@@ -24,8 +24,6 @@ package com.iiordanov.bVNC;
  * Keys for intent values
  */
 public class Constants {
-    public static final String CONNECTION = "com.iiordanov.bVNC.CONNECTION";
-
     public static final int CONN_TYPE_PLAIN        = 0;
     public static final int CONN_TYPE_SSH          = 1;
     public static final int CONN_TYPE_ULTRAVNC     = 2;
