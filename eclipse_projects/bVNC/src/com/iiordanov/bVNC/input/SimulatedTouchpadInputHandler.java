@@ -1,13 +1,10 @@
 package com.iiordanov.bVNC.input;
 
-import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import com.iiordanov.bVNC.R;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
-import com.iiordanov.bVNC.R.string;
 
 public class SimulatedTouchpadInputHandler extends AbstractGestureInputHandler {
     static final String TAG = "SimulatedTouchpadInputHandler";

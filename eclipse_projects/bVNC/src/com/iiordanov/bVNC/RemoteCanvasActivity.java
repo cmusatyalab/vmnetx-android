@@ -23,11 +23,7 @@
 //
 package com.iiordanov.bVNC;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.iiordanov.android.zoomer.ZoomControls;
 import com.iiordanov.bVNC.input.AbstractInputHandler;
@@ -38,12 +34,8 @@ import com.iiordanov.bVNC.input.TouchMouseDragPanInputHandler;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.AlertDialog;
-import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -65,13 +57,8 @@ import android.view.View.OnKeyListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
 

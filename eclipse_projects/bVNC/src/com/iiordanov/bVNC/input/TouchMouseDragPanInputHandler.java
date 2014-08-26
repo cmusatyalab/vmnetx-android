@@ -1,15 +1,10 @@
 package com.iiordanov.bVNC.input;
 
-import android.graphics.PointF;
-import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
 
-import com.iiordanov.bVNC.R;
 import com.iiordanov.bVNC.RemoteCanvas;
 import com.iiordanov.bVNC.RemoteCanvasActivity;
-import com.iiordanov.bVNC.R.string;
 import com.iiordanov.bVNC.Utils;
 
 public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {

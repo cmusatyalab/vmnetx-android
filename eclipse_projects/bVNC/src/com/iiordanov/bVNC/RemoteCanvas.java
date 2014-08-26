@@ -32,17 +32,14 @@ package com.iiordanov.bVNC;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Timer;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;

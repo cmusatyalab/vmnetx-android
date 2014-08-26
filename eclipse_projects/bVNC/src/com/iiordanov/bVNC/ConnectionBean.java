@@ -24,9 +24,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ImageView.ScaleType;
 
-import com.antlersoft.android.db.FieldAccessor;
 import com.antlersoft.android.dbimpl.NewInstance;
-import com.iiordanov.bVNC.RemoteCanvasActivity;
 import com.iiordanov.bVNC.input.TouchMouseDragPanInputHandler;
 
 import java.lang.Comparable;

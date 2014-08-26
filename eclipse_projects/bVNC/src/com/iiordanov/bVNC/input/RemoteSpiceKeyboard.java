@@ -1,8 +1,6 @@
 package com.iiordanov.bVNC.input;
 
 import android.os.Handler;
-import android.os.SystemClock;
-import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
