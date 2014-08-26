@@ -3,7 +3,6 @@
 	<name>bVNC</name>
 	<comment></comment>
 	<projects>
-		<project>ZoomerWithKeys</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
