@@ -32,42 +32,49 @@
  * USA.
  */
 
-package com.iiordanov.android.zoomer;
+package com.iiordanov.bVNC;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
+import android.view.inputmethod.InputMethodManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 /**
- * The {@code ZoomControls} class displays a simple set of controls used for zooming and
- * provides callbacks to register for events. */
-public class ZoomControls extends LinearLayout {
+ * The {@code KeyboardControls} class displays a simple set of controls used for
+ * controlling the soft keyboard. */
+public class KeyboardControls extends LinearLayout {
 
-    private final ImageButton mZoomKeyboard;
+    private ImageButton showKeyboard;
     private boolean disabled = false;
-        
-    public ZoomControls(Context context) {
+
+    public KeyboardControls(Context context) {
         this(context, null);
     }
 
-    public ZoomControls(Context context, AttributeSet attrs) {
+    public KeyboardControls(Context context, AttributeSet attrs) {
         super(context, attrs);
         setFocusable(false);
-        
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.zoom_controls, this, // we are the parent
-                true);
-        
-        mZoomKeyboard = (ImageButton) findViewById(R.id.zoomKeys);
     }
 
-    public void setOnZoomKeyboardClickListener(OnClickListener listener) {
-    	mZoomKeyboard.setOnClickListener(listener);
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        showKeyboard = (ImageButton) findViewById(R.id.showKeyboard);
+        showKeyboard.setOnClickListener(new View.OnClickListener() {
+            /*
+             * (non-Javadoc)
+             * 
+             * @see android.view.View.OnClickListener#onClick(android.view.View)
+             */
+            @Override
+            public void onClick(View v) {
+                InputMethodManager inputMgr = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMgr.toggleSoftInput(0, 0);
+            }
+        });
     }
     
     @Override

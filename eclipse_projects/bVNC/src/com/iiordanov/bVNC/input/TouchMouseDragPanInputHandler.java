@@ -109,7 +109,7 @@ public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
         if (twoFingers||inSwiping||inScaling||scalingJustFinished)
             return true;
 
-        activity.showZoomer(false);
+        activity.showKeyboardControls(false);
         
         if (!dragMode) {
             dragMode = true;

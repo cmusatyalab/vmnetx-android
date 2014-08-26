@@ -25,7 +25,6 @@ package com.iiordanov.bVNC;
 
 import java.util.List;
 
-import com.iiordanov.android.zoomer.ZoomControls;
 import com.iiordanov.bVNC.input.AbstractInputHandler;
 import com.iiordanov.bVNC.input.Panner;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
@@ -82,7 +81,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private static final int scalingModeIds[] = { R.id.itemZoomable, R.id.itemFitToScreen,
                                                   R.id.itemOneToOne};
 
-    ZoomControls zoomer;
+    KeyboardControls keyboardControls;
     Panner panner;
     Handler handler;
 
@@ -174,7 +173,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
         setContentView(R.layout.canvas);
         canvas = (RemoteCanvas) findViewById(R.id.vnc_canvas);
-        zoomer = (ZoomControls) findViewById(R.id.zoomer);
+        keyboardControls = (KeyboardControls) findViewById(R.id.keyboardControls);
 
         // Initialize and define actions for on-screen keys.
         initializeOnScreenKeys ();
@@ -213,7 +212,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                         }
                     }
                     
-                    // Enable/show the zoomer if the keyboard is gone, and disable/hide otherwise.
+                    // Enable/show the keyboard controls if the keyboard is gone, and disable/hide otherwise.
                     // We detect the keyboard if more than 19% of the screen is covered.
                     int offset = 0;
                     int rootViewHeight = rootView.getHeight();
@@ -226,7 +225,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                             if (prevBottomOffset != offset) { 
                                 setExtraKeysVisibility(View.GONE, false);
                                 canvas.invalidate();
-                                zoomer.enable();
+                                keyboardControls.enable();
                             }
                         }
                     } else {
@@ -238,8 +237,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                             if (prevBottomOffset != offset) { 
                                 setExtraKeysVisibility(View.VISIBLE, true);
                                 canvas.invalidate();
-                                zoomer.hide();
-                                zoomer.disable();
+                                keyboardControls.hide();
+                                keyboardControls.disable();
                             }
                         }
                     }
@@ -248,22 +247,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
              }
         });
 
-        zoomer.hide();
+        keyboardControls.hide();
         
-        zoomer.setOnZoomKeyboardClickListener(new View.OnClickListener() {
-
-            /*
-             * (non-Javadoc)
-             * 
-             * @see android.view.View.OnClickListener#onClick(android.view.View)
-             */
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputMgr = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMgr.toggleSoftInput(0, 0);
-            }
-
-        });
         panner = new Panner(this, canvas.handler);
 
         inputHandler = getInputHandlerById(R.id.itemInputDragPanZoomMouse);
@@ -944,7 +929,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         canvas = null;
         connection = null;
         database = null;
-        zoomer = null;
+        keyboardControls = null;
         panner = null;
         clearInputHandlers();
         inputHandler = null;
@@ -1015,26 +1000,26 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         return super.onGenericMotionEvent(event);
     }
 
-    long hideZoomAfterMs;
-    static final long ZOOM_HIDE_DELAY_MS = 2500;
-    HideZoomRunnable hideZoomInstance = new HideZoomRunnable();
+    long hideKeyboardControlsAfterMs;
+    static final long KEYBOARD_CONTROLS_HIDE_DELAY_MS = 2500;
+    HideKeyboardControlsRunnable hideKeyboardControlsInstance = new HideKeyboardControlsRunnable();
 
     public void stopPanner() {
         panner.stop ();
     }
     
-    public void showZoomer(boolean force) {
-        if (force || zoomer.getVisibility() != View.VISIBLE) {
-            zoomer.show();
-            hideZoomAfterMs = SystemClock.uptimeMillis() + ZOOM_HIDE_DELAY_MS;
-            canvas.handler.postAtTime(hideZoomInstance, hideZoomAfterMs + 10);
+    public void showKeyboardControls(boolean force) {
+        if (force || keyboardControls.getVisibility() != View.VISIBLE) {
+            keyboardControls.show();
+            hideKeyboardControlsAfterMs = SystemClock.uptimeMillis() + KEYBOARD_CONTROLS_HIDE_DELAY_MS;
+            canvas.handler.postAtTime(hideKeyboardControlsInstance, hideKeyboardControlsAfterMs + 10);
         }
     }
 
-    private class HideZoomRunnable implements Runnable {
+    private class HideKeyboardControlsRunnable implements Runnable {
         public void run() {
-            if (SystemClock.uptimeMillis() >= hideZoomAfterMs) {
-                zoomer.hide();
+            if (SystemClock.uptimeMillis() >= hideKeyboardControlsAfterMs) {
+                keyboardControls.hide();
             }
         }
     }

@@ -263,7 +263,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         RemotePointer p  = canvas.getPointer();
         final int action = e.getActionMasked();
         final int meta   = e.getMetaState();
-        activity.showZoomer(true);
+        activity.showKeyboardControls(true);
         p.processPointerEvent(getX(e), getY(e), action, meta, true, false, false, false, 0);
         SystemClock.sleep(50);
         p.processPointerEvent(getX(e), getY(e), action, meta, false, false, false, false, 0);
