@@ -31,7 +31,6 @@
 package com.iiordanov.bVNC;
 
 import java.io.IOException;
-import java.net.Socket;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -74,10 +73,9 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     ConnectionBean connection;
     Database database;
     
-    // VNC protocol connection
+    // SPICE protocol connection
     public RfbConnectable rfbconn   = null;
     private SpiceCommunicator spicecomm = null;
-    private Socket sock             = null;
     
     boolean maintainConnection = true;
     
@@ -86,7 +84,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     RemoteKeyboard keyboard;
     
     // Internal bitmap data
-    private int capacity;
     public AbstractBitmapData bitmapData;
     boolean useFull = false;
     boolean compact = false;
