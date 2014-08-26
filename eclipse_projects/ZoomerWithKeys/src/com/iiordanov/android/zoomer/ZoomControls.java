@@ -39,18 +39,14 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ZoomButton;
 
 /**
  * The {@code ZoomControls} class displays a simple set of controls used for zooming and
  * provides callbacks to register for events. */
 public class ZoomControls extends LinearLayout {
 
-    private final ZoomButton mZoomIn;
-    private final ZoomButton mZoomOut;
     private final ImageButton mZoomKeyboard;
     private boolean disabled = false;
         
@@ -67,30 +63,11 @@ public class ZoomControls extends LinearLayout {
         inflater.inflate(R.layout.zoom_controls, this, // we are the parent
                 true);
         
-        mZoomIn = (ZoomButton) findViewById(R.id.zoomIn);
-        mZoomOut = (ZoomButton) findViewById(R.id.zoomOut);
         mZoomKeyboard = (ImageButton) findViewById(R.id.zoomKeys);
     }
 
-    public void setOnZoomInClickListener(OnClickListener listener) {
-        mZoomIn.setOnClickListener(listener);
-    }
-    
-    public void setOnZoomOutClickListener(OnClickListener listener) {
-        mZoomOut.setOnClickListener(listener);
-    }
-    
     public void setOnZoomKeyboardClickListener(OnClickListener listener) {
     	mZoomKeyboard.setOnClickListener(listener);
-    }
-    
-    /*
-     * Sets how fast you get zoom events when the user holds down the
-     * zoom in/out buttons.
-     */
-    public void setZoomSpeed(long speed) {
-        mZoomIn.setZoomSpeed(speed);
-        mZoomOut.setZoomSpeed(speed);
     }
     
     @Override
@@ -105,12 +82,10 @@ public class ZoomControls extends LinearLayout {
     public void show() {
     	if (!disabled)
     		setVisibility(View.VISIBLE);
-    		//fade(View.VISIBLE, 0.0f, 1.0f);
     }
     
     public void hide() {
 		setVisibility(View.GONE);
-		//fade(View.GONE, 1.0f, 0.0f);
     }
 
     public void disable() {
@@ -120,24 +95,9 @@ public class ZoomControls extends LinearLayout {
     public void enable() {
     	disabled = false;
     }
-
-    private void fade(int visibility, float startAlpha, float endAlpha) {
-        AlphaAnimation anim = new AlphaAnimation(startAlpha, endAlpha);
-        anim.setDuration(500);
-        startAnimation(anim);
-        setVisibility(visibility);
-    }
-    
-    public void setIsZoomInEnabled(boolean isEnabled) {
-        mZoomIn.setEnabled(isEnabled);
-    }
-    
-    public void setIsZoomOutEnabled(boolean isEnabled) {
-        mZoomOut.setEnabled(isEnabled);
-    }
     
     @Override
     public boolean hasFocus() {
-        return mZoomIn.hasFocus() || mZoomOut.hasFocus();
+        return false;
     }
 }
