@@ -25,7 +25,6 @@ import android.widget.ImageView.ScaleType;
 import com.iiordanov.bVNC.input.TouchMouseDragPanInputHandler;
 
 import java.lang.Comparable;
-import android.content.Context;
 
 /**
  * @author Iordan Iordanov
