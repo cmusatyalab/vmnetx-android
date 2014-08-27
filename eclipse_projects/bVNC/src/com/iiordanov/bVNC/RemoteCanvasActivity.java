@@ -156,7 +156,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             port = data.getPort();
         }
         connection.setAddress(host);
-        connection.setNickname(connection.getAddress());
         connection.setPort(port);
         List<String> path = data.getPathSegments();
         if (path.size() >= 1) {

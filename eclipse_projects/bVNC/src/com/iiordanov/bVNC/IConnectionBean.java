@@ -32,8 +32,6 @@ interface IConnectionBean {
     @FieldAccessor
     long get_Id();
     @FieldAccessor
-    String getNickname();
-    @FieldAccessor
     String getAddress();
     @FieldAccessor
     int getPort();
@@ -41,14 +39,6 @@ interface IConnectionBean {
     String getPassword();
     @FieldAccessor
     int getExtraKeysToggleType();
-    /**
-     * Records bitmap data implementation selection.  0 for auto, 1 for force full bitmap, 2 for force tiled
-     * <p>
-     * For historical reasons, this is named as if it were just a boolean selection for auto and force full.
-     * @return 0 for auto, 1 for force full bitmap, 2 for forced tiled
-     */
-    @FieldAccessor
-    long getForceFull();
     @FieldAccessor
     String getInputMode();
     @FieldAccessor(Name="SCALEMODE")
@@ -57,8 +47,6 @@ interface IConnectionBean {
     boolean getUseDpadAsArrows();
     @FieldAccessor
     boolean getRotateDpad();
-    @FieldAccessor
-    boolean getKeepPassword();
     @FieldAccessor
     boolean getFollowMouse();
     @FieldAccessor(DefaultValue="false")

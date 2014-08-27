@@ -47,8 +47,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         set_Id(0);
         setAddress("");
         setPassword("");
-        setKeepPassword(true);
-        setNickname("");
         setPort(5900);
         setScaleMode(ScaleType.MATRIX);
         setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
@@ -66,9 +64,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     public synchronized void save(SQLiteDatabase database) {
         ContentValues values=Gen_getValues();
         values.remove(GEN_FIELD__ID);
-        if ( ! getKeepPassword()) {
-            values.put(GEN_FIELD_PASSWORD, "");
-        }
         if ( isNew()) {
             set_Id(database.insert(GEN_TABLE_NAME, null, values));
         } else {
@@ -94,10 +89,6 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         }
         String result = new String("");
         
-        // Add the nickname if it has been set.
-        if (!getNickname().equals(""))
-            result += getNickname()+":";
-        
         // Add the VNC server and port.
         result += getAddress()+":"+getPort();
         return result;
@@ -108,10 +99,7 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
      */
     @Override
     public int compareTo(ConnectionBean another) {
-        int result = getNickname().compareTo(another.getNickname());
-        if (result == 0) {
-            result = getAddress().compareTo(another.getAddress());
-        }
+        int result = getAddress().compareTo(another.getAddress());
         if ( result == 0) {
             result = getPort() - another.getPort();
         }
