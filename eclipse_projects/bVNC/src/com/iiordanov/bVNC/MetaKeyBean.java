@@ -23,7 +23,6 @@ package com.iiordanov.bVNC;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.antlersoft.android.dbimpl.NewInstance;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
 import com.iiordanov.bVNC.input.RemoteSpicePointer;
 

@@ -1,14 +1,8 @@
-1. Install sqlitegen plugin into Eclipse from:
-      http://code.google.com/p/sqlitegen/
-
-   NOTE: I've been told by a user that he had to "downgrade to"
-         eclipse_site_0.1.16.
-
-2. Add bVNC from the
+1. Add bVNC from the
    bVNC/eclipse_projects/ directory to Eclipse as an existing Android
    project.
 
-3. To build and successfully run aSPICE, you need to:
+2. To build and successfully run aSPICE, you need to:
    - Install gstreamer-sdk (0.10.x, not 1.x) into /opt/gstreamer
    - cd bVNC/eclipse_projects/bVNC
    - ndk-build GSTREAMER_SDK_ROOT_ANDROID=/opt/gstreamer -j 4
