@@ -71,7 +71,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     // Connection parameters
     ConnectionBean connection;
-    Database database;
     
     // SPICE protocol connection
     public RfbConnectable rfbconn   = null;
@@ -153,10 +152,9 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * @param bean Connection settings
      * @param setModes Callback to run on UI thread after connection is set up
      */
-    void initializeCanvas(ConnectionBean bean, Database db, final Runnable setModes) {
+    void initializeCanvas(ConnectionBean bean, final Runnable setModes) {
         this.setModes = setModes;
         connection = bean;
-        database = db;
 
         // Startup the connection thread with a progress dialog
         pd = ProgressDialog.show(getContext(), getContext().getString(R.string.info_progress_dialog_connecting),
@@ -353,7 +351,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         
         removeCallbacksAndMessages();
         setModes         = null;
-        database         = null;
         connection       = null;
         scaling          = null;
         drawableSetter   = null;

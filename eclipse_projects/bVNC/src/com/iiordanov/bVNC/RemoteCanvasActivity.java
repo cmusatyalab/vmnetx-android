@@ -70,8 +70,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     private RemoteCanvas canvas;
 
-    private Database database;
-
     private MenuItem[] inputModeMenuItems;
     private MenuItem[] scalingModeMenuItems;
     private AbstractInputHandler inputModeHandlers[];
@@ -124,8 +122,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                              WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        database = new Database(this);
-
         Intent i = getIntent();
         connection = new ConnectionBean();
         
@@ -161,7 +157,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         if (path.size() >= 1) {
             connection.setPassword(path.get(0));
         }
-        database.close();
     }
 
     void continueConnecting () {
@@ -176,7 +171,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         // Initialize and define actions for on-screen keys.
         initializeOnScreenKeys ();
     
-        canvas.initializeCanvas(connection, database, new Runnable() {
+        canvas.initializeCanvas(connection, new Runnable() {
             public void run() {
                 try { setModes(); } catch (NullPointerException e) { }
             }
@@ -869,13 +864,11 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             if (newFollow) {
                 vncCanvas.panToMouse();
             }
-            database.close();
             return true;
         case R.id.itemFollowPan:
             boolean newFollowPan = !connection.getFollowPan();
             item.setChecked(newFollowPan);
             connection.setFollowPan(newFollowPan);
-            database.close();
             return true;
 */
         case R.id.itemExtraKeys:
@@ -890,7 +883,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 extraKeysHidden = false;
             }
             setKeyStowDrawableAndVisibility();
-            database.close();
             return true;
         default:
             AbstractInputHandler input = getInputHandlerById(item.getItemId());
@@ -906,7 +898,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 }
 
                 item.setChecked(true);
-                database.close();
                 return true;
             }
         }
@@ -918,11 +909,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         super.onDestroy();
         if (canvas != null)
             canvas.closeConnection();
-        if (database != null)
-            database.close();
         canvas = null;
         connection = null;
-        database = null;
         keyboardControls = null;
         panner = null;
         clearInputHandlers();
@@ -1040,14 +1028,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     public boolean getAccelerationEnabled() {
         // TODO: Make this a config option.
         return true;
-    }
-
-    public Database getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(Database database) {
-        this.database = database;
     }
 
     public RemoteCanvas getCanvas() {
