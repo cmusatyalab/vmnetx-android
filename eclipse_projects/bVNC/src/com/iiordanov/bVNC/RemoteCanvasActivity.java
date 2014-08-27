@@ -65,6 +65,7 @@ import android.content.Context;
 public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     
     private final static String TAG = "VncCanvasActivity";
+    private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
     AbstractInputHandler inputHandler;
 
@@ -106,10 +107,19 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        if (icicle != null)
+            connection = (ConnectionBean) icicle.getSerializable(CONNECTION_KEY);
+
         initialize();
         continueConnecting();
     }
     
+    @Override
+    protected void onSaveInstanceState(Bundle icicle) {
+        super.onSaveInstanceState(icicle);
+        icicle.putSerializable(CONNECTION_KEY, connection);
+    }
+
     void initialize () {
         if (android.os.Build.VERSION.SDK_INT >= 9) {
             android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -122,40 +132,42 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                              WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        Intent i = getIntent();
-        connection = new ConnectionBean();
-        
-        Uri data = i.getData();
-        if (data == null || !data.getScheme().equals("vmnetx")) {
-            Utils.showFatalErrorMessage(this, getString(R.string.error_connection_type_not_supported));
-        }
+        if (connection == null) {
+            Intent i = getIntent();
+            connection = new ConnectionBean();
 
-        String host = data.getHost();
-        // This should not happen according to Uri contract, but bug introduced in Froyo (2.2)
-        // has made this parsing of host necessary
-        int index = host.indexOf(':');
-        int port;
-        if (index != -1)
-        {
-            try
-            {
-                port = Integer.parseInt(host.substring(index + 1));
+            Uri data = i.getData();
+            if (data == null || !data.getScheme().equals("vmnetx")) {
+                Utils.showFatalErrorMessage(this, getString(R.string.error_connection_type_not_supported));
             }
-            catch (NumberFormatException nfe)
+
+            String host = data.getHost();
+            // This should not happen according to Uri contract, but bug introduced in Froyo (2.2)
+            // has made this parsing of host necessary
+            int index = host.indexOf(':');
+            int port;
+            if (index != -1)
             {
-                port = 0;
+                try
+                {
+                    port = Integer.parseInt(host.substring(index + 1));
+                }
+                catch (NumberFormatException nfe)
+                {
+                    port = 0;
+                }
+                host = host.substring(0,index);
             }
-            host = host.substring(0,index);
-        }
-        else
-        {
-            port = data.getPort();
-        }
-        connection.setAddress(host);
-        connection.setPort(port);
-        List<String> path = data.getPathSegments();
-        if (path.size() >= 1) {
-            connection.setPassword(path.get(0));
+            else
+            {
+                port = data.getPort();
+            }
+            connection.setAddress(host);
+            connection.setPort(port);
+            List<String> path = data.getPathSegments();
+            if (path.size() >= 1) {
+                connection.setPassword(path.get(0));
+            }
         }
     }
 

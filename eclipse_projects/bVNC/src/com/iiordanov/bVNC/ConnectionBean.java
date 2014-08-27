@@ -25,13 +25,14 @@ import android.widget.ImageView.ScaleType;
 import com.iiordanov.bVNC.input.TouchMouseDragPanInputHandler;
 
 import java.lang.Comparable;
+import java.io.Serializable;
 
 /**
  * @author Iordan Iordanov
  * @author Michael A. MacDonald
  *
  */
-public class ConnectionBean implements Comparable<ConnectionBean> {
+public class ConnectionBean implements Comparable<ConnectionBean>, Serializable {
     private String address;
     private int port;
     private String password;
