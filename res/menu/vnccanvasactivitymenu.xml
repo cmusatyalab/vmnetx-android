@@ -17,8 +17,8 @@
 	    	</group>
     	</menu>
     </item>
-    <item android:numericShortcut="7" android:alphabeticShortcut="x" android:id="@+id/itemDisconnect" android:title="@string/disconnect" android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
     <item android:numericShortcut="8" android:alphabeticShortcut="r" android:id="@+id/itemCtrlAltDel" android:title="@string/ctrl_alt_del" android:icon="@android:drawable/ic_menu_share"/>
+    <item android:numericShortcut="7" android:alphabeticShortcut="x" android:id="@+id/itemDisconnect" android:title="@string/disconnect" android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
     <!-- <group android:checkableBehavior="all">
     	<item android:numericShortcut="6" android:alphabeticShortcut="f" android:id="@+id/itemFollowMouse" android:title="@string/pan_follow_mouse"/>
     	<item android:title="@string/mouse_follow_pan" android:id="@+id/itemFollowPan"/>

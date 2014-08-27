@@ -33,6 +33,7 @@ import org.olivearchive.vmnetx.android.input.TouchMouseDragPanInputHandler;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -863,8 +864,13 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             item.setChecked(true);
             return true;
         case R.id.itemDisconnect:
-            canvas.closeConnection();
-            finish();
+            Utils.showYesNoPrompt(this, getString(R.string.disconnect_prompt_title), getString(R.string.disconnect_prompt), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    canvas.closeConnection();
+                    finish();
+                }
+            }, null);
             return true;
         case R.id.itemCtrlAltDel:
             canvas.getKeyboard().sendMetaKey(MetaKeyBean.keyCtrlAltDel);
