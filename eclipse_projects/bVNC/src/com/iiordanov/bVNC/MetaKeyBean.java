@@ -33,7 +33,7 @@ import android.view.KeyEvent;
  * @author Michael A. MacDonald
  *
  */
-public class MetaKeyBean extends AbstractMetaKeyBean implements Comparable<MetaKeyBean> {
+public class MetaKeyBean implements Comparable<MetaKeyBean> {
     public static final ArrayList<MetaKeyBase> allKeys;
     public static final String[] allKeysNames;
     public static final HashMap<Integer,MetaKeyBase> keysByKeyCode;
@@ -44,8 +44,6 @@ public class MetaKeyBean extends AbstractMetaKeyBean implements Comparable<MetaK
     public static final MetaKeyBean keyArrowRight;
     public static final MetaKeyBean keyArrowUp;
     public static final MetaKeyBean keyArrowDown;
-    
-    public static final NewInstance<MetaKeyBean> NEW;
     
     static {
         allKeys = new ArrayList<MetaKeyBase>();
@@ -129,16 +127,6 @@ public class MetaKeyBean extends AbstractMetaKeyBean implements Comparable<MetaK
             else
                 keysByKeySym.put(b.keySym,b);
         }
-        NEW = new NewInstance<MetaKeyBean>() {
-
-                /* (non-Javadoc)
-                 * @see com.antlersoft.android.dbimpl.NewInstance#get()
-                 */
-                @Override
-                public MetaKeyBean get() {
-                    return new MetaKeyBean();
-                }
-            };
         keyCtrlAltDel = new MetaKeyBean(0,RemoteKeyboard.CTRL_MASK|RemoteKeyboard.ALT_MASK,keysByKeyCode.get(KeyEvent.KEYCODE_DEL));
         keyArrowLeft = new MetaKeyBean(0,0,keysByKeySym.get(0xFF51));
         keyArrowUp = new MetaKeyBean(0,0,keysByKeySym.get(0xFF52));
@@ -146,8 +134,13 @@ public class MetaKeyBean extends AbstractMetaKeyBean implements Comparable<MetaK
         keyArrowDown = new MetaKeyBean(0,0,keysByKeySym.get(0xFF54));
     }
     
+    private String keyDesc;
     private boolean _regenDesc;
-    
+    private int keySym;
+    private int metaFlags;
+    private int mouseButtons;
+    private boolean mouseClick;
+
     MetaKeyBean()
     {
     }
@@ -169,10 +162,6 @@ public class MetaKeyBean extends AbstractMetaKeyBean implements Comparable<MetaK
         _regenDesc = true;
     }
 
-    /* (non-Javadoc)
-     * @see com.iiordanov.bVNC.AbstractMetaKeyBean#getKeyDesc()
-     */
-    @Override
     public String getKeyDesc() {
         if (_regenDesc)
         {
@@ -216,56 +205,60 @@ public class MetaKeyBean extends AbstractMetaKeyBean implements Comparable<MetaK
                 }
             }
         }
-        return super.getKeyDesc();
+        return keyDesc;
     }
 
-    /* (non-Javadoc)
-     * @see com.iiordanov.bVNC.AbstractMetaKeyBean#setKeyDesc(java.lang.String)
-     */
-    @Override
-    public void setKeyDesc(String arg_keyDesc) {
-        super.setKeyDesc(arg_keyDesc);
+    public void setKeyDesc(String keyDesc) {
+        this.keyDesc = keyDesc;
         _regenDesc = false;
     }
 
-    /* (non-Javadoc)
-     * @see com.iiordanov.bVNC.AbstractMetaKeyBean#setKeySym(int)
-     */
-    @Override
-    public void setKeySym(int arg_keySym) {
-        if (arg_keySym!=getKeySym() || isMouseClick())
+    public int getKeySym() {
+        return keySym;
+    }
+
+    public void setKeySym(int keySym) {
+        if (keySym!=getKeySym() || isMouseClick())
         {
             setMouseClick(false);
             _regenDesc=true;
-            super.setKeySym(arg_keySym);
+            this.keySym = keySym;
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.iiordanov.bVNC.AbstractMetaKeyBean#setMetaFlags(int)
-     */
-    @Override
-    public void setMetaFlags(int arg_metaFlags) {
-        if (arg_metaFlags != getMetaFlags())
+    public int getMetaFlags() {
+        return metaFlags;
+    }
+
+    public void setMetaFlags(int metaFlags) {
+        if (metaFlags != getMetaFlags())
         {
             _regenDesc = true;
-            super.setMetaFlags(arg_metaFlags);
+            this.metaFlags = metaFlags;
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.iiordanov.bVNC.AbstractMetaKeyBean#setMouseButtons(int)
-     */
-    @Override
-    public void setMouseButtons(int arg_mouseButtons) {
-        if (arg_mouseButtons!=getMouseButtons() || ! isMouseClick())
+    public int getMouseButtons() {
+        return mouseButtons;
+    }
+
+    public void setMouseButtons(int mouseButtons) {
+        if (mouseButtons!=getMouseButtons() || ! isMouseClick())
         {
             setMouseClick(true);
             _regenDesc = true;
-            super.setMouseButtons(arg_mouseButtons);
+            this.mouseButtons = mouseButtons;
         }
     }
-    
+
+    public boolean isMouseClick() {
+        return mouseClick;
+    }
+
+    public void setMouseClick(boolean mouseClick) {
+        this.mouseClick = mouseClick;
+    }
+
     public void setKeyBase(MetaKeyBase base)
     {
         if (base.isMouse)
