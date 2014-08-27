@@ -1,11 +1,8 @@
-1. Add bVNC from the
-   bVNC/eclipse_projects/ directory to Eclipse as an existing Android
-   project.
+1. Add vmnetx-android to Eclipse as an existing Android project.
 
-2. To build and successfully run aSPICE, you need to:
-   - Install gstreamer-sdk (0.10.x, not 1.x) into /opt/gstreamer
-   - cd bVNC/eclipse_projects/bVNC
-   - ndk-build GSTREAMER_SDK_ROOT_ANDROID=/opt/gstreamer -j 4
-   - You may have to select the "Android private libraries" entry in
-       Project Properties->Java Build Path->Order and Export
-     if you have it.
+2. Install gstreamer-sdk (0.10.x, not 1.x) into /opt/gstreamer
+
+3. ndk-build GSTREAMER_SDK_ROOT_ANDROID=/opt/gstreamer -j 4
+
+4. You may have to select the "Android private libraries" entry in
+   Project Properties->Java Build Path->Order and Export if you have it.
