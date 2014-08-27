@@ -20,11 +20,8 @@
 
 package com.iiordanov.bVNC;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.widget.ImageView.ScaleType;
 
-import com.antlersoft.android.dbimpl.NewInstance;
 import com.iiordanov.bVNC.input.TouchMouseDragPanInputHandler;
 
 import java.lang.Comparable;
@@ -35,16 +32,20 @@ import android.content.Context;
  * @author Michael A. MacDonald
  *
  */
-public class ConnectionBean extends AbstractConnectionBean implements Comparable<ConnectionBean> {
-    
-    static Context c = null;
-    
-    static final NewInstance<ConnectionBean> newInstance=new NewInstance<ConnectionBean>() {
-        public ConnectionBean get() { return new ConnectionBean(c); }
-    };
-    ConnectionBean(Context context)
+public class ConnectionBean implements Comparable<ConnectionBean> {
+    private String address;
+    private int port;
+    private String password;
+    private int extraKeysToggleType;
+    private String inputMode;
+    private String scaleMode;
+    private boolean useDpadAsArrows;
+    private boolean rotateDpad;
+    private boolean followMouse;
+    private boolean followPan;
+
+    ConnectionBean()
     {
-        set_Id(0);
         setAddress("");
         setPassword("");
         setPort(5900);
@@ -53,24 +54,48 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setUseDpadAsArrows(true);
         setRotateDpad(false);
         setExtraKeysToggleType(1);
-        c = context;
     }
     
-    boolean isNew()
-    {
-        return get_Id()== 0;
+    public String getAddress() {
+        return address;
     }
-    
-    public synchronized void save(SQLiteDatabase database) {
-        ContentValues values=Gen_getValues();
-        values.remove(GEN_FIELD__ID);
-        if ( isNew()) {
-            set_Id(database.insert(GEN_TABLE_NAME, null, values));
-        } else {
-            database.update(GEN_TABLE_NAME, values, GEN_FIELD__ID + " = ?", new String[] { Long.toString(get_Id()) });
-        }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
-    
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getExtraKeysToggleType() {
+        return extraKeysToggleType;
+    }
+
+    public void setExtraKeysToggleType(int extraKeysToggleType) {
+        this.extraKeysToggleType = extraKeysToggleType;
+    }
+
+    public String getInputMode() {
+        return inputMode;
+    }
+
+    public void setInputMode(String inputMode) {
+        this.inputMode = inputMode;
+    }
+
     ScaleType getScaleMode()
     {
         return ScaleType.valueOf(getScaleModeAsString());
@@ -81,17 +106,49 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setScaleModeAsString(value.toString());
     }
     
+    public String getScaleModeAsString() {
+        return scaleMode;
+    }
+
+    public void setScaleModeAsString(String scaleMode) {
+        this.scaleMode = scaleMode;
+    }
+
+    public boolean getUseDpadAsArrows() {
+        return useDpadAsArrows;
+    }
+
+    public void setUseDpadAsArrows(boolean useDpadAsArrows) {
+        this.useDpadAsArrows = useDpadAsArrows;
+    }
+
+    public boolean getRotateDpad() {
+        return rotateDpad;
+    }
+
+    public void setRotateDpad(boolean rotateDpad) {
+        this.rotateDpad = rotateDpad;
+    }
+
+    public boolean getFollowMouse() {
+        return followMouse;
+    }
+
+    public void setFollowMouse(boolean followMouse) {
+        this.followMouse = followMouse;
+    }
+
+    public boolean getFollowPan() {
+        return followPan;
+    }
+
+    public void setFollowPan(boolean followPan) {
+        this.followPan = followPan;
+    }
+
     @Override
     public String toString() {
-        if (isNew())
-        {
-            return c.getString(R.string.new_connection);
-        }
-        String result = new String("");
-        
-        // Add the VNC server and port.
-        result += getAddress()+":"+getPort();
-        return result;
+        return getAddress() + ":" + getPort();
     }
 
     /* (non-Javadoc)

@@ -17,7 +17,6 @@
 <string name="input_mode">Input Mode</string>
 <string name="input_mode_drag_pan_zoom_mouse">Direct, Hold Pan</string>
 <string name="input_mode_touchpad">Simulated Touchpad</string>
-<string name="new_connection">New Connection</string>
 <string name="one_to_one">One to One</string>
 <string name="scaling">Scaling</string>
 <string name="scaling_zoomable">Zoomable</string>

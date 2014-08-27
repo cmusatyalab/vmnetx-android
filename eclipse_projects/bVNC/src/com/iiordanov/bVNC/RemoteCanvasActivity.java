@@ -127,7 +127,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         database = new Database(this);
 
         Intent i = getIntent();
-        connection = new ConnectionBean(this);
+        connection = new ConnectionBean();
         
         Uri data = i.getData();
         if (data == null || !data.getScheme().equals("vmnetx")) {
@@ -161,7 +161,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         if (path.size() >= 1) {
             connection.setPassword(path.get(0));
         }
-        connection.save(database.getWritableDatabase());
         database.close();
     }
 
@@ -870,14 +869,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             if (newFollow) {
                 vncCanvas.panToMouse();
             }
-            connection.save(database.getWritableDatabase());
             database.close();
             return true;
         case R.id.itemFollowPan:
             boolean newFollowPan = !connection.getFollowPan();
             item.setChecked(newFollowPan);
             connection.setFollowPan(newFollowPan);
-            connection.save(database.getWritableDatabase());
             database.close();
             return true;
 */
@@ -893,7 +890,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 extraKeysHidden = false;
             }
             setKeyStowDrawableAndVisibility();
-            connection.save(database.getWritableDatabase());
             database.close();
             return true;
         default:
@@ -910,7 +906,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 }
 
                 item.setChecked(true);
-                connection.save(database.getWritableDatabase());
                 database.close();
                 return true;
             }

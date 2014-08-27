@@ -54,7 +54,6 @@ public class Database extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(AbstractConnectionBean.GEN_CREATE);
     }
 
     /* (non-Javadoc)
@@ -69,10 +68,6 @@ public class Database extends SQLiteOpenHelper {
         
         if (oldVersion == DBV_1_2_0) {
             Log.i(TAG,"Doing upgrade from 20 to 22");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_USEDPADASARROWS + " BOOLEAN DEFAULT FALSE");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_ROTATEDPAD + " BOOLEAN DEFAULT FALSE");
             oldVersion = DBV_1_5_0;
         }
         
@@ -88,8 +83,6 @@ public class Database extends SQLiteOpenHelper {
 
         if (oldVersion == DBV_1_7_0) {
             Log.i(TAG,"Doing upgrade from 292 to 293");
-            db.execSQL("ALTER TABLE " + AbstractConnectionBean.GEN_TABLE_NAME + " ADD COLUMN "
-                    +AbstractConnectionBean.GEN_FIELD_EXTRAKEYSTOGGLETYPE + " INTEGER");
             oldVersion = DBV_1_8_0;
         }
 
