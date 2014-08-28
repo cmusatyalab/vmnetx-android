@@ -805,7 +805,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     public void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.e(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
         synchronized (bitmapData.mbitmap) {
-            spicecomm.UpdateBitmap(bitmapData.mbitmap, x, y, width, height);
+            spicecomm.updateBitmap(bitmapData.mbitmap, x, y, width, height);
         }
         
         reDraw(x, y, width, height);

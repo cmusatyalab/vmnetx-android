@@ -47,7 +47,7 @@ void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int heig
 }
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_UpdateBitmap (JNIEnv* env, jobject obj, jobject bitmap, gint x, gint y, gint width, gint height) {
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv* env, jobject obj, jobject bitmap, gint x, gint y, gint width, gint height) {
     void* pixels;
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(global_display);
 

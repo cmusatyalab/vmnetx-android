@@ -12,12 +12,12 @@ import com.gstreamer.*;
 public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProcessingListener {
     private final static String TAG = "SpiceCommunicator";
 
-    public native int  SpiceClientConnect (String ip, String port, String password);
-    public native void SpiceClientDisconnect ();
-    public native void SpiceButtonEvent (int x, int y, int metaState, int pointerMask);
-    public native void SpiceKeyEvent (boolean keyDown, int virtualKeyCode);
-    public native void UpdateBitmap (Bitmap bitmap, int x, int y, int w, int h);
-    public native void SpiceRequestResolution (int x, int y);
+    private native int  SpiceClientConnect (String ip, String port, String password);
+    private native void SpiceClientDisconnect ();
+    private native void SpiceButtonEvent (int x, int y, int metaState, int pointerMask);
+    private native void SpiceKeyEvent (boolean keyDown, int virtualKeyCode);
+    private native void SpiceUpdateBitmap (Bitmap bitmap, int x, int y, int w, int h);
+    private native void SpiceRequestResolution (int x, int y);
     
     static {
         System.loadLibrary("gstreamer_android");
@@ -108,6 +108,9 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
         SpiceKeyEvent(keyDown, virtualKeyCode);
     }
     
+    public void updateBitmap (Bitmap bitmap, int x, int y, int w, int h) {
+        SpiceUpdateBitmap(bitmap, x, y, w, h);
+    }
     
     /* Callbacks from jni */
     private static void OnSettingsChanged(int inst, int width, int height, int bpp) {
