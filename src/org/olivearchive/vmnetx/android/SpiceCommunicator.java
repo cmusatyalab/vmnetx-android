@@ -46,7 +46,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     
     private boolean isInNormalProtocol = false;
     
-    private SpiceThread spicehread = null;
+    private SpiceThread spicethread = null;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionBean connection) {
         this.canvas = canvas;
@@ -61,26 +61,18 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
 
     public void connect() {
-        spicehread = new SpiceThread(connection.getAddress(), Integer.toString(connection.getPort()), connection.getPassword());
-        spicehread.start();
+        spicethread = new SpiceThread();
+        spicethread.start();
     }
     
     public void disconnect() {
         SpiceClientDisconnect();
-        try {spicehread.join(3000);} catch (InterruptedException e) {}
+        try {spicethread.join(3000);} catch (InterruptedException e) {}
     }
 
-    class SpiceThread extends Thread {
-        private String ip, port, password;
-
-        public SpiceThread(String ip, String port, String password) {
-            this.ip = ip;
-            this.port = port;
-            this.password = password;
-        }
-
+    private class SpiceThread extends Thread {
         public void run() {
-            SpiceClientConnect (ip, port, password);
+            SpiceClientConnect (connection.getAddress(), Integer.toString(connection.getPort()), connection.getPassword());
             android.util.Log.e(TAG, "SpiceClientConnect returned.");
 
             // If we've exited SpiceClientConnect, the connection was
