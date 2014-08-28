@@ -76,13 +76,13 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
         return 255;
     }
 
-    // Find the jclass reference and get a Global reference for it for use in other threads.
-    jclass local_class  = (*env)->FindClass (env, "org/olivearchive/vmnetx/android/SpiceCommunicator");
-    jni_connector_class = (jclass)((*env)->NewGlobalRef(env, local_class));
+    // Get a global reference on the object for use in other threads.
+    jni_connector = (*env)->NewGlobalRef(env, obj);
 
     // Get global method IDs for callback methods.
-    jni_settings_changed = (*env)->GetStaticMethodID (env, jni_connector_class, "OnSettingsChanged", "(IIII)V");
-    jni_graphics_update  = (*env)->GetStaticMethodID (env, jni_connector_class, "OnGraphicsUpdate", "(IIIII)V");
+    jclass local_class   = (*env)->GetObjectClass(env, obj);
+    jni_settings_changed = (*env)->GetMethodID(env, local_class, "OnSettingsChanged", "(IIII)V");
+    jni_graphics_update  = (*env)->GetMethodID(env, local_class, "OnGraphicsUpdate", "(IIIII)V");
 
     g_thread_init(NULL);
     bindtextdomain(GETTEXT_PACKAGE, SPICE_GTK_LOCALEDIR);
@@ -109,10 +109,11 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
         result = 2;
     }
 
-    jvm                  = NULL;
-    jni_connector_class  = NULL;
     jni_settings_changed = NULL;
     jni_graphics_update  = NULL;
+    (*env)->DeleteGlobalRef(env, jni_connector);
+    jni_connector        = NULL;
+    jvm                  = NULL;
     return result;
 }
 

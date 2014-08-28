@@ -56,7 +56,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         }
     }
 
-    private static UIEventListener uiEventListener = null;
+    private UIEventListener uiEventListener = null;
     private Handler handler = null;
 
     public void setHandler(Handler handler) {
@@ -115,12 +115,12 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
     
     /* Callbacks from jni */
-    private static void OnSettingsChanged(int inst, int width, int height, int bpp) {
+    private void OnSettingsChanged(int inst, int width, int height, int bpp) {
         if (uiEventListener != null)
             uiEventListener.OnSettingsChanged(width, height, bpp);
     }
 
-    private static void OnGraphicsUpdate(int inst, int x, int y, int width, int height) {
+    private void OnGraphicsUpdate(int inst, int x, int y, int width, int height) {
         if (uiEventListener != null)
             uiEventListener.OnGraphicsUpdate(x, y, width, height);
     }
