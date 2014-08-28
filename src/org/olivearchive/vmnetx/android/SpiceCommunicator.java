@@ -35,7 +35,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     final static int VK_RWIN = 0x5C;
     final static int VK_EXT_KEY = 0x00000100;
 
-    int metaState = 0;
+    private int metaState = 0;
     
     private RemoteCanvas canvas;
     private Handler handler;
@@ -44,7 +44,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private int width = 0;
     private int height = 0;
     
-    boolean isInNormalProtocol = false;
+    private boolean isInNormalProtocol = false;
     
     private SpiceThread spicehread = null;
 
