@@ -33,6 +33,9 @@ import java.io.Serializable;
  *
  */
 public class ConnectionBean implements Comparable<ConnectionBean>, Serializable {
+    // for Serializable
+    private static final long serialVersionUID = 0;
+
     private String address;
     private int port;
     private String password;
