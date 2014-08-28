@@ -59,7 +59,7 @@ import org.olivearchive.vmnetx.android.input.RemoteSpicePointer;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
 
-public class RemoteCanvas extends ImageView implements UIEventListener {
+public class RemoteCanvas extends ImageView {
     private final static String TAG = "VncCanvas";
     
     public AbstractScaling scaling;
@@ -214,7 +214,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         spice = new SpiceCommunicator (getContext(), this, connection);
         pointer = new RemoteSpicePointer (spice, RemoteCanvas.this, handler);
         keyboard = new RemoteSpiceKeyboard (spice, RemoteCanvas.this, handler);
-        spice.setUIEventListener(RemoteCanvas.this);
         spice.setHandler(handler);
         spice.connect();
     }
@@ -732,11 +731,10 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     }
     
     //////////////////////////////////////////////////////////////////////////////////
-    //  Implementation of UIEventListener. Through the functions implemented
-    //  below libspice communicates remote desktop size and updates.
+    //  Through the functions implemented below libspice communicates remote
+    //  desktop size and updates.
     //////////////////////////////////////////////////////////////////////////////////
     
-    @Override
     public void OnSettingsChanged(int width, int height, int bpp) {
         android.util.Log.e(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
@@ -774,7 +772,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 
-    @Override
     public void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.e(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
         synchronized (bitmapData.mbitmap) {

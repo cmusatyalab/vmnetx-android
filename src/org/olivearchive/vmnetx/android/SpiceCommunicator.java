@@ -37,6 +37,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
 
     int metaState = 0;
     
+    private RemoteCanvas canvas;
     private ConnectionBean connection;
 
     private int width = 0;
@@ -47,6 +48,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private SpiceThread spicehread = null;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, ConnectionBean connection) {
+        this.canvas = canvas;
         this.connection = connection;
         try {
             GStreamer.init(context);
@@ -56,17 +58,12 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         }
     }
 
-    private UIEventListener uiEventListener = null;
     private Handler handler = null;
 
     public void setHandler(Handler handler) {
         this.handler = handler;
     }
     
-    public void setUIEventListener(UIEventListener ui) {
-        uiEventListener = ui;
-    }
-
     public Handler getHandler() {
         return handler;
     }
@@ -116,13 +113,11 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     
     /* Callbacks from jni */
     private void OnSettingsChanged(int inst, int width, int height, int bpp) {
-        if (uiEventListener != null)
-            uiEventListener.OnSettingsChanged(width, height, bpp);
+        canvas.OnSettingsChanged(width, height, bpp);
     }
 
     private void OnGraphicsUpdate(int inst, int x, int y, int width, int height) {
-        if (uiEventListener != null)
-            uiEventListener.OnGraphicsUpdate(x, y, width, height);
+        canvas.OnGraphicsUpdate(x, y, width, height);
     }
 
     public int framebufferWidth() {
