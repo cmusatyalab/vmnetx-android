@@ -26,6 +26,7 @@ import android.app.AlertDialog;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.text.Html;
 import android.view.View;
@@ -33,14 +34,14 @@ import android.view.HapticFeedbackConstants;
 
 public class Utils {
 
-    public static void showYesNoPrompt(Context _context, String title, String message, OnClickListener onYesListener, OnClickListener onNoListener) {
+    public static void showYesNoPrompt(Context _context, String title, String message, OnClickListener onYesListener, OnClickListener onNoListener, OnCancelListener onCancelListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setTitle(title);
         builder.setIcon(android.R.drawable.ic_dialog_info);
         builder.setMessage(message);
-        builder.setCancelable(false);
         builder.setPositiveButton("Yes", onYesListener);
         builder.setNegativeButton("No", onNoListener);
+        builder.setOnCancelListener(onCancelListener);
         boolean show = true;
         if ( _context instanceof Activity ) {
             Activity activity = (Activity) _context;

@@ -870,7 +870,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                     canvas.closeConnection();
                     finish();
                 }
-            }, null);
+            }, null, null);
             return true;
         case R.id.itemCtrlAltDel:
             canvas.getKeyboard().sendMetaKey(MetaKeyBean.keyCtrlAltDel);
