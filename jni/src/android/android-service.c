@@ -27,22 +27,10 @@
 #include "android-spicy.h"
 
 
-void spice_session_setup(JNIEnv *env, SpiceSession *session, jstring h, jstring p, jstring pw) {
-    const char *host = NULL;
-    const char *port = NULL;
-    const char *password = NULL;
-
-    host = (*env)->GetStringUTFChars(env, h, NULL);
-    port = (*env)->GetStringUTFChars(env, p, NULL);
-    password  = (*env)->GetStringUTFChars(env, pw, NULL);
-
+void spice_session_setup(JNIEnv *env, SpiceSession *session, jstring pw) {
     g_return_if_fail(SPICE_IS_SESSION(session));
 
-    if (host)
-        g_object_set(session, "host", host, NULL);
-    // If we receive "-1" for a port, we assume the port is not set.
-    if (port && strcmp (port, "-1") != 0)
-       g_object_set(session, "port", port, NULL);
+    const char *password = (*env)->GetStringUTFChars(env, pw, NULL);
     if (password)
         g_object_set(session, "password", password, NULL);
 }
@@ -63,8 +51,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientDisconnect (JN
 
 
 JNIEXPORT jint JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jstring h, jstring p,
-                                                                        jstring pw)
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jstring pw)
 {
     int result = 0;
     maintainConnection = TRUE;
@@ -81,6 +68,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
 
     // Get global method IDs for callback methods.
     jclass local_class   = (*env)->GetObjectClass(env, obj);
+    jni_get_fd           = (*env)->GetMethodID(env, local_class, "OnGetFd", "(J)V");
     jni_settings_changed = (*env)->GetMethodID(env, local_class, "OnSettingsChanged", "(IIII)V");
     jni_graphics_update  = (*env)->GetMethodID(env, local_class, "OnGraphicsUpdate", "(IIIII)V");
 
@@ -94,7 +82,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
 
     spice_connection *conn;
     conn = connection_new();
-    spice_session_setup(env, conn->session, h, p, pw);
+    spice_session_setup(env, conn->session, pw);
 
     //watch_stdin();
 
@@ -109,6 +97,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
         result = 2;
     }
 
+    jni_get_fd           = NULL;
     jni_settings_changed = NULL;
     jni_graphics_update  = NULL;
     (*env)->DeleteGlobalRef(env, jni_connector);

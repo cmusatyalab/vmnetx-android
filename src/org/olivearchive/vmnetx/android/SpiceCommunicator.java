@@ -12,12 +12,14 @@ import com.gstreamer.*;
 public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private final static String TAG = "SpiceCommunicator";
 
-    private native int  SpiceClientConnect (String ip, String port, String password);
+    private native int  SpiceClientConnect (String password);
     private native void SpiceClientDisconnect ();
     private native void SpiceButtonEvent (int x, int y, int metaState, int pointerMask);
     private native void SpiceKeyEvent (boolean keyDown, int virtualKeyCode);
     private native void SpiceUpdateBitmap (Bitmap bitmap, int x, int y, int w, int h);
     private native void SpiceRequestResolution (int x, int y);
+    private native void SpiceSetFd (long cookie, int fd);
+    private native int  SpiceConnectFd (String host, String port);
     
     static {
         System.loadLibrary("gstreamer_android");
@@ -72,7 +74,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
 
     private class SpiceThread extends Thread {
         public void run() {
-            SpiceClientConnect (connection.getAddress(), Integer.toString(connection.getPort()), connection.getPassword());
+            SpiceClientConnect (connection.getPassword());
             android.util.Log.e(TAG, "SpiceClientConnect returned.");
 
             // If we've exited SpiceClientConnect, the connection was
@@ -81,6 +83,23 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         }
     }
     
+    private class ConnectThread extends Thread {
+        private long cookie;
+
+        public ConnectThread(long cookie) {
+            this.cookie = cookie;
+        }
+
+        public void run() {
+            int fd = SpiceConnectFd(connection.getAddress(), Integer.toString(connection.getPort()));
+            android.util.Log.d(TAG, "Get FD returned " + Integer.toString(fd));
+            if (fd == -1)
+                disconnect();
+            else
+                SpiceSetFd(cookie, fd);
+        }
+    }
+
     public void sendMouseEvent (int x, int y, int metaState, int pointerMask) {
         SpiceButtonEvent(x, y, metaState, pointerMask);
     }
@@ -94,6 +113,11 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
     
     /* Callbacks from jni */
+    private void OnGetFd(long cookie) {
+        android.util.Log.d(TAG, "Get FD");
+        new ConnectThread(cookie).start();
+    }
+
     private void OnSettingsChanged(int inst, int width, int height, int bpp) {
         canvas.OnSettingsChanged(width, height, bpp);
     }

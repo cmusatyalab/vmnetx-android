@@ -66,6 +66,12 @@ static void destroy_spice_window(SpiceWindow *win)
 
 /* ------------------------------------------------------------------ */
 
+static void channel_open_fd(SpiceChannel *channel, gint with_tls,
+                            gpointer data)
+{
+    uiCallbackGetFd (channel);
+}
+
 static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
                                gpointer data)
 {
@@ -130,6 +136,9 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
     g_object_get(channel, "channel-id", &id, NULL);
     conn->channels++;
     SPICE_DEBUG("new channel (#%d)", id);
+
+    g_signal_connect(channel, "open-fd",
+                     G_CALLBACK(channel_open_fd), conn);
 
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
         SPICE_DEBUG("new main channel");
@@ -267,7 +276,7 @@ spice_connection *connection_new(void)
 void connection_connect(spice_connection *conn)
 {
     conn->disconnecting = false;
-    spice_session_connect(conn->session);
+    spice_session_open_fd(conn->session, -1);
 }
 
 void connection_disconnect(spice_connection *conn)

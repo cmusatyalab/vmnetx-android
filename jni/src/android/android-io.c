@@ -27,6 +27,15 @@
 #include "android-service.h"
 
 
+JNIEXPORT void JNICALL
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceSetFd(JNIEnv *env, jobject obj, jlong cookie, jint fd) {
+    SpiceChannel *channel = (SpiceChannel *) cookie;
+    if (!spice_channel_open_fd(channel, fd)) {
+        __android_log_write(6, "android-io", "Failed to open FD");
+    }
+}
+
+
 void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int height, int buffwidth, int buffheight) {
     //char buf[100];
     //snprintf (buf, 100, "Drawing x: %d, y: %d, w: %d, h: %d, wBuf: %d, hBuf: %d", x, y, width, height, wBuf, hBuf);
@@ -211,6 +220,18 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv *
 
 /* Callbacks to the UI layer to draw screen updates and invalidate part of the screen,
  * or to request a new bitmap. */
+
+void uiCallbackGetFd (SpiceChannel *channel) {
+    JNIEnv* env;
+    bool attached = attachThreadToJvm (&env);
+
+    // Ask the UI to connect a file descriptor for us.
+    (*env)->CallVoidMethod(env, jni_connector, jni_get_fd, (jlong) channel);
+
+    if (attached) {
+        detachThreadFromJvm ();
+    }
+}
 
 void uiCallbackInvalidate (SpiceDisplayPrivate *d, gint x, gint y, gint w, gint h) {
     JNIEnv* env;

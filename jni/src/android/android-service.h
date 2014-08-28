@@ -29,6 +29,7 @@
     gboolean  maintainConnection   = TRUE;
     JavaVM*   jvm                  = NULL;
     jobject   jni_connector        = NULL;
+    jmethodID jni_get_fd           = NULL;
     jmethodID jni_settings_changed = NULL;
     jmethodID jni_graphics_update  = NULL;
     GMainLoop            *mainloop = NULL;
@@ -38,6 +39,7 @@
     extern gboolean  maintainConnection;
     extern JavaVM*   jvm;
     extern jobject   jni_connector;
+    extern jmethodID jni_get_fd;
     extern jmethodID jni_settings_changed;
     extern jmethodID jni_graphics_update;
     extern GMainLoop *mainloop;

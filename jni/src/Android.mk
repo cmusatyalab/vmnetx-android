@@ -31,7 +31,7 @@ LOCAL_SRC_FILES := gtk/channel-record.c gtk/channel-playback.c gtk/channel-curso
                    spice-common/common/snd_codec.c \
                    virt-viewer/virt-viewer-file.c virt-viewer/virt-viewer-util.c \
                    android/android-service.c android/android-spicy.c android/android-spice-widget.c \
-                   android/android-io.c
+                   android/android-io.c android/android-socket.c
 
 LOCAL_LDLIBS 	+= $(spice_objs) \
                    -ljnigraphics -llog -ldl -lstdc++ -lz \
