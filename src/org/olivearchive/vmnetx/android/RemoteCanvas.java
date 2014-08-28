@@ -71,7 +71,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     ConnectionBean connection;
     
     // SPICE protocol connection
-    private SpiceCommunicator spicecomm = null;
+    private SpiceCommunicator spice = null;
     
     boolean maintainConnection = true;
     
@@ -211,12 +211,12 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * @throws Exception
      */
     private void startSpiceConnection() throws Exception {
-        spicecomm = new SpiceCommunicator (getContext(), this, connection);
-        pointer = new RemoteSpicePointer (spicecomm, RemoteCanvas.this, handler);
-        keyboard = new RemoteSpiceKeyboard (spicecomm, RemoteCanvas.this, handler);
-        spicecomm.setUIEventListener(RemoteCanvas.this);
-        spicecomm.setHandler(handler);
-        spicecomm.connect();
+        spice = new SpiceCommunicator (getContext(), this, connection);
+        pointer = new RemoteSpicePointer (spice, RemoteCanvas.this, handler);
+        keyboard = new RemoteSpiceKeyboard (spice, RemoteCanvas.this, handler);
+        spice.setUIEventListener(RemoteCanvas.this);
+        spice.setHandler(handler);
+        spice.connect();
     }
     
     
@@ -309,8 +309,8 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
             keyboard.processLocalKeyEvent(0, new KeyEvent(KeyEvent.ACTION_UP, 0));
         }
         // Close the SPICE connection.
-        if (spicecomm != null)
-            spicecomm.disconnect();
+        if (spice != null)
+            spice.disconnect();
         
         onDestroy();
     }
@@ -363,8 +363,8 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * Computes the X and Y offset for converting coordinates from full-frame coordinates to view coordinates.
      */
     public void computeShiftFromFullToView () {
-        shiftX = (spicecomm.framebufferWidth()  - getWidth())  / 2;
-        shiftY = (spicecomm.framebufferHeight() - getHeight()) / 2;
+        shiftX = (spice.framebufferWidth()  - getWidth())  / 2;
+        shiftY = (spice.framebufferHeight() - getHeight()) / 2;
     }
     
     /**
@@ -381,7 +381,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * Make sure mouse is visible on displayable part of screen
      */
     public void panToMouse() {
-        if (spicecomm == null)
+        if (spice == null)
             return;
         
         boolean panX = true;
@@ -389,9 +389,9 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         
         // Don't pan in a certain direction if dimension scaled is already less 
         // than the dimension of the visible part of the screen.
-        if (spicecomm.framebufferWidth()  <= getVisibleWidth())
+        if (spice.framebufferWidth()  <= getVisibleWidth())
             panX = false;
-        if (spicecomm.framebufferHeight() <= getVisibleHeight())
+        if (spice.framebufferHeight() <= getVisibleHeight())
             panY = false;
         
         // We only pan if the current scaling is able to pan.
@@ -668,19 +668,19 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     }
     
     public int getImageWidth() {
-        return spicecomm.framebufferWidth();
+        return spice.framebufferWidth();
     }
     
     public int getImageHeight() {
-        return spicecomm.framebufferHeight();
+        return spice.framebufferHeight();
     }
     
     public int getCenteredXOffset() {
-        return (spicecomm.framebufferWidth() - getWidth()) / 2;
+        return (spice.framebufferWidth() - getWidth()) / 2;
     }
     
     public int getCenteredYOffset() {
-        return (spicecomm.framebufferHeight() - getHeight()) / 2;
+        return (spice.framebufferHeight() - getHeight()) / 2;
     }
     
     public float getMinimumScale() {
@@ -741,20 +741,20 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         android.util.Log.e(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
         // We need to initialize the communicator and remote keyboard and mouse now.
-        spicecomm.setFramebufferWidth(width);
-        spicecomm.setFramebufferHeight(height);
+        spice.setFramebufferWidth(width);
+        spice.setFramebufferHeight(height);
         waitUntilInflated();
         int remoteWidth  = getRemoteWidth(getWidth(), getHeight());
         int remoteHeight = getRemoteHeight(getWidth(), getHeight());
         if (width != remoteWidth || height != remoteHeight) {
             android.util.Log.e(TAG, "Requesting new res: " + remoteWidth + "x" + remoteHeight);
-            spicecomm.requestResolution(remoteWidth, remoteHeight);
+            spice.requestResolution(remoteWidth, remoteHeight);
         }
         
         disposeDrawable ();
         try {
             // TODO: Use frameBufferSizeChanged instead.
-            bitmapData = new CompactBitmapData(spicecomm, this);
+            bitmapData = new CompactBitmapData(spice, this);
         } catch (Throwable e) {
             showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
             return;
@@ -770,7 +770,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         
         // Set the new bitmap in the native layer.
         spiceUpdateReceived = true;
-        spicecomm.setIsInNormalProtocol(true);
+        spice.setIsInNormalProtocol(true);
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 
@@ -778,7 +778,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     public void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.e(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
         synchronized (bitmapData.mbitmap) {
-            spicecomm.updateBitmap(bitmapData.mbitmap, x, y, width, height);
+            spice.updateBitmap(bitmapData.mbitmap, x, y, width, height);
         }
         
         reDraw(x, y, width, height);
