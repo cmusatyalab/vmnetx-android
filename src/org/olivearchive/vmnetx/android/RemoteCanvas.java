@@ -73,7 +73,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     ConnectionBean connection;
     
     // SPICE protocol connection
-    public RfbConnectable rfbconn   = null;
     private SpiceCommunicator spicecomm = null;
     
     boolean maintainConnection = true;
@@ -215,9 +214,8 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      */
     private void startSpiceConnection() throws Exception {
         spicecomm = new SpiceCommunicator (getContext(), this, connection);
-        rfbconn = spicecomm;
-        pointer = new RemoteSpicePointer (rfbconn, RemoteCanvas.this, handler);
-        keyboard = new RemoteSpiceKeyboard (rfbconn, RemoteCanvas.this, handler);
+        pointer = new RemoteSpicePointer (spicecomm, RemoteCanvas.this, handler);
+        keyboard = new RemoteSpiceKeyboard (spicecomm, RemoteCanvas.this, handler);
         spicecomm.setUIEventListener(RemoteCanvas.this);
         spicecomm.setHandler(handler);
         spicecomm.connect();
@@ -306,7 +304,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      */
     public void writeFramebufferUpdateRequest (int x, int y, int w, int h, boolean incremental) throws IOException {
         bitmapData.prepareFullUpdateRequest(incremental);
-        rfbconn.writeFramebufferUpdateRequest(x, y, w, h, incremental);
+        spicecomm.writeFramebufferUpdateRequest(x, y, w, h, incremental);
     }
     
     
@@ -315,8 +313,8 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      */
     public void writeFullUpdateRequest (boolean incremental) {
         bitmapData.prepareFullUpdateRequest(incremental);
-        rfbconn.writeFramebufferUpdateRequest(bitmapData.getXoffset(), bitmapData.getYoffset(),
-                                              bitmapData.bmWidth(),    bitmapData.bmHeight(), incremental);
+        spicecomm.writeFramebufferUpdateRequest(bitmapData.getXoffset(), bitmapData.getYoffset(),
+                                                bitmapData.bmWidth(),    bitmapData.bmHeight(), incremental);
     }
     
     
@@ -331,9 +329,9 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
             keyboard.clearMetaState();
             keyboard.processLocalKeyEvent(0, new KeyEvent(KeyEvent.ACTION_UP, 0));
         }
-        // Close the rfb connection.
-        if (rfbconn != null)
-            rfbconn.close();
+        // Close the SPICE connection.
+        if (spicecomm != null)
+            spicecomm.close();
         
         onDestroy();
     }
@@ -386,8 +384,8 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * Computes the X and Y offset for converting coordinates from full-frame coordinates to view coordinates.
      */
     public void computeShiftFromFullToView () {
-        shiftX = (rfbconn.framebufferWidth()  - getWidth())  / 2;
-        shiftY = (rfbconn.framebufferHeight() - getHeight()) / 2;
+        shiftX = (spicecomm.framebufferWidth()  - getWidth())  / 2;
+        shiftY = (spicecomm.framebufferHeight() - getHeight()) / 2;
     }
     
     /**
@@ -404,7 +402,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * Make sure mouse is visible on displayable part of screen
      */
     public void panToMouse() {
-        if (rfbconn == null)
+        if (spicecomm == null)
             return;
         
         boolean panX = true;
@@ -412,9 +410,9 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         
         // Don't pan in a certain direction if dimension scaled is already less 
         // than the dimension of the visible part of the screen.
-        if (rfbconn.framebufferWidth()  <= getVisibleWidth())
+        if (spicecomm.framebufferWidth()  <= getVisibleWidth())
             panX = false;
-        if (rfbconn.framebufferHeight() <= getVisibleHeight())
+        if (spicecomm.framebufferHeight() <= getVisibleHeight())
             panY = false;
         
         // We only pan if the current scaling is able to pan.
@@ -691,19 +689,19 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     }
     
     public int getImageWidth() {
-        return rfbconn.framebufferWidth();
+        return spicecomm.framebufferWidth();
     }
     
     public int getImageHeight() {
-        return rfbconn.framebufferHeight();
+        return spicecomm.framebufferHeight();
     }
     
     public int getCenteredXOffset() {
-        return (rfbconn.framebufferWidth() - getWidth()) / 2;
+        return (spicecomm.framebufferWidth() - getWidth()) / 2;
     }
     
     public int getCenteredYOffset() {
-        return (rfbconn.framebufferHeight() - getHeight()) / 2;
+        return (spicecomm.framebufferHeight() - getHeight()) / 2;
     }
     
     public float getMinimumScale() {
@@ -771,13 +769,13 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         int remoteHeight = getRemoteHeight(getWidth(), getHeight());
         if (width != remoteWidth || height != remoteHeight) {
             android.util.Log.e(TAG, "Requesting new res: " + remoteWidth + "x" + remoteHeight);
-            rfbconn.requestResolution(remoteWidth, remoteHeight);
+            spicecomm.requestResolution(remoteWidth, remoteHeight);
         }
         
         disposeDrawable ();
         try {
             // TODO: Use frameBufferSizeChanged instead.
-            bitmapData = new CompactBitmapData(rfbconn, this);
+            bitmapData = new CompactBitmapData(spicecomm, this);
         } catch (Throwable e) {
             showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
             return;
@@ -793,7 +791,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         
         // Set the new bitmap in the native layer.
         spiceUpdateReceived = true;
-        rfbconn.setIsInNormalProtocol(true);
+        spicecomm.setIsInNormalProtocol(true);
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 

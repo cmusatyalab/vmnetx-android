@@ -52,9 +52,9 @@ class CompactBitmapData extends AbstractBitmapData {
         }
     }
     
-    CompactBitmapData(RfbConnectable rfb, RemoteCanvas c)
+    CompactBitmapData(SpiceCommunicator spice, RemoteCanvas c)
     {
-        super(rfb,c);
+        super(spice, c);
         bitmapwidth=framebufferwidth;
         bitmapheight=framebufferheight;
         // To please createBitmap, we ensure the size it at least 1x1.
@@ -168,8 +168,8 @@ class CompactBitmapData extends AbstractBitmapData {
      */
     @Override
     public void frameBufferSizeChanged () {
-        framebufferwidth=rfb.framebufferWidth();
-        framebufferheight=rfb.framebufferHeight();
+        framebufferwidth = spice.framebufferWidth();
+        framebufferheight = spice.framebufferHeight();
         android.util.Log.i("CBM", "bitmapsize changed = ("+bitmapwidth+","+bitmapheight+")");
         if ( bitmapwidth < framebufferwidth || bitmapheight < framebufferheight ) {
             dispose();

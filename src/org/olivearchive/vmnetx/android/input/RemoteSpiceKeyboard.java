@@ -5,7 +5,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import org.olivearchive.vmnetx.android.MetaKeyBean;
-import org.olivearchive.vmnetx.android.RfbConnectable;
+import org.olivearchive.vmnetx.android.SpiceCommunicator;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.input.KeyboardMapper;
 
@@ -13,20 +13,20 @@ import org.olivearchive.vmnetx.android.input.KeyboardMapper;
 public class RemoteSpiceKeyboard extends RemoteKeyboard {
     private final static String TAG = "RemoteSpiceKeyboard";
     
-    public RemoteSpiceKeyboard (RfbConnectable r, RemoteCanvas v, Handler h) {
-        super(r, v, h);
+    public RemoteSpiceKeyboard (SpiceCommunicator s, RemoteCanvas v, Handler h) {
+        super(s, v, h);
         
         context = v.getContext();
         
         keyboardMapper = new KeyboardMapper();
         keyboardMapper.init(context);
-        keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener)r);
+        keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener) s);
     }
     
     public boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState) {
         //android.util.Log.e(TAG, evt.toString() + " " + keyCode);
 
-        if (rfb != null && rfb.isInNormalProtocol()) {
+        if (spice != null && spice.isInNormalProtocol()) {
             RemotePointer pointer = vncCanvas.getPointer();
             boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
                            (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
@@ -87,7 +87,7 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
 
             // Update the meta-state with writeKeyEvent.
             metaState = onScreenMetaState|hardwareMetaState|metaState;
-            rfb.writeKeyEvent(keyCode, metaState, down);
+            spice.writeKeyEvent(keyCode, metaState, down);
             if (down) {
                 lastDownMetaState = metaState;
             } else {
@@ -148,16 +148,16 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
             pointer.processPointerEvent(x, y, MotionEvent.ACTION_UP, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
                     false, false, false, false, 0);
 
-            //rfb.writePointerEvent(x, y, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState, button);
-            //rfb.writePointerEvent(x, y, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState, 0);
+            //spice.writePointerEvent(x, y, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState, button);
+            //spice.writePointerEvent(x, y, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState, 0);
         } else if (meta.equals(MetaKeyBean.keyCtrlAltDel)) {
             // TODO: I should not need to treat this specially anymore.
             int savedMetaState = onScreenMetaState|hardwareMetaState;
             // Update the metastate
-            rfb.writeKeyEvent(0, RemoteKeyboard.CTRL_MASK|RemoteKeyboard.ALT_MASK, false);
+            spice.writeKeyEvent(0, RemoteKeyboard.CTRL_MASK|RemoteKeyboard.ALT_MASK, false);
             keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, 112));
             keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, 112));
-            rfb.writeKeyEvent(0, savedMetaState, false);
+            spice.writeKeyEvent(0, savedMetaState, false);
         } else {
             sendKeySym (meta.getKeySym(), meta.getMetaFlags());
         }

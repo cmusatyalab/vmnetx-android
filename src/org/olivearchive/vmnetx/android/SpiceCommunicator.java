@@ -9,7 +9,7 @@ import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemoteSpicePointer;
 import com.gstreamer.*;
 
-public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProcessingListener {
+public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private final static String TAG = "SpiceCommunicator";
 
     private native int  SpiceClientConnect (String ip, String port, String password);
@@ -125,12 +125,10 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
             uiEventListener.OnGraphicsUpdate(x, y, width, height);
     }
 
-    @Override
     public int framebufferWidth() {
         return width;
     }
 
-    @Override
     public int framebufferHeight() {
         return height;
     }
@@ -143,29 +141,24 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
         height = h;
     }
     
-    @Override
     public String desktopName() {
         // TODO Auto-generated method stub
         return "";
     }
 
-    @Override
     public void requestUpdate(boolean incremental) {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
     public void setIsInNormalProtocol(boolean state) {
         isInNormalProtocol = state;        
     }
     
-    @Override
     public boolean isInNormalProtocol() {
         return isInNormalProtocol;
     }
 
-    @Override
     public void writePointerEvent(int x, int y, int metaState, int pointerMask) {
         this.metaState = metaState; 
         if ((pointerMask & RemoteSpicePointer.PTRFLAGS_DOWN) != 0)
@@ -194,7 +187,6 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
         }
     }
     
-    @Override
     public void writeKeyEvent(int key, int metaState, boolean down) {
         // Not used for actually sending keyboard events, but rather to record the current metastate.
         // The key event is sent to the KeyboardMapper from RemoteSpiceKeyboard, and
@@ -203,7 +195,6 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
         this.metaState = metaState;
     }
 
-    @Override
     public void writeSetPixelFormat(int bitsPerPixel, int depth,
             boolean bigEndian, boolean trueColour, int redMax, int greenMax,
             int blueMax, int redShift, int greenShift, int blueShift,
@@ -212,14 +203,12 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
 
     }
 
-    @Override
     public void writeFramebufferUpdateRequest(int x, int y, int w, int h,
             boolean b) {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
     public void close() {
         disconnect();
     }
@@ -272,7 +261,6 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
             android.util.Log.e("SpiceCommunicator", "Unsupported unicode key that needs to be mapped: " + unicodeKey);
     }
 
-    @Override
     public void requestResolution(int x, int y) {
         SpiceRequestResolution (x, y);        
     }

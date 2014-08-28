@@ -95,10 +95,10 @@ class FullBufferBitmapData extends AbstractBitmapData {
      * @param p
      * @param c
      */
-    public FullBufferBitmapData(RfbConnectable p, RemoteCanvas c) {
+    public FullBufferBitmapData(SpiceCommunicator p, RemoteCanvas c) {
         super(p, c);
-        framebufferwidth=rfb.framebufferWidth();
-        framebufferheight=rfb.framebufferHeight();
+        framebufferwidth=spice.framebufferWidth();
+        framebufferheight=spice.framebufferHeight();
         bitmapwidth=framebufferwidth;
         bitmapheight=framebufferheight;
         dataWidth=framebufferwidth;
@@ -198,8 +198,8 @@ class FullBufferBitmapData extends AbstractBitmapData {
      */
     @Override
     public void frameBufferSizeChanged () {
-        framebufferwidth  = rfb.framebufferWidth();
-        framebufferheight = rfb.framebufferHeight();
+        framebufferwidth  = spice.framebufferWidth();
+        framebufferheight = spice.framebufferHeight();
         bitmapwidth       = framebufferwidth;
         bitmapheight      = framebufferheight;
         android.util.Log.i("FBBM", "bitmapsize changed = ("+bitmapwidth+","+bitmapheight+")");

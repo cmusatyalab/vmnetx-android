@@ -39,7 +39,7 @@ abstract public class AbstractBitmapData {
     int framebufferheight;
     int bitmapwidth;
     int bitmapheight;
-    RfbConnectable rfb;
+    SpiceCommunicator spice;
     Bitmap mbitmap;
     int bitmapPixels[];
     Canvas memGraphics;
@@ -50,12 +50,12 @@ abstract public class AbstractBitmapData {
     int xoffset = 0;
     int yoffset = 0;
 
-    AbstractBitmapData(RfbConnectable p, RemoteCanvas c)
+    AbstractBitmapData(SpiceCommunicator s, RemoteCanvas c)
     {
-        rfb = p;
+        spice = s;
         vncCanvas = c;
-        framebufferwidth  = rfb.framebufferWidth();
-        framebufferheight = rfb.framebufferHeight();
+        framebufferwidth  = spice.framebufferWidth();
+        framebufferheight = spice.framebufferHeight();
         drawable = createDrawable();
         paint = new Paint();
     }

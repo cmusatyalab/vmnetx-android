@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import org.olivearchive.vmnetx.android.MetaKeyBean;
-import org.olivearchive.vmnetx.android.RfbConnectable;
+import org.olivearchive.vmnetx.android.SpiceCommunicator;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 
 public abstract class RemoteKeyboard {
@@ -35,7 +35,7 @@ public abstract class RemoteKeyboard {
     
     protected RemoteCanvas vncCanvas;
     protected Handler handler;
-    protected RfbConnectable rfb;
+    protected SpiceCommunicator spice;
     protected Context context;
     protected KeyboardMapper keyboardMapper;
     protected KeyRepeater keyRepeater;
@@ -63,8 +63,8 @@ public abstract class RemoteKeyboard {
     // SDK >= 16 and LatinIME next time a multi-character event comes along.
     public boolean skippedJunkChars = true;
 
-    RemoteKeyboard (RfbConnectable r, RemoteCanvas v, Handler h) {
-        rfb = r;
+    RemoteKeyboard (SpiceCommunicator s, RemoteCanvas v, Handler h) {
+        spice = s;
         vncCanvas = v;
         handler = h;
         keyRepeater = new KeyRepeater (this, h);

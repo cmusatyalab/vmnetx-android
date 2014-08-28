@@ -1,7 +1,7 @@
 package org.olivearchive.vmnetx.android.input;
 
 import org.olivearchive.vmnetx.android.RemoteCanvas;
-import org.olivearchive.vmnetx.android.RfbConnectable;
+import org.olivearchive.vmnetx.android.SpiceCommunicator;
 
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -18,7 +18,7 @@ public abstract class RemotePointer {
 
     protected RemoteCanvas vncCanvas;
     protected Handler handler;
-    protected RfbConnectable rfb;
+    protected SpiceCommunicator spice;
 
     /**
      * Use camera button as meta key for right mouse button
@@ -35,10 +35,10 @@ public abstract class RemotePointer {
      */
     protected boolean hasMenuKey = false;
     
-    public RemotePointer (RfbConnectable r, RemoteCanvas v, Handler h) {
-        rfb = r;
-        mouseX=rfb.framebufferWidth()/2;
-        mouseY=rfb.framebufferHeight()/2;
+    public RemotePointer (SpiceCommunicator s, RemoteCanvas v, Handler h) {
+        spice = s;
+        mouseX = spice.framebufferWidth()/2;
+        mouseY = spice.framebufferHeight()/2;
         vncCanvas = v;
         handler = h;
         hasMenuKey = android.os.Build.VERSION.SDK_INT < 14 ||
