@@ -214,17 +214,13 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
      * @throws Exception
      */
     private void startSpiceConnection() throws Exception {
-        // Get the address and port (based on whether an SSH tunnel is being established or not).
-        String address = connection.getAddress();
-        int port = connection.getPort();
-        
         spicecomm = new SpiceCommunicator (getContext(), this, connection);
         rfbconn = spicecomm;
         pointer = new RemoteSpicePointer (rfbconn, RemoteCanvas.this, handler);
         keyboard = new RemoteSpiceKeyboard (rfbconn, RemoteCanvas.this, handler);
         spicecomm.setUIEventListener(RemoteCanvas.this);
         spicecomm.setHandler(handler);
-        spicecomm.connect(address, Integer.toString(port), connection.getPassword());
+        spicecomm.connect();
     }
     
     

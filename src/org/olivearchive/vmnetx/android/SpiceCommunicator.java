@@ -37,6 +37,8 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
 
     int metaState = 0;
     
+    private ConnectionBean connection;
+
     private int width = 0;
     private int height = 0;
     
@@ -45,6 +47,7 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
     private SpiceThread spicehread = null;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, ConnectionBean connection) {
+        this.connection = connection;
         try {
             GStreamer.init(context);
         } catch (Exception e) {
@@ -68,9 +71,8 @@ public class SpiceCommunicator implements RfbConnectable, KeyboardMapper.KeyProc
         return handler;
     }
 
-    public void connect(String ip, String port, String password) {
-        android.util.Log.e(TAG, ip + ", " + port + ", " + password);
-        spicehread = new SpiceThread(ip, port, password);
+    public void connect() {
+        spicehread = new SpiceThread(connection.getAddress(), Integer.toString(connection.getPort()), connection.getPassword());
         spicehread.start();
     }
     
