@@ -38,6 +38,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     int metaState = 0;
     
     private RemoteCanvas canvas;
+    private Handler handler;
     private ConnectionBean connection;
 
     private int width = 0;
@@ -47,8 +48,9 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     
     private SpiceThread spicehread = null;
 
-    public SpiceCommunicator (Context context, RemoteCanvas canvas, ConnectionBean connection) {
+    public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionBean connection) {
         this.canvas = canvas;
+        this.handler = handler;
         this.connection = connection;
         try {
             GStreamer.init(context);
@@ -56,16 +58,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
             e.printStackTrace();
             canvas.displayShortToastMessage(e.getMessage());
         }
-    }
-
-    private Handler handler = null;
-
-    public void setHandler(Handler handler) {
-        this.handler = handler;
-    }
-    
-    public Handler getHandler() {
-        return handler;
     }
 
     public void connect() {
@@ -93,9 +85,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
 
             // If we've exited SpiceClientConnect, the connection was
             // interrupted or was never established.
-            if (handler != null) {
-                handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
-            }
+            handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
         }
     }
     
