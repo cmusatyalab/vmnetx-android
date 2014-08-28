@@ -30,8 +30,6 @@
 
 package org.olivearchive.vmnetx.android;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -300,25 +298,6 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
     
     
     /**
-     * Requests a remote desktop update at the specified rectangle.
-     */
-    public void writeFramebufferUpdateRequest (int x, int y, int w, int h, boolean incremental) throws IOException {
-        bitmapData.prepareFullUpdateRequest(incremental);
-        spicecomm.writeFramebufferUpdateRequest(x, y, w, h, incremental);
-    }
-    
-    
-    /**
-     * Requests an update of the entire remote desktop.
-     */
-    public void writeFullUpdateRequest (boolean incremental) {
-        bitmapData.prepareFullUpdateRequest(incremental);
-        spicecomm.writeFramebufferUpdateRequest(bitmapData.getXoffset(), bitmapData.getYoffset(),
-                                                bitmapData.bmWidth(),    bitmapData.bmHeight(), incremental);
-    }
-    
-    
-    /**
      * Method that disconnects from the remote server.
      */
     public void closeConnection() {
@@ -331,7 +310,7 @@ public class RemoteCanvas extends ImageView implements UIEventListener {
         }
         // Close the SPICE connection.
         if (spicecomm != null)
-            spicecomm.close();
+            spicecomm.disconnect();
         
         onDestroy();
     }

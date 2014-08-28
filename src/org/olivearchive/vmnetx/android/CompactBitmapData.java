@@ -22,7 +22,6 @@ package org.olivearchive.vmnetx.android;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 
 class CompactBitmapData extends AbstractBitmapData {
     /**
@@ -104,54 +103,6 @@ class CompactBitmapData extends AbstractBitmapData {
     public void updateBitmap(Bitmap b, int x, int y, int w, int h) {
         synchronized (mbitmap) {
             memGraphics.drawBitmap(b, x, y, null);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#copyRect(android.graphics.Rect, android.graphics.Rect, android.graphics.Paint)
-     */
-    @Override
-    public void copyRect(int sx, int sy, int dx, int dy, int w, int h) {
-        int srcOffset, dstOffset;
-        int dstH = h;
-        int dstW = w;
-        
-        int startSrcY, endSrcY, dstY, deltaY;
-        if (sy > dy) {
-            startSrcY = sy;
-            endSrcY = sy + dstH;
-            dstY = dy;
-            deltaY = +1;
-        } else {
-            startSrcY = sy + dstH - 1;
-            endSrcY = sy - 1;
-            dstY = dy + dstH - 1;
-            deltaY = -1;
-        }
-        for (int y = startSrcY; y != endSrcY; y += deltaY) {
-            srcOffset = offset(sx, y);
-            dstOffset = offset(dx, dstY);
-            try {
-                synchronized (mbitmap) {
-                    mbitmap.getPixels(bitmapPixels, srcOffset, bitmapwidth, sx-xoffset, y-yoffset, dstW, 1);
-                }
-                System.arraycopy(bitmapPixels, srcOffset, bitmapPixels, dstOffset, dstW);
-            } catch (Exception e) {
-                // There was an index out of bounds exception, but we continue copying what we can. 
-                e.printStackTrace();
-            }
-            dstY += deltaY;
-        }
-        updateBitmap(dx, dy, dstW, dstH);
-    }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#drawRect(int, int, int, int, android.graphics.Paint)
-     */
-    @Override
-    void drawRect(int x, int y, int w, int h, Paint paint) {
-        synchronized (mbitmap) {
-            memGraphics.drawRect(x, y, x + w, y + h, paint);
         }
     }
 

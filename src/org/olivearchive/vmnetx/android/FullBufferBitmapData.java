@@ -20,11 +20,8 @@
 
 package org.olivearchive.vmnetx.android;
 
-import java.util.Arrays;
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.Log;
 
 class FullBufferBitmapData extends AbstractBitmapData {
@@ -109,71 +106,11 @@ class FullBufferBitmapData extends AbstractBitmapData {
     }
 
     /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#copyRect(android.graphics.Rect, android.graphics.Rect, android.graphics.Paint)
-     */
-    @Override
-    public void copyRect(int sx, int sy, int dx, int dy, int w, int h) {
-        int srcOffset, dstOffset;
-        int dstH = h;
-        int dstW = w;
-        
-        int startSrcY, endSrcY, dstY, deltaY;
-        if (sy > dy) {
-            startSrcY = sy;
-            endSrcY = sy + dstH;
-            dstY = dy;
-            deltaY = +1;
-        } else {
-            startSrcY = sy + dstH - 1;
-            endSrcY = sy - 1;
-            dstY = dy + dstH - 1;
-            deltaY = -1;
-        }
-        for (int y = startSrcY; y != endSrcY; y += deltaY) {
-            srcOffset = offset(sx, y);
-            dstOffset = offset(dx, dstY);
-            try {
-                System.arraycopy(bitmapPixels, srcOffset, bitmapPixels, dstOffset, dstW);
-            } catch (Exception e) {
-                // There was an index out of bounds exception, but we continue copying what we can. 
-                e.printStackTrace();
-            }
-            dstY += deltaY;
-        }
-    }
-
-    /* (non-Javadoc)
      * @see org.olivearchive.vmnetx.android.AbstractBitmapData#createDrawable()
      */
     @Override
     AbstractBitmapDrawable createDrawable() {
         return new Drawable(this);
-    }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#drawRect(int, int, int, int, android.graphics.Paint)
-     */
-    @Override
-    void drawRect(int x, int y, int w, int h, Paint paint) {
-        int color = paint.getColor();
-        int offset = offset(x,y);
-        if (w > 10)
-        {
-            for (int j = 0; j < h; j++, offset += framebufferwidth)
-            {
-                Arrays.fill(bitmapPixels, offset, offset + w, color);
-            }
-        }
-        else
-        {
-            for (int j = 0; j < h; j++, offset += framebufferwidth - w)
-            {
-                for (int k = 0; k < w; k++, offset++)
-                {
-                    bitmapPixels[offset] = color;
-                }
-            }
-        }
     }
 
     /* (non-Javadoc)

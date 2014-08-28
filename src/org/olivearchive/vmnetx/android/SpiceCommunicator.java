@@ -141,16 +141,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         height = h;
     }
     
-    public String desktopName() {
-        // TODO Auto-generated method stub
-        return "";
-    }
-
-    public void requestUpdate(boolean incremental) {
-        // TODO Auto-generated method stub
-
-    }
-
     public void setIsInNormalProtocol(boolean state) {
         isInNormalProtocol = state;        
     }
@@ -195,24 +185,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         this.metaState = metaState;
     }
 
-    public void writeSetPixelFormat(int bitsPerPixel, int depth,
-            boolean bigEndian, boolean trueColour, int redMax, int greenMax,
-            int blueMax, int redShift, int greenShift, int blueShift,
-            boolean fGreyScale) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void writeFramebufferUpdateRequest(int x, int y, int w, int h,
-            boolean b) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void close() {
-        disconnect();
-    }
-    
     // ****************************************************************************
     // KeyboardMapper.KeyProcessingListener implementation
     @Override

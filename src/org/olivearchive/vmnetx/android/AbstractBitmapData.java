@@ -103,12 +103,6 @@ abstract public class AbstractBitmapData {
     }
 
     /**
-     * Send a request through the protocol to get the data for the currently held bitmap
-     * @param incremental True if we want incremental update; false for full update
-     */
-    public void prepareFullUpdateRequest(boolean incremental) {};
-
-    /**
      * Determine if a rectangle in full-frame coordinates can be drawn in the existing buffer
      * @param x Top left x
      * @param y Top left y
@@ -163,55 +157,6 @@ abstract public class AbstractBitmapData {
         v.setImageDrawable(drawable);
     }
 
-
-    /**
-     * Call in UI thread; tell ImageView we've changed
-     * @param v ImageView displaying bitmap data
-     */
-    void updateView(ImageView v)
-    {
-        v.invalidate();
-    }
-
-    /**
-     * Copy a rectangle from one part of the bitmap to another
-     * @param src Rectangle in full-frame coordinates to be copied
-     * @param dest Destination rectangle in full-frame coordinates
-     * @param paint Paint specifier
-     */
-    public abstract void copyRect(int sx, int sy, int dx, int dy, int w, int h);
-
-    public void fillRect(int x, int y, int w, int h, int pix) {
-        paint.setColor(pix);
-        drawRect(x, y, w, h, paint);
-    }
-
-    public void imageRect(int x, int y, int w, int h, int[] pix) {
-        for (int j = 0; j < h; j++) {
-            try {
-                synchronized (mbitmap) {
-                    System.arraycopy(pix, (w * j), bitmapPixels, offset(x, y+j), w);
-                }
-                //System.arraycopy(pix, (w * j), bitmapPixels, bitmapwidth * (y + j) + x, w);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                // An index is out of bounds for some reason, but we try to continue.
-                e.printStackTrace();
-            }
-
-        }
-        updateBitmap(x, y, w, h);
-    }
-
-    /**
-     * Draw a rectangle in the bitmap with coordinates given in full frame
-     * @param x Top left x
-     * @param y Top left y
-     * @param w width (pixels)
-     * @param h height (pixels)
-     * @param paint How to draw
-     */
-    abstract void drawRect( int x, int y, int w, int h, Paint paint);
-    
     /**
      * Scroll position has changed.
      * <p>
