@@ -34,12 +34,12 @@ import java.io.Serializable;
  */
 public class ConnectionBean implements Comparable<ConnectionBean>, Serializable {
     // for Serializable
-    private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = 1;
 
     private String address;
     private int port;
     private String password;
-    private int extraKeysToggleType;
+    private boolean extraKeys;
     private String inputMode;
     private String scaleMode;
     private boolean useDpadAsArrows;
@@ -56,7 +56,7 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
         setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);
         setRotateDpad(false);
-        setExtraKeysToggleType(1);
+        setExtraKeys(true);
     }
     
     public String getAddress() {
@@ -83,12 +83,12 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
         this.password = password;
     }
 
-    public int getExtraKeysToggleType() {
-        return extraKeysToggleType;
+    public boolean getExtraKeys() {
+        return extraKeys;
     }
 
-    public void setExtraKeysToggleType(int extraKeysToggleType) {
-        this.extraKeysToggleType = extraKeysToggleType;
+    public void setExtraKeys(boolean extraKeys) {
+        this.extraKeys = extraKeys;
     }
 
     public String getInputMode() {

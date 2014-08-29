@@ -26,8 +26,4 @@ package org.olivearchive.vmnetx.android;
 public class Constants {
     public static final int SPICE_CONNECT_SUCCESS  = 1;
     public static final int SPICE_CONNECT_FAILURE  = 2;
-
-    public static final int EXTRA_KEYS_OFF         = 0;
-    public static final int EXTRA_KEYS_ON          = 1;
-    public static final int EXTRA_KEYS_TIMEOUT     = 2;
 }

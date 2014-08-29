@@ -269,7 +269,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             replacer = getResources().getDrawable(R.drawable.hidekeys);
         keyStow.setBackgroundDrawable(replacer);
 
-        if (connection.getExtraKeysToggleType() == Constants.EXTRA_KEYS_OFF)
+        if (!connection.getExtraKeys())
             keyStow.setVisibility(View.GONE);
         else
             keyStow.setVisibility(View.VISIBLE);
@@ -580,8 +580,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         if (config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
             makeVisible = true;
 
-        if (!extraKeysHidden && makeVisible && 
-            connection.getExtraKeysToggleType() == Constants.EXTRA_KEYS_ON) {
+        if (!extraKeysHidden && makeVisible && connection.getExtraKeys()) {
             layoutKeys.setVisibility(View.VISIBLE);
             layoutKeys.invalidate();
             return;
@@ -734,7 +733,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             updateScalingMenu();
             
             // Set the text of the Extra Keys menu item appropriately.
-            if (connection.getExtraKeysToggleType() == Constants.EXTRA_KEYS_ON)
+            if (connection.getExtraKeys())
                 menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_disable);
             else
                 menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_enable);
@@ -890,12 +889,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             return true;
 */
         case R.id.itemExtraKeys:
-            if (connection.getExtraKeysToggleType() == Constants.EXTRA_KEYS_ON) {
-                connection.setExtraKeysToggleType(Constants.EXTRA_KEYS_OFF);
+            if (connection.getExtraKeys()) {
+                connection.setExtraKeys(false);
                 item.setTitle(R.string.extra_keys_enable);
                 setExtraKeysVisibility(View.GONE, false);
             } else {
-                connection.setExtraKeysToggleType(Constants.EXTRA_KEYS_ON);
+                connection.setExtraKeys(true);
                 item.setTitle(R.string.extra_keys_disable);
                 setExtraKeysVisibility(View.VISIBLE, false);
                 extraKeysHidden = false;
