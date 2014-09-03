@@ -51,7 +51,7 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
     {
         setAddress("");
         setPassword("");
-        setPort(5900);
+        setPort(18923);
         setScaleMode(ScaleType.MATRIX);
         setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);

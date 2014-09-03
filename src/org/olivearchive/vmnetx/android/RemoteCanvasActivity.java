@@ -155,7 +155,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 }
                 catch (NumberFormatException nfe)
                 {
-                    port = 0;
+                    port = -1;
                 }
                 host = host.substring(0,index);
             }
@@ -164,10 +164,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 port = data.getPort();
             }
             connection.setAddress(host);
-            connection.setPort(port);
-            List<String> path = data.getPathSegments();
-            if (path.size() >= 1) {
-                connection.setPassword(path.get(0));
+            if (port != -1)
+                connection.setPort(port);
+            String path = data.getPath();
+            if (path != null) {
+                // drop leading '/'
+                connection.setPassword(path.substring(1));
             }
         }
     }

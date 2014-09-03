@@ -19,7 +19,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private native void SpiceUpdateBitmap (Bitmap bitmap, int x, int y, int w, int h);
     private native void SpiceRequestResolution (int x, int y);
     private native void SpiceSetFd (long cookie, int fd);
-    private native int  SpiceConnectFd (String host, String port);
     
     static {
         System.loadLibrary("gstreamer_android");
@@ -91,12 +90,15 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         }
 
         public void run() {
-            int fd = SpiceConnectFd(connection.getAddress(), Integer.toString(connection.getPort()));
-            android.util.Log.d(TAG, "Get FD returned " + Integer.toString(fd));
-            if (fd == -1)
-                disconnect();
-            else
+            try {
+                int fd = new ViewerConnectionProcessor(connection.getAddress(),
+                                                       Integer.toString(connection.getPort()),
+                                                       connection.getPassword()).connect();
                 SpiceSetFd(cookie, fd);
+            } catch (ProtocolException e) {
+                android.util.Log.e(TAG, "Get FD failed", e);
+                disconnect();
+            }
         }
     }
 
@@ -114,7 +116,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     
     /* Callbacks from jni */
     private void OnGetFd(long cookie) {
-        android.util.Log.d(TAG, "Get FD");
         new ConnectThread(cookie).start();
     }
 
