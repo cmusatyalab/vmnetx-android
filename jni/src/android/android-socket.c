@@ -24,6 +24,7 @@
 #include <android/log.h>
 
 #define TAG "vmnetx-socket"
+#define MAX_MESSAGE_SIZE (1 << 20)
 
 enum connect_status {
     CONNECT_CONTINUE = 0,
@@ -124,6 +125,11 @@ Java_org_olivearchive_vmnetx_android_ViewerConnectionProcessor_Connect(JNIEnv *e
             return;
         }
         len = ntohl(len);
+        if (len > MAX_MESSAGE_SIZE) {
+            __android_log_print(ANDROID_LOG_ERROR, TAG, "Received oversized message of length %u", len);
+            close(fd);
+            return;
+        }
 
         // Data
         jbyteArray data = (*env)->NewByteArray(env, len);
