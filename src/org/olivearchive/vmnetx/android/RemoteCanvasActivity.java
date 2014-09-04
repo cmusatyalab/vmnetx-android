@@ -23,8 +23,6 @@
 //
 package org.olivearchive.vmnetx.android;
 
-import java.util.List;
-
 import org.olivearchive.vmnetx.android.input.AbstractInputHandler;
 import org.olivearchive.vmnetx.android.input.Panner;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;

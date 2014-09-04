@@ -90,6 +90,7 @@ class ViewerConnectionProcessor implements ConnectionProcessor, ProtocolEndpoint
         case Constants.PROTOCOL_CONNECTED:
             endpoint.sendAuthenticate(token);
             break;
+
         case Constants.CLIENT_PROTOCOL_AUTH_OK:
             int vmState = args.getInt(Constants.ARG_VM_STATE);
             if (vmState != Constants.VM_STATE_RUNNING) {
@@ -99,17 +100,21 @@ class ViewerConnectionProcessor implements ConnectionProcessor, ProtocolEndpoint
                 endpoint.sendAttachViewer();
             }
             break;
+
         case Constants.CLIENT_PROTOCOL_AUTH_FAILED:
             Log.e(TAG, "Viewer auth failed: " + args.getString(Constants.ARG_ERROR));
             transition(CONNECT_FAILED);
             break;
+
         case Constants.CLIENT_PROTOCOL_ATTACHING_VIEWER:
             transition(CONNECT_DONE);
             break;
+
         case Constants.PROTOCOL_ERROR:
             Log.e(TAG, "Protocol error: " + args.getString(Constants.ARG_ERROR));
             transition(CONNECT_FAILED);
             break;
+
         default:
             Log.e(TAG, "Ignored message " + Integer.toString(what));
             break;

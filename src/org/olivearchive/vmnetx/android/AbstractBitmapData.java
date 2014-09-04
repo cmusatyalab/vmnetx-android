@@ -22,7 +22,6 @@ package org.olivearchive.vmnetx.android;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.RectF;
 import android.widget.ImageView;
 import android.util.Log;
@@ -46,7 +45,6 @@ abstract public class AbstractBitmapData {
     boolean waitingForInput;
     RemoteCanvas vncCanvas;
     public AbstractBitmapDrawable drawable;
-    private Paint paint;
     int xoffset = 0;
     int yoffset = 0;
 
@@ -57,7 +55,6 @@ abstract public class AbstractBitmapData {
         framebufferwidth  = spice.framebufferWidth();
         framebufferheight = spice.framebufferHeight();
         drawable = createDrawable();
-        paint = new Paint();
     }
 
     synchronized void doneWaiting() {
