@@ -43,9 +43,6 @@ public abstract class RemoteKeyboard {
     // Variable holding the state of any pressed hardware meta keys (Ctrl, Alt...)
     protected int hardwareMetaState = 0;
     
-    // Use camera button as meta key for right mouse button
-    boolean cameraButtonDown = false;
-    
     // Keep track when a seeming key press was the result of a menu shortcut
     int lastKeyDown;
     boolean afterMenu;
@@ -186,10 +183,6 @@ public abstract class RemoteKeyboard {
     
     public void setAfterMenu(boolean value) {
         afterMenu = value;
-    }
-    
-    public boolean getCameraButtonDown() {
-        return cameraButtonDown;
     }
     
     public void clearMetaState () {

@@ -1,7 +1,5 @@
 package org.olivearchive.vmnetx.android.input;
 
-import android.os.Handler;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
@@ -19,11 +17,8 @@ public class RemoteSpicePointer extends RemotePointer {
 
     public static final int PTRFLAGS_DOWN             = 0x8000;
     
-    public MouseScrollRunnable scrollRunnable;
-
-    public RemoteSpicePointer (SpiceCommunicator s, RemoteCanvas v, Handler h) {
-        super(s, v, h);
-        scrollRunnable = new MouseScrollRunnable();
+    public RemoteSpicePointer (SpiceCommunicator s, RemoteCanvas v) {
+        super(s, v);
     }
 
     public int getX() {
@@ -75,89 +70,15 @@ public class RemoteSpicePointer extends RemotePointer {
     }
     
     /**
-     * Moves the scroll while the volume key is held down
-     * 
-     * @author Michael A. MacDonald
-     */
-    public class MouseScrollRunnable implements Runnable
-    {
-        int delay = 100;
-        
-        public int scrollButton = 0;
-        
-        /* (non-Javadoc)
-         * @see java.lang.Runnable#run()
-         */
-        @Override
-        public void run() {
-            if (spice != null && spice.isInNormalProtocol()) {
-                spice.writePointerEvent(mouseX, mouseY, 0, scrollButton|PTRFLAGS_DOWN);
-                try {Thread.sleep(2);} catch (InterruptedException e) {}
-                spice.writePointerEvent(mouseX, mouseY, 0, scrollButton);
-                handler.postDelayed(this, delay);
-            }
-        }        
-    }
-
-    public boolean handleHardwareButtons(int keyCode, KeyEvent evt, int combinedMetastate) {
-        boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
-                        (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
-        if (down)
-            pointerMask = PTRFLAGS_DOWN;
-        else
-            pointerMask = 0;
-
-        int mouseChange = 0;
-        //int direction = 0;
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            mouseChange = RemoteSpicePointer.MOUSE_BUTTON_SCROLL_DOWN;
-            //direction = 1;
-        } else {
-            mouseChange = RemoteSpicePointer.MOUSE_BUTTON_SCROLL_UP;
-            //direction = 0;
-        }
-        
-        if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-            cameraButtonDown = down;
-            pointerMask |= RemoteSpicePointer.MOUSE_BUTTON_RIGHT;
-            //processPointerEvent(getX(), getY(), evt.getAction(), combinedMetastate, down, true, false, false, direction);
-            spice.writePointerEvent(getX(), getY(), combinedMetastate, pointerMask);
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            pointerMask |= mouseChange;
-            if (down) {
-                // If not auto-repeat
-                if (scrollRunnable.scrollButton != mouseChange) {
-                    scrollRunnable.scrollButton = mouseChange;
-                    handler.postDelayed(scrollRunnable, 200);
-                }
-            } else {
-                handler.removeCallbacks(scrollRunnable);
-                scrollRunnable.scrollButton = 0;
-            }
-            //processPointerEvent(getX(), getY(), evt.getAction(), combinedMetastate, down, false, false, true, direction);
-            spice.writePointerEvent(getX(), getY(), combinedMetastate, pointerMask);
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK && (evt.getScanCode() == 0 || hasMenuKey)) {
-            pointerMask |= RemoteSpicePointer.MOUSE_BUTTON_RIGHT;
-            spice.writePointerEvent(getX(), getY(), combinedMetastate, pointerMask);
-            return true;
-        }
-        return false;
-    }
-    
-    
-    /**
      * Convert a motion event to a format suitable for sending over the wire
      * @param evt motion event; x and y must already have been converted from screen coordinates
-     * to remote frame buffer coordinates.  cameraButton flag is interpreted as second mouse
-     * button
+     * to remote frame buffer coordinates.
      * @param downEvent True if "mouse button" (touch or trackball button) is down when this happens
      * @return true if event was actually sent
      */
     public boolean processPointerEvent(MotionEvent evt, boolean downEvent)
     {
-        return processPointerEvent(evt, downEvent, cameraButtonDown);
+        return processPointerEvent(evt, downEvent, false);
     }
 
     /**

@@ -212,7 +212,7 @@ public class RemoteCanvas extends ImageView {
      */
     private void startSpiceConnection() throws Exception {
         spice = new SpiceCommunicator (getContext(), this, handler, connection);
-        pointer = new RemoteSpicePointer (spice, RemoteCanvas.this, handler);
+        pointer = new RemoteSpicePointer (spice, RemoteCanvas.this);
         keyboard = new RemoteSpiceKeyboard (spice, RemoteCanvas.this, handler);
         spice.connect();
     }

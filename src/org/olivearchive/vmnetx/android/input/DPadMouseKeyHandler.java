@@ -61,7 +61,6 @@ class DPadMouseKeyHandler {
         boolean result = true;
         keyboard = canvas.getKeyboard();
         pointer  = canvas.getPointer();
-        boolean cameraButtonDown = keyboard.getCameraButtonDown();
 
         // If we are instructed to rotate the Dpad at 90 degrees, reassign KeyCodes.
         if (rotateDpad) {
@@ -103,7 +102,7 @@ class DPadMouseKeyHandler {
                 if (!mouseDown) {
                     mouseDown = true;
                     result = pointer.processPointerEvent(pointer.getX(), pointer.getY(), MotionEvent.ACTION_DOWN,
-                                                                evt.getMetaState(), mouseDown, cameraButtonDown);
+                                                                evt.getMetaState(), mouseDown, false);
                 }
                 break;
             default:
@@ -135,7 +134,7 @@ class DPadMouseKeyHandler {
 
             });
             pointer.processPointerEvent(pointer.getX() + x, pointer.getY() + y, MotionEvent.ACTION_MOVE,
-                                        evt.getMetaState(), mouseDown, cameraButtonDown);
+                                        evt.getMetaState(), mouseDown, false);
 
         }
         return result;
@@ -143,7 +142,6 @@ class DPadMouseKeyHandler {
 
     public boolean onKeyUp(int keyCode, KeyEvent evt) {
 
-        boolean cameraButtonDown = keyboard.getCameraButtonDown();
         pointer  = canvas.getPointer();
 
         // Pass the event on if we are not controlling the mouse.
@@ -165,7 +163,7 @@ class DPadMouseKeyHandler {
             if (mouseDown) {
                 mouseDown = false;
                 result = pointer.processPointerEvent(pointer.getX(), pointer.getY(), MotionEvent.ACTION_UP,
-                                                        evt.getMetaState(), mouseDown, cameraButtonDown);
+                                                        evt.getMetaState(), mouseDown, false);
             } else {
                 result = true;
             }

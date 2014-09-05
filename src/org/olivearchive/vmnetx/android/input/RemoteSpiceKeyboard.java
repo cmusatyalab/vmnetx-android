@@ -27,17 +27,12 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
         //android.util.Log.e(TAG, evt.toString() + " " + keyCode);
 
         if (spice != null && spice.isInNormalProtocol()) {
-            RemotePointer pointer = vncCanvas.getPointer();
             boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
                            (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
-            int metaState = additionalMetaState | convertEventMetaState (evt);
             
             if (keyCode == KeyEvent.KEYCODE_MENU)
                 return true;                           // Ignore menu key
 
-            if (pointer.handleHardwareButtons(keyCode, evt, metaState|onScreenMetaState|hardwareMetaState))
-                return true;
-            
             // Detect whether this event is coming from a default hardware keyboard.
             boolean defaultHardwareKbd = (evt.getDeviceId() == 0);
             if (!down) {
@@ -86,7 +81,7 @@ public class RemoteSpiceKeyboard extends RemoteKeyboard {
             }
 
             // Update the meta-state with writeKeyEvent.
-            metaState = onScreenMetaState|hardwareMetaState|metaState;
+            int metaState = onScreenMetaState|hardwareMetaState|additionalMetaState|convertEventMetaState(evt);
             spice.writeKeyEvent(keyCode, metaState, down);
             if (down) {
                 lastDownMetaState = metaState;
