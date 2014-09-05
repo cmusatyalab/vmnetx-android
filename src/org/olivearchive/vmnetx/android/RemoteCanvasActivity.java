@@ -940,12 +940,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
         boolean consumed = false;
 
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            if (evt.getAction() == KeyEvent.ACTION_DOWN)
-                return super.onKeyDown(keyCode, evt);
-            else
-                return super.onKeyUp(keyCode, evt);
-        }
+        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BACK)
+            return false;
 
         try {
             if (evt.getAction() == KeyEvent.ACTION_DOWN || evt.getAction() == KeyEvent.ACTION_MULTIPLE) {

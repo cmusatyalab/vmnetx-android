@@ -38,12 +38,12 @@ import android.view.MotionEvent;
  */
 public interface AbstractInputHandler {
     /**
-     * Note: Menu key code is handled before this is called
+     * Note: Menu/Back key codes are handled before this is called
      * @see android.app.Activity#onKeyDown(int keyCode, KeyEvent evt)
      */
     boolean onKeyDown(int keyCode, KeyEvent evt);
     /**
-     * Note: Menu key code is handled before this is called
+     * Note: Menu/Back key codes are handled before this is called
      * @see android.app.Activity#onKeyUp(int keyCode, KeyEvent evt)
      */
     boolean onKeyUp(int keyCode, KeyEvent evt);
