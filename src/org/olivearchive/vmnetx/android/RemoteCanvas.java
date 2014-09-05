@@ -171,10 +171,21 @@ public class RemoteCanvas extends ImageView {
         // Make this dialog cancellable only upon hitting the Back button and not touching outside.
         pd.setCanceledOnTouchOutside(false);
         
-        Thread t = new Thread () {
+        startSpiceConnection();
+    }
+
+
+    /**
+     * Starts a SPICE connection using libspice.
+     */
+    private void startSpiceConnection() {
+        new Thread() {
             public void run() {
                 try {
-                    startSpiceConnection();
+                    spice = new SpiceCommunicator (getContext(), RemoteCanvas.this, handler, connection);
+                    pointer = new RemoteSpicePointer (spice, RemoteCanvas.this);
+                    keyboard = new RemoteSpiceKeyboard (spice, RemoteCanvas.this, handler);
+                    spice.connect();
                 } catch (Throwable e) {
                     if (maintainConnection) {
                         Log.e(TAG, e.toString());
@@ -201,20 +212,7 @@ public class RemoteCanvas extends ImageView {
                     }
                 }
             }
-        };
-        t.start();
-    }
-    
-    
-    /**
-     * Starts a SPICE connection using libspice.
-     * @throws Exception
-     */
-    private void startSpiceConnection() throws Exception {
-        spice = new SpiceCommunicator (getContext(), this, handler, connection);
-        pointer = new RemoteSpicePointer (spice, RemoteCanvas.this);
-        keyboard = new RemoteSpiceKeyboard (spice, RemoteCanvas.this, handler);
-        spice.connect();
+        }.start();
     }
     
     
