@@ -34,7 +34,6 @@ public abstract class RemoteKeyboard {
     public final static int META_MASK  = 0;
     
     protected RemoteCanvas vncCanvas;
-    protected Handler handler;
     protected SpiceCommunicator spice;
     protected Context context;
     protected KeyboardMapper keyboardMapper;
@@ -63,7 +62,6 @@ public abstract class RemoteKeyboard {
     RemoteKeyboard (SpiceCommunicator s, RemoteCanvas v, Handler h) {
         spice = s;
         vncCanvas = v;
-        handler = h;
         keyRepeater = new KeyRepeater (this, h);
         
         if (android.os.Build.MODEL.contains("BlackBerry") ||
