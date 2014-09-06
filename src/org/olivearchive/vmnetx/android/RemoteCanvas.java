@@ -220,11 +220,6 @@ public class RemoteCanvas extends ImageView {
                         } else {
                             String error = getContext().getString(R.string.error_connection_failed);
                             if (e.getMessage() != null) {
-                                if (e.getMessage().indexOf("authentication") > -1 ||
-                                        e.getMessage().indexOf("Unknown security result") > -1 ||
-                                        e.getMessage().indexOf("password check failed") > -1) {
-                                    error = getContext().getString(R.string.error_vnc_authentication);
-                                }
                                 error = error + "<br>" + e.getLocalizedMessage();
                             }
                             showFatalMessageAndQuit(error);
@@ -927,7 +922,7 @@ public class RemoteCanvas extends ImageView {
                         pd.dismiss();
                     }
                     if (!spiceUpdateReceived) {
-                        showFatalMessageAndQuit(getContext().getString(R.string.error_spice_unable_to_connect));
+                        showFatalMessageAndQuit(getContext().getString(R.string.error_connection_failed));
                     } else {
                         showFatalMessageAndQuit(getContext().getString(R.string.error_connection_interrupted));
                     }
