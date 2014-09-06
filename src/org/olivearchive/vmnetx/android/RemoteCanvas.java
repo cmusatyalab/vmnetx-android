@@ -31,6 +31,7 @@
 package org.olivearchive.vmnetx.android;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -162,9 +163,17 @@ public class RemoteCanvas extends ImageView {
         connection = bean;
 
         // Startup the connection thread with a progress dialog
-        pd = ProgressDialog.show(getContext(), getContext().getString(R.string.info_progress_dialog_connecting),
-                                                getContext().getString(R.string.info_progress_dialog_establishing),
-                                                true, true, new DialogInterface.OnCancelListener() {
+        pd = new ProgressDialog(getContext());
+        pd.setTitle(getContext().getString(R.string.info_progress_dialog_title));
+        pd.setMessage(getContext().getString(R.string.info_progress_dialog_message));
+        pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        pd.setProgressNumberFormat(null);
+        pd.setProgressPercentFormat(null);
+        pd.setMax(10000);
+        pd.setIndeterminate(true);
+        // Make this dialog cancellable only upon hitting the Back button and not touching outside.
+        pd.setCanceledOnTouchOutside(false);
+        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
                 closeConnection();
@@ -175,9 +184,7 @@ public class RemoteCanvas extends ImageView {
                 });
             }
         });
-        
-        // Make this dialog cancellable only upon hitting the Back button and not touching outside.
-        pd.setCanceledOnTouchOutside(false);
+        pd.show();
         
         startControlConnection();
     }
@@ -961,7 +968,11 @@ public class RemoteCanvas extends ImageView {
 
             case Constants.CLIENT_PROTOCOL_STARTUP_PROGRESS:
                 double progress = args.getDouble(Constants.ARG_PROGRESS);
-                Log.d(TAG, "progress " + Double.toString(progress));
+                if (pd.isIndeterminate() && progress > 0) {
+                    pd.setIndeterminate(false);
+                    pd.setProgressPercentFormat(NumberFormat.getPercentInstance());
+                }
+                pd.setProgress((int) (progress * pd.getMax()));
                 break;
 
             case Constants.CLIENT_PROTOCOL_STARTUP_REJECTED_MEMORY:

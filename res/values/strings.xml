@@ -13,8 +13,8 @@
 <string name="extra_keys_enable">Enable Extra Keys</string>
 <string name="extra_keys_disable">Disable Extra Keys</string>
 <string name="fit_to_screen">Fit to Screen</string>
-<string name="info_progress_dialog_connecting">Connecting...</string>
-<string name="info_progress_dialog_establishing">Establishing handshake.\nPlease wait...</string>
+<string name="info_progress_dialog_title">Loading...</string>
+<string name="info_progress_dialog_message">Launching virtual machine.\nPlease wait...</string>
 <string name="info_progress_dialog_aborted">Connection aborted!</string>
 <string name="input_mode">Input Mode</string>
 <string name="input_mode_drag_pan_zoom_mouse">Direct, Hold Pan</string>
