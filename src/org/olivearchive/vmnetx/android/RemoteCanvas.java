@@ -1,4 +1,5 @@
 /**
+ * Copyright (C) 2013-2014 Carnegie Mellon University
  * Copyright (C) 2012 Iordan Iordanov
  * Copyright (C) 2010 Michael A. MacDonald
  * Copyright (C) 2004 Horizon Wimba.  All Rights Reserved.
@@ -8,9 +9,8 @@
  * Copyright (C) 1999 AT&T Laboratories Cambridge.  All Rights Reserved.
  * 
  * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of version 2 of the GNU General Public License
+ * as published by the Free Software Foundation.
  * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,11 +30,14 @@
 
 package org.olivearchive.vmnetx.android;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -69,6 +72,11 @@ public class RemoteCanvas extends ImageView {
     
     // Connection parameters
     ConnectionBean connection;
+
+    // VMNetX control connection
+    private ControlConnectionProcessor controlConn;
+    private ClientProtocolEndpoint endpoint;
+    private int vmState = Constants.VM_STATE_UNKNOWN;
     
     // SPICE protocol connection
     private SpiceCommunicator spice = null;
@@ -171,7 +179,19 @@ public class RemoteCanvas extends ImageView {
         // Make this dialog cancellable only upon hitting the Back button and not touching outside.
         pd.setCanceledOnTouchOutside(false);
         
-        startSpiceConnection();
+        startControlConnection();
+    }
+
+
+    private void startControlConnection() {
+        try {
+            controlConn = new ControlConnectionProcessor(connection.getAddress(), connection.getPort());
+            endpoint = new ClientProtocolEndpoint(controlConn, handler);
+            new Thread(controlConn).start();
+        } catch (IOException e) {
+            Log.e(TAG, "Couldn't create ControlConnectionProcessor", e);
+            showFatalMessageAndQuit(getContext().getString(R.string.error_connection_failed));
+        }
     }
 
 
@@ -307,7 +327,14 @@ public class RemoteCanvas extends ImageView {
         // Close the SPICE connection.
         if (spice != null)
             spice.disconnect();
-        
+        // Close the control connection.
+        if (controlConn != null) {
+            try {
+                wantVMState(Constants.VM_STATE_DESTROYED);
+            } catch (IllegalStateException e) {}
+            controlConn.close();
+        }
+
         onDestroy();
     }
     
@@ -324,6 +351,9 @@ public class RemoteCanvas extends ImageView {
         scaling          = null;
         drawableSetter   = null;
         screenMessage    = null;
+        spice            = null;
+        endpoint         = null;
+        controlConn      = null;
         
         disposeDrawable ();
     }
@@ -778,20 +808,120 @@ public class RemoteCanvas extends ImageView {
         reDraw(x, y, width, height);
     }
 
+    private void wantVMState(int wanted) {
+        // Only handle transitions for which we can usefully issue a
+        // command.  Other transitions will be handled after a
+        // subsequent event.
+        switch (wanted) {
+        case Constants.VM_STATE_RUNNING:
+            if (vmState == Constants.VM_STATE_STOPPED) {
+                endpoint.sendStartVM();
+                vmState = Constants.VM_STATE_STARTING;
+            }
+            break;
+
+        case Constants.VM_STATE_STOPPED:
+            if (vmState == Constants.VM_STATE_STARTING || vmState == Constants.VM_STATE_RUNNING) {
+                endpoint.sendStopVM();
+                vmState = Constants.VM_STATE_STOPPING;
+            }
+            break;
+
+        case Constants.VM_STATE_DESTROYED:
+            if (vmState != Constants.VM_STATE_DESTROYED) {
+                endpoint.sendDestroyVM();
+                vmState = Constants.VM_STATE_DESTROYED;
+            }
+            break;
+        }
+    }
+
+
+    private class PingerRunnable implements Runnable {
+        private static final int INTERVAL = 5000;
+        private static final int COUNT = 5;
+
+        private int outstanding = 0;
+
+        public void start() {
+            stop();
+            schedule();
+        }
+
+        public void stop() {
+            handler.removeCallbacks(pinger);
+        }
+
+        public void pong() {
+            outstanding = 0;
+        }
+
+        private void schedule() {
+            handler.postDelayed(pinger, INTERVAL);
+        }
+
+        @Override
+        public void run() {
+            if (outstanding < COUNT) {
+                endpoint.sendPing();
+                outstanding += 1;
+                schedule();
+            } else {
+                Log.w(TAG, "Control connection timed out");
+                controlConn.close();
+            }
+        }
+    };
+    private final PingerRunnable pinger = new PingerRunnable();
+
+
     /** 
-     * Handler for the dialogs that display the x509/RDP/SSH key signatures to the user.
-     * Also shows the dialogs which show various connection failures.
+     * Handler for connection events.
      */
     public Handler handler = new Handler() {
+        private void showProtocolErrorAndQuit(String error) {
+            showFatalMessageAndQuit(getContext().getString(R.string.error_protocol) + " " + error);
+        }
+
         @Override
         public void handleMessage(Message msg) {
+            Bundle args = msg.getData();
+            String error;
+
             switch (msg.what) {
             case Constants.SPICE_CONNECT_SUCCESS:
                 if (pd != null && pd.isShowing()) {
                     pd.dismiss();
                 }
                 break;
+
             case Constants.SPICE_CONNECT_FAILURE:
+                // Data connection failed; retry
+                if (maintainConnection) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startSpiceConnection();
+                        }
+                    }, 1000);
+                }
+                break;
+
+            case Constants.PROTOCOL_CONNECTED:
+                Log.d(TAG, "connected");
+                endpoint.sendAuthenticate(connection.getPassword());
+                break;
+
+            case Constants.PROTOCOL_ERROR:
+                error = args.getString(Constants.ARG_ERROR);
+                Log.d(TAG, "error " + error);
+                showProtocolErrorAndQuit(error);
+                break;
+
+            case Constants.PROTOCOL_DISCONNECTED:
+                Log.d(TAG, "disconnected");
+                vmState = Constants.VM_STATE_UNKNOWN;
+                pinger.stop();
                 if (maintainConnection) {
                     if (pd != null && pd.isShowing()) {
                         pd.dismiss();
@@ -802,6 +932,82 @@ public class RemoteCanvas extends ImageView {
                         showFatalMessageAndQuit(getContext().getString(R.string.error_connection_interrupted));
                     }
                 }
+                break;
+
+            case Constants.CLIENT_PROTOCOL_AUTH_OK:
+                String vmName = args.getString(Constants.ARG_VM_NAME);
+                vmState = args.getInt(Constants.ARG_VM_STATE);
+                int maxMouseRate = args.getInt(Constants.ARG_MAX_MOUSE_RATE);
+                Log.d(TAG, "auth ok " + vmName + " " + Integer.toString(vmState) + " " + Integer.toString(maxMouseRate));
+
+                // Start pinging
+                pinger.start();
+
+                // If the VM is in a stable state, synthesize a state transition.
+                switch (vmState) {
+                case Constants.VM_STATE_RUNNING:
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(Constants.ARG_CHECK_DISPLAY, false);
+                    Message message = handler.obtainMessage(Constants.CLIENT_PROTOCOL_VM_STARTED);
+                    message.setData(bundle);
+                    handler.sendMessage(message);
+                    break;
+                case Constants.VM_STATE_STOPPED:
+                    handler.sendEmptyMessage(Constants.CLIENT_PROTOCOL_VM_STOPPED);
+                    break;
+                }
+                break;
+
+            case Constants.CLIENT_PROTOCOL_AUTH_FAILED:
+                error = args.getString(Constants.ARG_ERROR);
+                Log.d(TAG, "auth failed " + error);
+                showProtocolErrorAndQuit(error);
+                break;
+
+            case Constants.CLIENT_PROTOCOL_STARTUP_PROGRESS:
+                double progress = args.getDouble(Constants.ARG_PROGRESS);
+                Log.d(TAG, "progress " + Double.toString(progress));
+                break;
+
+            case Constants.CLIENT_PROTOCOL_STARTUP_REJECTED_MEMORY:
+                Log.d(TAG, "rejected memory");
+                break;
+
+            case Constants.CLIENT_PROTOCOL_STARTUP_FAILED:
+                error = args.getString(Constants.ARG_ERROR);
+                Log.d(TAG, "startup failed " + error);
+                showProtocolErrorAndQuit(error);
+                break;
+
+            case Constants.CLIENT_PROTOCOL_VM_STARTED:
+                boolean checkDisplay = args.getBoolean(Constants.ARG_CHECK_DISPLAY);
+                Log.d(TAG, "VM started, check: " + Boolean.toString(checkDisplay));
+                vmState = Constants.VM_STATE_RUNNING;
+                if (spice == null)
+                    startSpiceConnection();
+                break;
+
+            case Constants.CLIENT_PROTOCOL_VM_STOPPED:
+                Log.d(TAG, "VM stopped");
+                vmState = Constants.VM_STATE_STOPPED;
+                wantVMState(Constants.VM_STATE_RUNNING);
+                break;
+
+            case Constants.CLIENT_PROTOCOL_VM_DESTROYED:
+                Log.d(TAG, "VM destroyed");
+                vmState = Constants.VM_STATE_DESTROYED;
+                if (maintainConnection) {
+                    showFatalMessageAndQuit(getContext().getString(R.string.error_vm_terminated));
+                }
+                break;
+
+            case Constants.CLIENT_PROTOCOL_PONG:
+                Log.d(TAG, "pong!");
+                pinger.pong();
+                break;
+
+            default:
+                Log.w(TAG, "Handler received unknown message " + Integer.toString(msg.what));
                 break;
             }
         }

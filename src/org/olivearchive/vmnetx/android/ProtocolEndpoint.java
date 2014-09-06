@@ -166,6 +166,10 @@ abstract class ProtocolEndpoint {
         dispatch(new RecvMessage(data));
     }
 
+    void disconnected() {
+        emit(Constants.PROTOCOL_DISCONNECTED);
+    }
+
     protected void dispatch(RecvMessage msg) throws ProtocolException {
         if (msg.mtype.equals("error")) {
             Bundle bundle = new Bundle();

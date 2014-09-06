@@ -36,7 +36,7 @@ public class Constants {
     // ARG_ERROR
     public static final int PROTOCOL_ERROR = 102;
     // no arguments
-    public static final int PROTOCOL_CLOSED = 103;
+    public static final int PROTOCOL_DISCONNECTED = 103;
 
     // Client protocol events
     // ARG_VM_STATE, ARG_VM_NAME, ARG_MAX_MOUSE_RATE
@@ -80,4 +80,5 @@ public class Constants {
     public static final int VM_STATE_STARTING = 2;
     public static final int VM_STATE_RUNNING = 3;
     public static final int VM_STATE_STOPPING = 4;
+    public static final int VM_STATE_DESTROYED = 5;
 }

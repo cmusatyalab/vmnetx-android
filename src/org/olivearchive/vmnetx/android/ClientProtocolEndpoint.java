@@ -40,12 +40,12 @@ class ClientProtocolEndpoint extends ProtocolEndpoint {
 
     protected void needDispatchState(int state) throws ProtocolException {
         if (state != this.state)
-            throw new ProtocolException("Invalid state for operation");
+            throw new ProtocolException("Invalid state for operation (currently " + Integer.toString(this.state) + ")");
     }
 
     protected void needSendState(int state) {
         if (state != this.state)
-            throw new IllegalStateException("Invalid state for operation");
+            throw new IllegalStateException("Invalid state for operation (currently " + Integer.toString(this.state) + ")");
     }
 
     @Override
