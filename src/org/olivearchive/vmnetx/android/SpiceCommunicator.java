@@ -73,7 +73,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
 
     private class SpiceThread extends Thread {
         public void run() {
-            SpiceClientConnect (connection.getPassword());
+            SpiceClientConnect (connection.getToken());
             android.util.Log.e(TAG, "SpiceClientConnect returned.");
 
             // If we've exited SpiceClientConnect, the connection was
@@ -93,7 +93,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
             try {
                 int fd = new ViewerConnectionProcessor(connection.getAddress(),
                                                        Integer.toString(connection.getPort()),
-                                                       connection.getPassword()).connect();
+                                                       connection.getToken()).connect();
                 SpiceSetFd(cookie, fd);
             } catch (ProtocolException e) {
                 android.util.Log.e(TAG, "Get FD failed", e);

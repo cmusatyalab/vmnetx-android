@@ -167,7 +167,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             String path = data.getPath();
             if (path != null) {
                 // drop leading '/'
-                connection.setPassword(path.substring(1));
+                connection.setToken(path.substring(1));
             }
         }
     }

@@ -38,7 +38,7 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
 
     private String address;
     private int port;
-    private String password;
+    private String token;
     private boolean extraKeys;
     private String inputMode;
     private String scaleMode;
@@ -50,8 +50,8 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
     ConnectionBean()
     {
         setAddress("");
-        setPassword("");
         setPort(18923);
+        setToken("");
         setScaleMode(ScaleType.MATRIX);
         setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);
@@ -75,12 +75,12 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
         this.port = port;
     }
 
-    public String getPassword() {
-        return password;
+    public String getToken() {
+        return token;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public boolean getExtraKeys() {

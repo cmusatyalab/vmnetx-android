@@ -904,7 +904,7 @@ public class RemoteCanvas extends ImageView {
 
             case Constants.PROTOCOL_CONNECTED:
                 Log.d(TAG, "connected");
-                endpoint.sendAuthenticate(connection.getPassword());
+                endpoint.sendAuthenticate(connection.getToken());
                 break;
 
             case Constants.PROTOCOL_ERROR:
