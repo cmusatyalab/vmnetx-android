@@ -11,7 +11,17 @@ I. VMNetX for Android:
   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
   more details.
 
-II. VMNetX for Android includes software from msgpack-java-lite.
+II. VMNetX icon:
+
+  The VMNetX icon is based on a photograph of a Radio Shack TRS-80 Model 3
+  computer, (C) 2010 Bilby (Adam Jenkins).  Both the original photograph and
+  the VMNetX icon are distributed under the CC-BY-3.0 (Creative Commons
+  Attribution 3.0 Unported) license; see the file LICENSE.icon for details.
+
+  Original image:
+  http://commons.wikimedia.org/wiki/File:TRS-80_Model_3_01.jpg
+
+III. VMNetX for Android includes software from msgpack-java-lite.
 
   msgpack-java-lite:
     https://bitbucket.org/sirbrialliance/msgpack-java-lite
@@ -41,7 +51,7 @@ II. VMNetX for Android includes software from msgpack-java-lite.
     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-III. VMNetX for Android is based on bVNC:
+IV. VMNetX for Android is based on bVNC:
 
   Copyright (C) 2012-2014 Iordan Iordanov, i (at) iiordanov (dot) com
 
@@ -53,7 +63,7 @@ III. VMNetX for Android is based on bVNC:
 
   Please see the LICENSE-bVNC file for a copy of the GPLv2 license.
 
-IV. bVNC uses code from android-vnc-viewer, TightVNC, TigerVNC,
+V. bVNC uses code from android-vnc-viewer, TightVNC, TigerVNC,
      antlersoft, FreeRDP, and spice-gtk
 
   android-vnc-viewer:
@@ -74,7 +84,7 @@ IV. bVNC uses code from android-vnc-viewer, TightVNC, TigerVNC,
   spice-gtk:
     http://spice-space.org/
 
-V. android-vnc-viewer VNC client:
+VI. android-vnc-viewer VNC client:
 
   Copyright 2009,2010 Michael A. MacDonald
 
