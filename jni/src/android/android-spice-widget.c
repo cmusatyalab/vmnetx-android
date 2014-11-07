@@ -88,7 +88,6 @@ static void spice_display_init(SpiceDisplay *display)
 
     d = display->priv = SPICE_DISPLAY_GET_PRIVATE(display);
     memset(d, 0, sizeof(*d));
-    d->have_mitshm = TRUE;
     d->mouse_last_x = -1;
     d->mouse_last_y = -1;
 }
@@ -119,12 +118,8 @@ static void update_mouse_mode(SpiceChannel *channel, gpointer data)
 
     switch (d->mouse_mode) {
     case SPICE_MOUSE_MODE_CLIENT:
-        //try_mouse_ungrab(display);
         break;
     case SPICE_MOUSE_MODE_SERVER:
-        //try_mouse_grab(display);
-        d->mouse_guest_x = -1;
-        d->mouse_guest_y = -1;
         break;
     default:
         g_warn_if_reached();
@@ -302,11 +297,6 @@ static void disconnect_main(SpiceDisplay *display)
     //g_signal_handlers_disconnect_by_func(d->main, G_CALLBACK(mouse_update),
     //                                     display);
     d->main = NULL;
-    //for (i = 0; i < CLIPBOARD_LAST; ++i) {
-    //    d->clipboard_by_guest[i] = FALSE;
-    //    d->clip_grabbed[i] = FALSE;
-    //    d->nclip_targets[i] = 0;
-    //}
 }
 
 static void disconnect_display(SpiceDisplay *display)
@@ -384,14 +374,6 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
         return;
     }
 
-#ifdef USE_SMARTCARD
-    if (SPICE_IS_SMARTCARD_CHANNEL(channel)) {
-        d->smartcard = SPICE_SMARTCARD_CHANNEL(channel);
-        spice_channel_connect(channel);
-        return;
-    }
-#endif
-
     return;
 }
 
@@ -427,13 +409,6 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
         d->inputs = NULL;
         return;
     }
-
-#ifdef USE_SMARTCARD
-    if (SPICE_IS_SMARTCARD_CHANNEL(channel)) {
-        d->smartcard = NULL;
-        return;
-    }
-#endif
 
     return;
 }

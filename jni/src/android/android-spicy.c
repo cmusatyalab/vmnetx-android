@@ -46,7 +46,6 @@ static SpiceWindow *create_spice_window(spice_connection *conn, SpiceChannel *ch
     win->id = id;
     //win->monitor_id = monitor_id;
     win->conn = conn;
-    win->display_channel = channel;
 
     win->spice = (spice_display_new(conn->session, id));
     return win;

@@ -25,16 +25,6 @@ G_BEGIN_DECLS
 #include "config.h"
 #endif
 
-#ifdef WITH_X11
-#include <X11/Xlib.h>
-#include <X11/extensions/XShm.h>
-#include <gdk/gdkx.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include "android-spice-widget.h"
 #include "spice-common.h"
 #include "spice-gtk-session.h"
@@ -47,14 +37,8 @@ struct _SpiceDisplayPrivate {
     gint                    monitor_id;
 
     /* options */
-    bool                    keyboard_grab_enable;
-    gboolean                keyboard_grab_inhibit;
-    bool                    mouse_grab_enable;
-    bool                    resize_guest_enable;
 
     /* state */
-    gboolean                ready;
-    gboolean                monitor_ready;
     enum SpiceSurfaceFmt    format;
     gint                    width, height, stride;
     gint                    shmid;
@@ -64,57 +48,20 @@ struct _SpiceDisplayPrivate {
     gint                    ww, wh, mx, my;
 
     bool                    convert;
-    bool                    have_mitshm;
-    gboolean                allow_scaling;
-    gboolean                only_downscale;
-    gboolean                disable_inputs;
-
-    /* TODO: make a display object instead? */
-#ifdef WITH_X11
-    Display                 *dpy;
-    XVisualInfo             *vi;
-    XImage                  *ximage;
-    XShmSegmentInfo         *shminfo;
-    GC                      gc;
-#endif
 
     SpiceSession            *session;
     SpiceMainChannel        *main;
     SpiceChannel            *display;
     SpiceCursorChannel      *cursor;
     SpiceInputsChannel      *inputs;
-    SpiceSmartcardChannel   *smartcard;
 
     enum SpiceMouseMode     mouse_mode;
-    int                     mouse_grab_active;
     bool                    mouse_have_pointer;
     int                     mouse_last_x;
     int                     mouse_last_y;
-    int                     mouse_guest_x;
-    int                     mouse_guest_y;
 
-    bool                    keyboard_grab_active;
-    bool                    keyboard_have_focus;
-
-    const guint16 const     *keycode_map;
-    size_t                  keycode_maplen;
     uint32_t                key_state[512 / 32];
-    int                     key_delayed_scancode;
-    guint                   key_delayed_id;
-    gboolean                *activeseq; /* the currently pressed keys */
     gint                    mark;
-#ifdef WIN32
-    HHOOK                   keyboard_hook;
-    int                     win_mouse[3];
-    int                     win_mouse_speed;
-#endif
-    guint                   keypress_delay;
-    gint                    zoom_level;
-#ifdef GDK_WINDOWING_X11
-    int                     x11_accel_numerator;
-    int                     x11_accel_denominator;
-    int                     x11_threshold;
-#endif
 };
 
 G_END_DECLS

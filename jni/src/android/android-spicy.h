@@ -32,13 +32,6 @@
 
 typedef struct spice_connection spice_connection;
 
-enum {
-    STATE_SCROLL_LOCK,
-    STATE_CAPS_LOCK,
-    STATE_NUM_LOCK,
-    STATE_MAX,
-};
-
 typedef struct _SpiceWindow SpiceWindow;
 typedef struct _SpiceWindowClass SpiceWindowClass;
 
@@ -48,15 +41,6 @@ struct _SpiceWindow {
     gint             id;
     gint             monitor_id;
     SpiceDisplay      *spice;
-    bool             fullscreen;
-    bool             mouse_grabbed;
-    SpiceChannel     *display_channel;
-#ifdef WIN32
-    gint             win_x;
-    gint             win_y;
-#endif
-    bool             enable_accels_save;
-    bool             enable_mnemonics_save;
 };
 
 struct _SpiceWindowClass
@@ -78,9 +62,6 @@ struct spice_connection {
     SpiceMainChannel *main;
     SpiceWindow     *wins[CHANNELID_MAX * MONITORID_MAX];
     SpiceAudio       *audio;
-    const char       *mouse_state;
-    const char       *agent_state;
-    gboolean         agent_connected;
     int              channels;
     int              disconnecting;
 };
