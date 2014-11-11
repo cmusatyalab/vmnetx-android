@@ -738,8 +738,6 @@ public class RemoteCanvas extends ImageView {
         android.util.Log.e(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
         // We need to initialize the communicator and remote keyboard and mouse now.
-        spice.setFramebufferWidth(width);
-        spice.setFramebufferHeight(height);
         waitUntilInflated();
         int remoteWidth  = getRemoteWidth(getWidth(), getHeight());
         int remoteHeight = getRemoteHeight(getWidth(), getHeight());

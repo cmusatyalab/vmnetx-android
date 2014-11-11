@@ -104,11 +104,11 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         }
     }
 
-    public void sendMouseEvent (int x, int y, int metaState, int pointerMask) {
+    private void sendMouseEvent (int x, int y, int metaState, int pointerMask) {
         SpiceButtonEvent(x, y, metaState, pointerMask);
     }
 
-    public void sendKeyEvent (boolean keyDown, int virtualKeyCode) {
+    private void sendKeyEvent (boolean keyDown, int virtualKeyCode) {
         SpiceKeyEvent(keyDown, virtualKeyCode);
     }
     
@@ -122,6 +122,8 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
 
     private void OnSettingsChanged(int inst, int width, int height, int bpp) {
+        this.width = width;
+        this.height = height;
         canvas.OnSettingsChanged(width, height, bpp);
     }
 
@@ -144,14 +146,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         return height;
     }
 
-    public void setFramebufferWidth(int w) {
-        width = w;
-    }
-
-    public void setFramebufferHeight(int h) {
-        height = h;
-    }
-    
     public void setIsInNormalProtocol(boolean state) {
         isInNormalProtocol = state;        
     }
