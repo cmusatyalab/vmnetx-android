@@ -627,7 +627,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
      */
     void setModes() {
         AbstractInputHandler handler = getInputHandlerByName(connection.getInputMode());
-        AbstractScaling.getByScaleType(connection.getScaleMode()).setScaleTypeForActivity(this);
+        AbstractScaling.getByScaleType(connection.getScaleMode()).setScaleTypeForActivity(this, connection);
         this.inputHandler = handler;
     }
 
@@ -662,7 +662,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         float oldScale = canvas.scaling.getScale();
         int x = canvas.absoluteXPosition;
         int y = canvas.absoluteYPosition;
-        canvas.scaling.setScaleTypeForActivity(RemoteCanvasActivity.this);
+        canvas.scaling.setScaleTypeForActivity(RemoteCanvasActivity.this, connection);
         float newScale = canvas.scaling.getScale();
         canvas.scaling.adjust(this, oldScale/newScale, 0, 0);
         newScale = canvas.scaling.getScale();
@@ -848,7 +848,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         case R.id.itemZoomable:
         case R.id.itemOneToOne:
         case R.id.itemFitToScreen:
-            AbstractScaling.getById(item.getItemId()).setScaleTypeForActivity(this);
+            AbstractScaling.getById(item.getItemId()).setScaleTypeForActivity(this, connection);
             item.setChecked(true);
             return true;
         case R.id.itemDisconnect:
@@ -1006,10 +1006,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 keyboardControls.hide();
             }
         }
-    }
-    
-    public ConnectionBean getConnection() {
-        return connection;
     }
     
     // Returns whether we are using D-pad/Trackball to send arrow key events.

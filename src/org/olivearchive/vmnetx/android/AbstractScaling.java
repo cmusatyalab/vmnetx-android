@@ -105,7 +105,7 @@ public abstract class AbstractScaling {
      * Sets the activity's scale type to the scaling
      * @param activity
      */
-    void setScaleTypeForActivity(RemoteCanvasActivity activity)
+    void setScaleTypeForActivity(RemoteCanvasActivity activity, ConnectionBean connection)
     {
         RemoteCanvas canvas = activity.getCanvas();
         activity.keyboardControls.hide();
@@ -114,7 +114,7 @@ public abstract class AbstractScaling {
         // essentially zoom-scaling with minimumScale and zoom disabled. However, we still use
         // it to identify Fit-to-screen scale mode. Instead of setting scaleType here, we hard-code MATRIX.
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
-        activity.getConnection().setScaleMode(scaleType);
+        connection.setScaleMode(scaleType);
         activity.updateInputMenu();
     }
     

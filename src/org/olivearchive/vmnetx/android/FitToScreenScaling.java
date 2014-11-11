@@ -78,11 +78,11 @@ class FitToScreenScaling extends AbstractScaling {
     }
 
     /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#setScaleTypeForActivity(org.olivearchive.vmnetx.android.VncCanvasActivity)
+     * @see org.olivearchive.vmnetx.android.AbstractScaling#setScaleTypeForActivity(org.olivearchive.vmnetx.android.RemoteCanvasActivity, org.olivearchive.vmnetx.android.ConnectionBean)
      */
     @Override
-    void setScaleTypeForActivity(RemoteCanvasActivity activity) {
-        super.setScaleTypeForActivity(activity);
+    void setScaleTypeForActivity(RemoteCanvasActivity activity, ConnectionBean connection) {
+        super.setScaleTypeForActivity(activity, connection);
         RemoteCanvas canvas = activity.getCanvas();
         canvas.absoluteXPosition = 0;
         canvas.absoluteYPosition = 0;
