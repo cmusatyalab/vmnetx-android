@@ -82,15 +82,15 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private RelativeLayout layoutKeys;
     private ImageButton keyStow;
     private ImageButton keyCtrl;
-    private boolean keyCtrlToggled;
+    private boolean keyCtrlLocked;
     private ImageButton keySuper;
-    private boolean keySuperToggled;
+    private boolean keySuperLocked;
     private ImageButton keyAlt;
-    private boolean keyAltToggled;
+    private boolean keyAltLocked;
     private ImageButton keyTab;
     private ImageButton keyEsc;
     private ImageButton keyShift;
-    private boolean keyShiftToggled;
+    private boolean keyShiftLocked;
     private ImageButton keyUp;
     private ImageButton keyDown;
     private ImageButton keyLeft;
@@ -342,7 +342,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             @Override
             public void onClick(View arg0) {
                 boolean on = canvas.getKeyboard().onScreenCtrlToggle();
-                keyCtrlToggled = false;
+                keyCtrlLocked = false;
                 if (on)
                     keyCtrl.setImageResource(R.drawable.ctrlon);
                 else
@@ -355,7 +355,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             public boolean onLongClick(View arg0) {
                 Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenCtrlToggle();
-                keyCtrlToggled = true;
+                keyCtrlLocked = true;
                 if (on)
                     keyCtrl.setImageResource(R.drawable.ctrlon);
                 else
@@ -369,7 +369,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             @Override
             public void onClick(View arg0) {
                 boolean on = canvas.getKeyboard().onScreenSuperToggle();
-                keySuperToggled = false;
+                keySuperLocked = false;
                 if (on)
                     keySuper.setImageResource(R.drawable.superon);
                 else
@@ -382,7 +382,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             public boolean onLongClick(View arg0) {
                 Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenSuperToggle();
-                keySuperToggled = true;
+                keySuperLocked = true;
                 if (on)
                     keySuper.setImageResource(R.drawable.superon);
                 else
@@ -396,7 +396,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             @Override
             public void onClick(View arg0) {
                 boolean on = canvas.getKeyboard().onScreenAltToggle();
-                keyAltToggled = false;
+                keyAltLocked = false;
                 if (on)
                     keyAlt.setImageResource(R.drawable.alton);
                 else
@@ -409,7 +409,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             public boolean onLongClick(View arg0) {
                 Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenAltToggle();
-                keyAltToggled = true;
+                keyAltLocked = true;
                 if (on)
                     keyAlt.setImageResource(R.drawable.alton);
                 else
@@ -423,7 +423,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             @Override
             public void onClick(View arg0) {
                 boolean on = canvas.getKeyboard().onScreenShiftToggle();
-                keyShiftToggled = false;
+                keyShiftLocked = false;
                 if (on)
                     keyShift.setImageResource(R.drawable.shifton);
                 else
@@ -436,7 +436,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             public boolean onLongClick(View arg0) {
                 Utils.performLongPressHaptic(canvas);
                 boolean on = canvas.getKeyboard().onScreenShiftToggle();
-                keyShiftToggled = true;
+                keyShiftLocked = true;
                 if (on)
                     keyShift.setImageResource(R.drawable.shifton);
                 else
@@ -543,19 +543,19 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         case KeyEvent.KEYCODE_SHIFT_LEFT:
         case KeyEvent.KEYCODE_SHIFT_RIGHT: return;
         }
-        if (!keyCtrlToggled) {
+        if (!keyCtrlLocked) {
             keyCtrl.setImageResource(R.drawable.ctrloff);
             canvas.getKeyboard().onScreenCtrlOff();
         }
-        if (!keyAltToggled) {
+        if (!keyAltLocked) {
             keyAlt.setImageResource(R.drawable.altoff);
             canvas.getKeyboard().onScreenAltOff();
         }
-        if (!keySuperToggled) {
+        if (!keySuperLocked) {
             keySuper.setImageResource(R.drawable.superoff);
             canvas.getKeyboard().onScreenSuperOff();
         }
-        if (!keyShiftToggled) {
+        if (!keyShiftLocked) {
             keyShift.setImageResource(R.drawable.shiftoff);
             canvas.getKeyboard().onScreenShiftOff();
         }
