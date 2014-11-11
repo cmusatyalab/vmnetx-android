@@ -33,7 +33,6 @@ class OneToOneScaling extends AbstractScaling {
     private Matrix matrix;
     int canvasXOffset;
     int canvasYOffset;
-    float scaling;
 
     /**
      * @param id
@@ -42,7 +41,6 @@ class OneToOneScaling extends AbstractScaling {
     public OneToOneScaling() {
         super(R.id.itemOneToOne,ScaleType.CENTER);
         matrix = new Matrix();
-        scaling = 1;
     }
     
     /* (non-Javadoc)
@@ -84,7 +82,7 @@ class OneToOneScaling extends AbstractScaling {
      */
     @Override
     float getScale() {
-        return scaling;
+        return 1;
     }
 
     private void resetMatrix()
@@ -103,9 +101,8 @@ class OneToOneScaling extends AbstractScaling {
         canvasXOffset = -canvas.getCenteredXOffset();
         canvasYOffset = -canvas.getCenteredYOffset();
         canvas.computeShiftFromFullToView ();
-        scaling = 1;
         resetMatrix();
-        matrix.postScale(scaling, scaling);
+        matrix.postScale(1, 1);
         canvas.setImageMatrix(matrix);
         resolveZoom(canvas);
         //activity.vncCanvas.pan(0, 0);

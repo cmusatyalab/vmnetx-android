@@ -99,7 +99,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     ImageButton    keyDown;
     ImageButton    keyLeft;
     ImageButton    keyRight;
-    boolean       hardKeyboardExtended;
     boolean       extraKeysHidden = false;
     int            prevBottomOffset = 0;
     
@@ -853,7 +852,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        canvas.getKeyboard().setAfterMenu(true);
         switch (item.getItemId()) {
             // Following sets one of the scaling options
         case R.id.itemZoomable:

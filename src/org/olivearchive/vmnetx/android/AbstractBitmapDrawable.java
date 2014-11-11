@@ -40,13 +40,10 @@ public class AbstractBitmapDrawable extends DrawableContainer {
     boolean softCursorInit;
     Rect clipRect;
     Rect toDraw;
-    boolean drawing = false;
 
     AbstractBitmapData data;
 
     public Paint _defaultPaint;
-    Paint _whitePaint;
-    Paint _blackPaint;
 
     AbstractBitmapDrawable(AbstractBitmapData data)    {
         this.data = data;
@@ -59,10 +56,6 @@ public class AbstractBitmapDrawable extends DrawableContainer {
 
         _defaultPaint = new Paint();
         _defaultPaint.setFilterBitmap(true);
-        _whitePaint = new Paint();
-        _whitePaint.setColor(0xffffffff);
-        _blackPaint = new Paint();
-        _blackPaint.setColor(0xff000000);
     }
     
     void draw(Canvas canvas, int xoff, int yoff) {
@@ -126,16 +119,11 @@ public class AbstractBitmapDrawable extends DrawableContainer {
     }
     
     public void dispose() {
-        drawing = false;
         if (softCursor != null)
             softCursor.recycle();
         softCursor = null;
         cursorRect = null;
         clipRect = null;
         toDraw = null;
-    }
-    
-    protected void startDrawing() {
-        drawing = true;
     }
 }

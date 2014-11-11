@@ -90,8 +90,6 @@ public class RemoteCanvas extends ImageView {
     
     // Internal bitmap data
     public AbstractBitmapData bitmapData;
-    boolean useFull = false;
-    boolean compact = false;
     
     // Progress dialog shown at connection time.
     ProgressDialog pd;
@@ -115,11 +113,6 @@ public class RemoteCanvas extends ImageView {
      */
     int visibleHeight = -1;
 
-    /*
-     * These variables contain the width and height of the display in pixels
-     */
-    int displayWidth = 0;
-    int displayHeight = 0;
     float displayDensity = 0;
     
     boolean spiceUpdateReceived = false;
@@ -138,8 +131,6 @@ public class RemoteCanvas extends ImageView {
         super(context, attrs);
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
-        displayWidth  = display.getWidth();
-        displayHeight = display.getHeight();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         displayDensity = metrics.density;
@@ -304,14 +295,6 @@ public class RemoteCanvas extends ImageView {
         screenMessage = getResources().getText(messageID);
         handler.removeCallbacks(showMessage);
         handler.post(showMessage);
-    }
-    
-    
-    /**
-     * Lets the drawable know that an update from the remote server has arrived.
-     */
-    public void doneWaiting () {
-        bitmapData.doneWaiting();
     }
     
     
@@ -519,7 +502,6 @@ public class RemoteCanvas extends ImageView {
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         if (bitmapData != null) {
-            bitmapData.scrollChanged(absoluteXPosition, absoluteYPosition);
             pointer.mouseFollowPan();
         }
     }

@@ -96,9 +96,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     // The minimum distance a scale event has to traverse the FIRST time before scaling starts.
     final double  minScaleFactor = 0.1;
     
-    // What action was previously performed by a mouse or stylus.
-    int prevMouseOrStylusAction = 0;
-    
     // What the display density is.
     float displayDensity = 0;
     
@@ -119,7 +116,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     protected boolean middleDragMode = false;
     protected float   dragX, dragY;
     protected boolean singleHandedGesture = false;
-    protected boolean singleHandedJustEnded = false;
 
 
     /**
@@ -249,7 +245,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
             }
         }
         
-        prevMouseOrStylusAction = action;
         return false;
     }
 
@@ -369,7 +364,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
             switch (action) {
             case MotionEvent.ACTION_DOWN:
                 disregardNextOnFling = false;
-                singleHandedJustEnded = false;
                 // We have put down first pointer on the screen, so we can reset the state of all click-state variables.
                 // Permit sending mouse-down event on long-tap again.
                 secondPointerWasDown = false;
@@ -388,7 +382,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
                 break;
             case MotionEvent.ACTION_UP:
                 singleHandedGesture = false;
-                singleHandedJustEnded = true;
                 // If any drag modes were going on, end them and send a mouse up event.
                 if (endDragModesAndScrolling())
                     return p.processPointerEvent(getX(e), getY(e), action, meta, false, false, false, false, 0);

@@ -65,7 +65,6 @@ class CompactBitmapData extends AbstractBitmapData {
 
         memGraphics = new Canvas(mbitmap);
         bitmapPixels = new int[bitmapwidth * bitmapheight];
-        drawable.startDrawing();
     }
 
     @Override
@@ -107,14 +106,6 @@ class CompactBitmapData extends AbstractBitmapData {
     }
 
     /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#scrollChanged(int, int)
-     */
-    @Override
-    void scrollChanged(int newx, int newy) {
-        // Don't need to do anything here
-    }
-
-    /* (non-Javadoc)
      * @see org.olivearchive.vmnetx.android.AbstractBitmapData#frameBufferSizeChanged(RfbProto)
      */
     @Override
@@ -132,7 +123,6 @@ class CompactBitmapData extends AbstractBitmapData {
             mbitmap      = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
             memGraphics  = new Canvas(mbitmap);
             drawable     = createDrawable();
-            drawable.startDrawing();
         }
     }
 }

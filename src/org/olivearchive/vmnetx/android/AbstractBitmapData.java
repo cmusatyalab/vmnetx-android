@@ -42,11 +42,8 @@ abstract public class AbstractBitmapData {
     Bitmap mbitmap;
     int bitmapPixels[];
     Canvas memGraphics;
-    boolean waitingForInput;
     RemoteCanvas vncCanvas;
     public AbstractBitmapDrawable drawable;
-    int xoffset = 0;
-    int yoffset = 0;
 
     AbstractBitmapData(SpiceCommunicator s, RemoteCanvas c)
     {
@@ -55,10 +52,6 @@ abstract public class AbstractBitmapData {
         framebufferwidth  = spice.framebufferWidth();
         framebufferheight = spice.framebufferHeight();
         drawable = createDrawable();
-    }
-
-    synchronized void doneWaiting() {
-        waitingForInput = false;
     }
 
     void setCursorRect(int x, int y, int w, int h, int hX, int hY) {
@@ -155,16 +148,6 @@ abstract public class AbstractBitmapData {
     }
 
     /**
-     * Scroll position has changed.
-     * <p>
-     * This method is called in the UI thread-- it updates internal status, but does
-     * not change the bitmap data or send a network request
-     * @param newx Position of left edge of visible part in full-frame coordinates
-     * @param newy Position of top edge of visible part in full-frame coordinates
-     */
-    abstract void scrollChanged( int newx, int newy);
-
-    /**
      * Remote framebuffer size has changed.
      * <p>
      * This method is called when the framebuffer has changed size and reinitializes the
@@ -202,13 +185,5 @@ abstract public class AbstractBitmapData {
 
     public int bmHeight () {
         return bitmapheight;
-    }
-    
-    public int getXoffset () {
-        return xoffset;
-    }
-
-    public int getYoffset () {
-        return yoffset;
     }
 }

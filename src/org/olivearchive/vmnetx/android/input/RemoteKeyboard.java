@@ -42,10 +42,6 @@ public abstract class RemoteKeyboard {
     // Variable holding the state of any pressed hardware meta keys (Ctrl, Alt...)
     protected int hardwareMetaState = 0;
     
-    // Keep track when a seeming key press was the result of a menu shortcut
-    int lastKeyDown;
-    boolean afterMenu;
-
     // Variable holding the state of the on-screen buttons for meta keys (Ctrl, Alt...)
     protected int onScreenMetaState = 0;
     
@@ -177,10 +173,6 @@ public abstract class RemoteKeyboard {
 
     public int getMetaState () {
         return onScreenMetaState|lastDownMetaState;
-    }
-    
-    public void setAfterMenu(boolean value) {
-        afterMenu = value;
     }
     
     public void clearMetaState () {

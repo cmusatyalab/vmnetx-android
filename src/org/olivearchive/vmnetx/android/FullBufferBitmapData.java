@@ -31,8 +31,6 @@ class FullBufferBitmapData extends AbstractBitmapData {
      */
     static final int CAPACITY_MULTIPLIER = 6;
     
-    int xoffset;
-    int yoffset;
     int dataWidth;
     int dataHeight;
 
@@ -102,7 +100,6 @@ class FullBufferBitmapData extends AbstractBitmapData {
         dataHeight=framebufferheight;
         android.util.Log.i("FBBM", "bitmapsize = ("+bitmapwidth+","+bitmapheight+")");
         bitmapPixels = new int[framebufferwidth * framebufferheight];
-        drawable.startDrawing();
     }
 
     /* (non-Javadoc)
@@ -119,15 +116,6 @@ class FullBufferBitmapData extends AbstractBitmapData {
     @Override
     public int offset(int x, int y) {
         return x + y * framebufferwidth;
-    }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#scrollChanged(int, int)
-     */
-    @Override
-    void scrollChanged(int newx, int newy) {
-        xoffset = newx;
-        yoffset = newy;
     }
 
     /* (non-Javadoc)
@@ -148,7 +136,6 @@ class FullBufferBitmapData extends AbstractBitmapData {
             dataHeight   = framebufferheight;
             bitmapPixels = new int[framebufferwidth * framebufferheight];
             drawable     = createDrawable();
-            drawable.startDrawing();
         }
     }
     

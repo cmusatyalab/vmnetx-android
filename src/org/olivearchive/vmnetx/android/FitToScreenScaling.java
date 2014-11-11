@@ -34,7 +34,6 @@ class FitToScreenScaling extends AbstractScaling {
     int canvasXOffset;
     int canvasYOffset;
     float scaling;
-    float minimumScale;
     
     /**
      * @param id
@@ -106,8 +105,7 @@ class FitToScreenScaling extends AbstractScaling {
         canvasXOffset = -canvas.getCenteredXOffset();
         canvasYOffset = -canvas.getCenteredYOffset();
         canvas.computeShiftFromFullToView ();
-        minimumScale = canvas.bitmapData.getMinimumScale();
-        scaling = minimumScale;
+        scaling = canvas.bitmapData.getMinimumScale();
         resetMatrix();
         matrix.postScale(scaling, scaling);
         canvas.setImageMatrix(matrix);
