@@ -32,7 +32,6 @@ public abstract class RemotePointer {
     abstract public int getY();
     abstract public void setX(int newX);
     abstract public void setY(int newY);
-    abstract public void warpMouse(int x, int y);
     abstract public boolean processPointerEvent(MotionEvent evt, boolean downEvent);
     abstract public boolean processPointerEvent(MotionEvent evt, boolean downEvent, 
                                        boolean useRightButton, boolean useMiddleButton, boolean useScrollButton, int direction);

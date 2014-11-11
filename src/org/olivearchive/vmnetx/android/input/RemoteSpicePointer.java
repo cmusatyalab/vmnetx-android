@@ -38,23 +38,6 @@ public class RemoteSpicePointer extends RemotePointer {
     }
 
     /**
-     * Warp the mouse to x, y in the RFB coordinates
-     * 
-     * @param x
-     * @param y
-     */
-    public void warpMouse(int x, int y)
-    {
-        vncCanvas.invalidateMousePosition();
-        mouseX=x;
-        mouseY=y;
-        vncCanvas.invalidateMousePosition();
-        //android.util.Log.i(TAG, "warp mouse to " + x + "," + y);
-        //processPointerEvent(getX(), getY(), MotionEvent.ACTION_MOVE, 0, false, false, false, false, 0);
-        spice.writePointerEvent(x, y, 0, MOUSE_BUTTON_MOVE);
-    }
-    
-    /**
      * Convert a motion event to a format suitable for sending over the wire
      * @param evt motion event; x and y must already have been converted from screen coordinates
      * to remote frame buffer coordinates.
