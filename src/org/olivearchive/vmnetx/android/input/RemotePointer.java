@@ -19,7 +19,7 @@ public abstract class RemotePointer {
     /**
      * Indicates where the mouse pointer is located.
      */
-    public int mouseX, mouseY;
+    protected int mouseX, mouseY;
 
     public RemotePointer (SpiceCommunicator s, RemoteCanvas v) {
         spice = s;

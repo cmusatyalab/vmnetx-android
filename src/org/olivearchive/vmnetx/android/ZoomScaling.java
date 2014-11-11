@@ -32,10 +32,10 @@ class ZoomScaling extends AbstractScaling {
     static final String TAG = "ZoomScaling";
 
     private Matrix matrix;
-    int canvasXOffset;
-    int canvasYOffset;
-    float scaling;
-    float minimumScale;
+    private int canvasXOffset;
+    private int canvasYOffset;
+    private float scaling;
+    private float minimumScale;
     
     /**
      * @param id

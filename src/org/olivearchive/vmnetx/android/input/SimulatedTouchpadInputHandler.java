@@ -9,8 +9,8 @@ import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 public class SimulatedTouchpadInputHandler extends AbstractGestureInputHandler {
     static final String TAG = "SimulatedTouchpadInputHandler";
     public static final String TOUCHPAD_MODE = "TOUCHPAD_MODE";
-    float sensitivity = 0;
-    boolean acceleration = false;
+    private float sensitivity = 0;
+    private boolean acceleration = false;
 
     /**
      * @param c

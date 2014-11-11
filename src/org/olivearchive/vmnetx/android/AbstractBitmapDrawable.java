@@ -35,13 +35,14 @@ import android.util.Log;
  */
 public class AbstractBitmapDrawable extends DrawableContainer {
     RectF cursorRect;
-    int hotX, hotY;
-    Bitmap softCursor;
     boolean softCursorInit;
-    Rect clipRect;
-    Rect toDraw;
 
-    AbstractBitmapData data;
+    protected Rect toDraw;
+    protected Bitmap softCursor;
+    protected AbstractBitmapData data;
+
+    private int hotX, hotY;
+    private Rect clipRect;
 
     public Paint _defaultPaint;
 

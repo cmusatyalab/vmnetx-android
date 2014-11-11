@@ -80,27 +80,27 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                                                   R.id.itemOneToOne};
 
     KeyboardControls keyboardControls;
-    Panner panner;
-    Handler handler;
+    private Panner panner;
+    private Handler handler;
 
-    RelativeLayout layoutKeys;
-    ImageButton    keyStow;
-    ImageButton    keyCtrl;
-    boolean       keyCtrlToggled;
-    ImageButton    keySuper;
-    boolean       keySuperToggled;
-    ImageButton    keyAlt;
-    boolean       keyAltToggled;
-    ImageButton    keyTab;
-    ImageButton    keyEsc;
-    ImageButton    keyShift;
-    boolean       keyShiftToggled;
-    ImageButton    keyUp;
-    ImageButton    keyDown;
-    ImageButton    keyLeft;
-    ImageButton    keyRight;
-    boolean       extraKeysHidden = false;
-    int            prevBottomOffset = 0;
+    private RelativeLayout layoutKeys;
+    private ImageButton keyStow;
+    private ImageButton keyCtrl;
+    private boolean keyCtrlToggled;
+    private ImageButton keySuper;
+    private boolean keySuperToggled;
+    private ImageButton keyAlt;
+    private boolean keyAltToggled;
+    private ImageButton keyTab;
+    private ImageButton keyEsc;
+    private ImageButton keyShift;
+    private boolean keyShiftToggled;
+    private ImageButton keyUp;
+    private ImageButton keyDown;
+    private ImageButton keyLeft;
+    private ImageButton keyRight;
+    private boolean extraKeysHidden = false;
+    private int prevBottomOffset = 0;
     
     @Override
     public void onCreate(Bundle icicle) {

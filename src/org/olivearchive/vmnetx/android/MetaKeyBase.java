@@ -25,15 +25,17 @@ package org.olivearchive.vmnetx.android;
  *
  */
 public class MetaKeyBase implements Comparable<MetaKeyBase> {
-    int keySym;
-    int mouseButtons;
-    int keyEvent;
-    String name;
-    boolean isMouse;
-    boolean isKeyEvent;
+    final int keySym;
+    final int keyEvent;
+    final int mouseButtons;
+    final String name;
+    final boolean isMouse;
+    final boolean isKeyEvent;
     
     MetaKeyBase(int mouseButtons, String name)
     {
+        this.keySym = 0;
+        this.keyEvent = 0;
         this.mouseButtons = mouseButtons;
         this.name = name;
         this.isMouse = true;
@@ -42,17 +44,20 @@ public class MetaKeyBase implements Comparable<MetaKeyBase> {
     
     MetaKeyBase(String name, int keySym, int keyEvent)
     {
-        this.name = name;
         this.keySym = keySym;
         this.keyEvent = keyEvent;
+        this.mouseButtons = 0;
+        this.name = name;
         this.isMouse = false;
         this.isKeyEvent = true;
     }
     
     MetaKeyBase(String name, int keySym)
     {
-        this.name = name;
         this.keySym = keySym;
+        this.keyEvent = 0;
+        this.mouseButtons = 0;
+        this.name = name;
         this.isMouse = false;
         this.isKeyEvent = false;        
     }

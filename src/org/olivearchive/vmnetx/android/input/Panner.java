@@ -34,12 +34,12 @@ import android.util.Log;
  */
 public class Panner implements Runnable {
     
-    RemoteCanvasActivity activity;
-    Handler handler;
-    PointF velocity;
-    long lastSent;
-    VelocityUpdater updater;
-    final int freq = 10;
+    protected RemoteCanvasActivity activity;
+    protected Handler handler;
+    protected PointF velocity;
+    protected long lastSent;
+    protected VelocityUpdater updater;
+    private final int freq = 10;
     
     private static final String TAG = "PANNER";
     

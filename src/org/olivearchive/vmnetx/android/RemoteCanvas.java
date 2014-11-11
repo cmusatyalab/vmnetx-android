@@ -72,7 +72,7 @@ public class RemoteCanvas extends ImageView {
     public boolean inScrolling = false;
     
     // Connection parameters
-    ConnectionBean connection;
+    private ConnectionBean connection;
 
     // VMNetX control connection
     private ControlConnectionProcessor controlConn;
@@ -82,17 +82,17 @@ public class RemoteCanvas extends ImageView {
     // SPICE protocol connection
     private SpiceCommunicator spice = null;
     
-    boolean maintainConnection = true;
+    private boolean maintainConnection = true;
     
     // The remote pointer and keyboard
-    RemotePointer pointer;
-    RemoteKeyboard keyboard;
+    private RemotePointer pointer;
+    private RemoteKeyboard keyboard;
     
     // Internal bitmap data
     public AbstractBitmapData bitmapData;
     
     // Progress dialog shown at connection time.
-    ProgressDialog pd;
+    private ProgressDialog pd;
     
     private Runnable setModes;
     
@@ -105,13 +105,13 @@ public class RemoteCanvas extends ImageView {
     /*
      * How much to shift coordinates over when converting from full to view coordinates.
      */
-    float shiftX = 0, shiftY = 0;
+    private float shiftX = 0, shiftY = 0;
 
     /*
      * This variable holds the height of the visible rectangle of the screen. It is used to keep track
      * of how much of the screen is hidden by the soft keyboard if any.
      */
-    int visibleHeight = -1;
+    private int visibleHeight = -1;
 
     float displayDensity = 0;
     
@@ -120,7 +120,7 @@ public class RemoteCanvas extends ImageView {
     /*
      * Variable used for BB workarounds.
      */
-    boolean bb = false;
+    private boolean bb = false;
     
     /**
      * Constructor used by the inflation apparatus

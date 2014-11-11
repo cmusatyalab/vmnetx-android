@@ -58,53 +58,53 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     protected DPadMouseKeyHandler keyHandler;
     
     // This is the initial "focal point" of the gesture (between the two fingers).
-    float xInitialFocus;
-    float yInitialFocus;
+    private float xInitialFocus;
+    private float yInitialFocus;
     
     // This is the final "focal point" of the gesture (between the two fingers).
-    float xCurrentFocus;
-    float yCurrentFocus;
-    float xPreviousFocus;
-    float yPreviousFocus;
+    private float xCurrentFocus;
+    private float yCurrentFocus;
+    private float xPreviousFocus;
+    private float yPreviousFocus;
     
     // These variables record whether there was a two-finger swipe performed up or down.
-    boolean inSwiping           = false;
-    boolean twoFingerSwipeUp    = false;
-    boolean twoFingerSwipeDown  = false;
-    boolean twoFingerSwipeLeft  = false;
-    boolean twoFingerSwipeRight = false;
+    protected boolean inSwiping         = false;
+    private boolean twoFingerSwipeUp    = false;
+    private boolean twoFingerSwipeDown  = false;
+    private boolean twoFingerSwipeLeft  = false;
+    private boolean twoFingerSwipeRight = false;
     
     // These variables indicate whether the dpad should be used as arrow keys
     // and whether it should be rotated.
-    boolean useDpadAsArrows    = false;
-    boolean rotateDpad         = false;
-    boolean trackballButtonDown;
+    private boolean useDpadAsArrows    = false;
+    private boolean rotateDpad         = false;
+    private boolean trackballButtonDown;
     
     // The variables which indicates how many scroll events to send per swipe 
     // event and the maximum number to send at one time.
-    long swipeSpeed    = 1;
-    int  maxSwipeSpeed = 20;
+    private long swipeSpeed = 1;
+    private final int maxSwipeSpeed = 20;
     // If swipe events are registered once every baseSwipeTime miliseconds, then
     // swipeSpeed will be one. If more often, swipe-speed goes up, if less, down.
-    final long    baseSwipeTime = 600;
+    private final long baseSwipeTime = 600;
     // This is how far the swipe has to travel before a swipe event is generated.
-    final float   baseSwipeDist = 40.f;
+    private final float baseSwipeDist = 40.f;
     
-    boolean inScrolling         = false;
-    boolean inScaling           = false;
-    boolean scalingJustFinished = false;
+    protected boolean inScrolling         = false;
+    protected boolean inScaling           = false;
+    protected boolean scalingJustFinished = false;
     // The minimum distance a scale event has to traverse the FIRST time before scaling starts.
-    final double  minScaleFactor = 0.1;
+    private final double minScaleFactor = 0.1;
     
     // What the display density is.
-    float displayDensity = 0;
+    protected float displayDensity = 0;
     
     // Indicates that the next onFling will be disregarded.
-    boolean disregardNextOnFling = false;
+    private boolean disregardNextOnFling = false;
     
     // Queue which holds the last two MotionEvents which triggered onScroll
-    Queue<Float> distXQueue;
-    Queue<Float> distYQueue;
+    protected Queue<Float> distXQueue;
+    protected Queue<Float> distYQueue;
     
     /**
      * In the drag modes, we process mouse events without sending them through

@@ -31,8 +31,8 @@ class FullBufferBitmapData extends AbstractBitmapData {
      */
     static final int CAPACITY_MULTIPLIER = 6;
     
-    int dataWidth;
-    int dataHeight;
+    private int dataWidth;
+    private int dataHeight;
 
     class Drawable extends AbstractBitmapDrawable {
         private final static String TAG = "Drawable";

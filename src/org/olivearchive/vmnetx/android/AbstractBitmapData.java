@@ -38,11 +38,11 @@ abstract public class AbstractBitmapData {
     int framebufferheight;
     int bitmapwidth;
     int bitmapheight;
-    SpiceCommunicator spice;
     Bitmap mbitmap;
-    int bitmapPixels[];
-    Canvas memGraphics;
-    RemoteCanvas vncCanvas;
+    protected SpiceCommunicator spice;
+    protected int bitmapPixels[];
+    protected Canvas memGraphics;
+    private RemoteCanvas vncCanvas;
     public AbstractBitmapDrawable drawable;
 
     AbstractBitmapData(SpiceCommunicator s, RemoteCanvas c)

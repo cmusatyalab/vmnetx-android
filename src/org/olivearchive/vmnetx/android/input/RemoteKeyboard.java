@@ -49,7 +49,7 @@ public abstract class RemoteKeyboard {
     protected int lastDownMetaState = 0;
     
     // Variable used for BB10 workarounds
-    boolean bb = false;
+    private boolean bb = false;
     
     // This variable tells us whether we need to skip junk characters for
     // SDK >= 16 and LatinIME next time a multi-character event comes along.
@@ -265,7 +265,7 @@ public abstract class RemoteKeyboard {
      * @param evt
      * @return
      */
-    int numJunkCharactersToSkip (int numchars, KeyEvent evt) {
+    protected int numJunkCharactersToSkip (int numchars, KeyEvent evt) {
         int i = 0;
         if (!skippedJunkChars) {
             if (numchars == 10000) {

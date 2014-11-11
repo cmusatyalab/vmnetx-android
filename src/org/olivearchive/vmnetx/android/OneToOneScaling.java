@@ -31,8 +31,8 @@ class OneToOneScaling extends AbstractScaling {
     static final String TAG = "OneToOneScaling";
 
     private Matrix matrix;
-    int canvasXOffset;
-    int canvasYOffset;
+    private int canvasXOffset;
+    private int canvasYOffset;
 
     /**
      * @param id

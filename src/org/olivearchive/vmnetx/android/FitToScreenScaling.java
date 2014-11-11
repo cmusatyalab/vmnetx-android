@@ -31,9 +31,9 @@ class FitToScreenScaling extends AbstractScaling {
     static final String TAG = "FitToScreenScaling";
     
     private Matrix matrix;
-    int canvasXOffset;
-    int canvasYOffset;
-    float scaling;
+    private int canvasXOffset;
+    private int canvasYOffset;
+    private float scaling;
     
     /**
      * @param id

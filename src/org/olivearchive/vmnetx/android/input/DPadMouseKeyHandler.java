@@ -44,8 +44,8 @@ class DPadMouseKeyHandler {
     private boolean isMoving;
     private boolean useDpadAsArrows = false;
     private boolean rotateDpad      = false;
-    RemoteKeyboard keyboard;
-    RemotePointer pointer;
+    private RemoteKeyboard keyboard;
+    private RemotePointer pointer;
 
     DPadMouseKeyHandler(RemoteCanvasActivity activity, Handler handler, boolean arrows, boolean rotate)
     {
