@@ -6,7 +6,7 @@ import android.os.Handler;
 
 import org.olivearchive.vmnetx.android.input.KeyboardMapper;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
-import org.olivearchive.vmnetx.android.input.RemoteSpicePointer;
+import org.olivearchive.vmnetx.android.input.RemotePointer;
 import com.gstreamer.*;
 
 public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
@@ -160,10 +160,10 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
 
     public void writePointerEvent(int x, int y, int metaState, int pointerMask) {
         this.metaState = metaState; 
-        if ((pointerMask & RemoteSpicePointer.PTRFLAGS_DOWN) != 0)
+        if ((pointerMask & RemotePointer.PTRFLAGS_DOWN) != 0)
             sendModifierKeys(true);
         sendMouseEvent(x, y, metaState, pointerMask);
-        if ((pointerMask & RemoteSpicePointer.PTRFLAGS_DOWN) == 0)
+        if ((pointerMask & RemotePointer.PTRFLAGS_DOWN) == 0)
             sendModifierKeys(false);
     }
 

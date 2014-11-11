@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
-import org.olivearchive.vmnetx.android.input.RemoteSpicePointer;
+import org.olivearchive.vmnetx.android.input.RemotePointer;
 
 import android.view.KeyEvent;
 
@@ -61,11 +61,11 @@ public class MetaKeyBean implements Comparable<MetaKeyBean> {
         allKeys.add(new MetaKeyBase("Left_Super", 0xffeb));
         allKeys.add(new MetaKeyBase("Right_Super", 0xffec));
 
-        allKeys.add(new MetaKeyBase(RemoteSpicePointer.MOUSE_BUTTON_LEFT, "Mouse Left"));
-        allKeys.add(new MetaKeyBase(RemoteSpicePointer.MOUSE_BUTTON_MIDDLE, "Mouse Middle"));
-        allKeys.add(new MetaKeyBase(RemoteSpicePointer.MOUSE_BUTTON_RIGHT, "Mouse Right"));
-        allKeys.add(new MetaKeyBase(RemoteSpicePointer.MOUSE_BUTTON_SCROLL_DOWN, "Mouse Scroll Down"));
-        allKeys.add(new MetaKeyBase(RemoteSpicePointer.MOUSE_BUTTON_SCROLL_UP, "Mouse Scroll Up"));
+        allKeys.add(new MetaKeyBase(RemotePointer.MOUSE_BUTTON_LEFT, "Mouse Left"));
+        allKeys.add(new MetaKeyBase(RemotePointer.MOUSE_BUTTON_MIDDLE, "Mouse Middle"));
+        allKeys.add(new MetaKeyBase(RemotePointer.MOUSE_BUTTON_RIGHT, "Mouse Right"));
+        allKeys.add(new MetaKeyBase(RemotePointer.MOUSE_BUTTON_SCROLL_DOWN, "Mouse Scroll Down"));
+        allKeys.add(new MetaKeyBase(RemotePointer.MOUSE_BUTTON_SCROLL_UP, "Mouse Scroll Up"));
         
         allKeys.add(new MetaKeyBase("Home", 0xFF50));
         allKeys.add(new MetaKeyBase("Arrow Left", 0xFF51));

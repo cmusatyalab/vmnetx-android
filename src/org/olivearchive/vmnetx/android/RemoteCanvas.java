@@ -58,7 +58,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 
-import org.olivearchive.vmnetx.android.input.RemoteSpicePointer;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
 
@@ -200,7 +199,7 @@ public class RemoteCanvas extends ImageView {
             public void run() {
                 try {
                     spice = new SpiceCommunicator (getContext(), RemoteCanvas.this, handler, connection);
-                    pointer = new RemoteSpicePointer (spice, RemoteCanvas.this);
+                    pointer = new RemotePointer (spice, RemoteCanvas.this);
                     keyboard = new RemoteKeyboard (spice, RemoteCanvas.this, handler);
                     spice.connect();
                 } catch (Throwable e) {
