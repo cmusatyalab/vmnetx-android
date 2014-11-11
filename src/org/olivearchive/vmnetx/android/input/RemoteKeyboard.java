@@ -5,11 +5,12 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import org.olivearchive.vmnetx.android.MetaKeyBean;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 
-public abstract class RemoteKeyboard {
+public class RemoteKeyboard {
     public final static int SCAN_ESC = 1;
     public final static int SCAN_LEFTCTRL = 29;
     public final static int SCAN_RIGHTCTRL = 97;
@@ -33,20 +34,20 @@ public abstract class RemoteKeyboard {
     public final static int SUPER_MASK = 8;
     public final static int META_MASK  = 0;
     
-    protected RemoteCanvas vncCanvas;
-    protected SpiceCommunicator spice;
-    protected Context context;
-    protected KeyboardMapper keyboardMapper;
-    protected KeyRepeater keyRepeater;
+    private RemoteCanvas vncCanvas;
+    private SpiceCommunicator spice;
+    private Context context;
+    private KeyboardMapper keyboardMapper;
+    private KeyRepeater keyRepeater;
 
     // Variable holding the state of any pressed hardware meta keys (Ctrl, Alt...)
-    protected int hardwareMetaState = 0;
+    private int hardwareMetaState = 0;
     
     // Variable holding the state of the on-screen buttons for meta keys (Ctrl, Alt...)
-    protected int onScreenMetaState = 0;
+    private int onScreenMetaState = 0;
     
     // Variable holding the state of the last metaState resulting from a button press.
-    protected int lastDownMetaState = 0;
+    private int lastDownMetaState = 0;
     
     // Variable used for BB10 workarounds
     private boolean bb = false;
@@ -55,7 +56,7 @@ public abstract class RemoteKeyboard {
     // SDK >= 16 and LatinIME next time a multi-character event comes along.
     public boolean skippedJunkChars = true;
 
-    RemoteKeyboard (SpiceCommunicator s, RemoteCanvas v, Handler h) {
+    public RemoteKeyboard (SpiceCommunicator s, RemoteCanvas v, Handler h) {
         spice = s;
         vncCanvas = v;
         keyRepeater = new KeyRepeater (this, h);
@@ -65,19 +66,156 @@ public abstract class RemoteKeyboard {
             android.os.Build.MANUFACTURER.contains("BlackBerry")) {
             bb = true;
         }
+
+        context = v.getContext();
+
+        keyboardMapper = new KeyboardMapper();
+        keyboardMapper.init(context);
+        keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener) s);
     }
 
     public boolean processLocalKeyEvent(int keyCode, KeyEvent evt) {
         return processLocalKeyEvent (keyCode, evt, 0);
     }
     
-    public abstract boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState);
+    public boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState) {
+        //android.util.Log.e(TAG, evt.toString() + " " + keyCode);
+
+        if (spice != null && spice.isInNormalProtocol()) {
+            boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
+                           (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
+            
+            if (keyCode == KeyEvent.KEYCODE_MENU)
+                return true;                           // Ignore menu key
+
+            // Detect whether this event is coming from a default hardware keyboard.
+            boolean defaultHardwareKbd = (evt.getDeviceId() == 0);
+            if (!down) {
+                switch (evt.getScanCode()) {
+                case SCAN_LEFTCTRL:
+                case SCAN_RIGHTCTRL:
+                    hardwareMetaState &= ~CTRL_MASK;
+                    break;
+                }
+                
+                switch(keyCode) {
+                case KeyEvent.KEYCODE_DPAD_CENTER:
+                    hardwareMetaState &= ~CTRL_MASK;
+                    break;
+                case KeyEvent.KEYCODE_ALT_LEFT:
+                    // Leaving KeyEvent.KEYCODE_ALT_LEFT for symbol input on hardware keyboards.
+                    if (!defaultHardwareKbd)
+                        hardwareMetaState &= ~ALT_MASK;
+                    break;
+                case KeyEvent.KEYCODE_ALT_RIGHT:
+                    hardwareMetaState &= ~ALT_MASK;
+                    break;
+                }
+            } else {
+                // Look for standard scan-codes from hardware keyboards
+                switch (evt.getScanCode()) {
+                case SCAN_LEFTCTRL:
+                case SCAN_RIGHTCTRL:
+                    hardwareMetaState |= CTRL_MASK;
+                    break;
+                }
+                
+                switch(keyCode) {
+                case KeyEvent.KEYCODE_DPAD_CENTER:
+                    hardwareMetaState |= CTRL_MASK;
+                    break;
+                case KeyEvent.KEYCODE_ALT_LEFT:
+                    // Leaving KeyEvent.KEYCODE_ALT_LEFT for symbol input on hardware keyboards.
+                    if (!defaultHardwareKbd)
+                        hardwareMetaState |= ALT_MASK;
+                    break;
+                case KeyEvent.KEYCODE_ALT_RIGHT:
+                    hardwareMetaState |= ALT_MASK;
+                    break;
+                }
+            }
+
+            // Update the meta-state with writeKeyEvent.
+            int metaState = onScreenMetaState|hardwareMetaState|additionalMetaState|convertEventMetaState(evt);
+            spice.writeKeyEvent(keyCode, metaState, down);
+            if (down) {
+                lastDownMetaState = metaState;
+            } else {
+                lastDownMetaState = 0;
+            }
+            
+            if (keyCode == 0 /*KEYCODE_UNKNOWN*/) {
+                String s = evt.getCharacters();
+                if (s != null) {
+                    int numchars = s.length();
+                    int i = numJunkCharactersToSkip (numchars, evt);
+                    for (; i < numchars; i++) {
+                        //android.util.Log.e(TAG, "Sending unicode: " + s.charAt(i));
+                        sendUnicode (s.charAt(i), metaState);
+                    }
+                }
+                return true;
+            } else {
+                // Send the key to be processed through the KeyboardMapper.
+                return keyboardMapper.processAndroidKeyEvent(evt);
+            }
+        } else {
+            return false;
+        }
+    }
 
     public void repeatKeyEvent(int keyCode, KeyEvent event) { keyRepeater.start(keyCode, event); }
 
     public void stopRepeatingKeyEvent() { keyRepeater.stop(); }
 
-    public abstract void sendMetaKey(MetaKeyBean meta);
+    public void sendMetaKey(MetaKeyBean meta) {
+        RemotePointer pointer = vncCanvas.getPointer();
+        int x = pointer.getX();
+        int y = pointer.getY();
+        
+        if (meta.isMouseClick()) {
+            //android.util.Log.e("RemoteKeyboard", "is a mouse click");
+            int button = meta.getMouseButtons();
+            switch (button) {
+            case RemoteSpicePointer.MOUSE_BUTTON_LEFT:
+                pointer.processPointerEvent(x, y, MotionEvent.ACTION_DOWN, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
+                        true, false, false, false, 0);
+                break;
+            case RemoteSpicePointer.MOUSE_BUTTON_RIGHT:
+                pointer.processPointerEvent(x, y, MotionEvent.ACTION_DOWN, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
+                        true, true, false, false, 0);
+                break;
+            case RemoteSpicePointer.MOUSE_BUTTON_MIDDLE:
+                pointer.processPointerEvent(x, y, MotionEvent.ACTION_DOWN, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
+                        true, false, true, false, 0);
+                break;
+            case RemoteSpicePointer.MOUSE_BUTTON_SCROLL_UP:
+                pointer.processPointerEvent(x, y, MotionEvent.ACTION_MOVE, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
+                        true, false, false, true, 0);
+                break;
+            case RemoteSpicePointer.MOUSE_BUTTON_SCROLL_DOWN:
+                pointer.processPointerEvent(x, y, MotionEvent.ACTION_MOVE, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
+                        true, false, false, true, 1);
+                break;
+            }
+            try { Thread.sleep(50); } catch (InterruptedException e) {}
+            pointer.processPointerEvent(x, y, MotionEvent.ACTION_UP, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState,
+                    false, false, false, false, 0);
+
+            //spice.writePointerEvent(x, y, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState, button);
+            //spice.writePointerEvent(x, y, meta.getMetaFlags()|onScreenMetaState|hardwareMetaState, 0);
+        } else if (meta.equals(MetaKeyBean.keyCtrlAltDel)) {
+            // TODO: I should not need to treat this specially anymore.
+            int savedMetaState = onScreenMetaState|hardwareMetaState;
+            // Update the metastate
+            spice.writeKeyEvent(0, RemoteKeyboard.CTRL_MASK|RemoteKeyboard.ALT_MASK, false);
+            keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, 112));
+            keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, 112));
+            spice.writeKeyEvent(0, savedMetaState, false);
+        } else {
+            sendKeySym (meta.getKeySym(), meta.getMetaFlags());
+        }
+    }
     
     /**
      * Toggles on-screen Ctrl mask. Returns true if result is Ctrl enabled, false otherwise.
@@ -235,7 +373,7 @@ public abstract class RemoteKeyboard {
      * @param event
      * @return
      */
-    protected int convertEventMetaState (KeyEvent event) {
+    private int convertEventMetaState (KeyEvent event) {
         int metaState = 0;
         int eventMetaState = event.getMetaState();
         int altMask = KeyEvent.META_ALT_RIGHT_ON;
@@ -265,7 +403,7 @@ public abstract class RemoteKeyboard {
      * @param evt
      * @return
      */
-    protected int numJunkCharactersToSkip (int numchars, KeyEvent evt) {
+    private int numJunkCharactersToSkip (int numchars, KeyEvent evt) {
         int i = 0;
         if (!skippedJunkChars) {
             if (numchars == 10000) {

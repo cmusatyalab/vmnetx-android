@@ -188,7 +188,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     
     public void writeKeyEvent(int key, int metaState, boolean down) {
         // Not used for actually sending keyboard events, but rather to record the current metastate.
-        // The key event is sent to the KeyboardMapper from RemoteSpiceKeyboard, and
+        // The key event is sent to the KeyboardMapper from RemoteKeyboard, and
         // when processed through the keyboard mapper, it ends up in one of the KeyProcessingListener
         // methods defined here.
         this.metaState = metaState;
