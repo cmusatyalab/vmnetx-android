@@ -45,6 +45,8 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private int width = 0;
     private int height = 0;
     
+    private boolean wantAbsoluteMouse = false;
+
     private boolean isInNormalProtocol = false;
     
     private SpiceThread spicethread = null;
@@ -127,6 +129,13 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         canvas.OnGraphicsUpdate(x, y, width, height);
     }
 
+    private void OnCursorConfig(boolean absoluteMouse) {
+        synchronized (this) {
+            wantAbsoluteMouse = absoluteMouse;
+        }
+        canvas.OnCursorConfig();
+    }
+
     public int framebufferWidth() {
         return width;
     }
@@ -149,6 +158,10 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     
     public boolean isInNormalProtocol() {
         return isInNormalProtocol;
+    }
+
+    public synchronized boolean getAbsoluteMouse() {
+        return wantAbsoluteMouse;
     }
 
     public void writePointerEvent(int x, int y, int metaState, int pointerMask) {

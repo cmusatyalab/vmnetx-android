@@ -256,3 +256,14 @@ void uiCallbackSettingsChanged (gint instance, gint width, gint height, gint bpp
         detachThreadFromJvm ();
     }
 }
+
+void uiCallbackCursorConfig (bool absolute_mouse) {
+    JNIEnv* env;
+    bool attached = attachThreadToJvm (&env);
+
+    (*env)->CallVoidMethod(env, jni_connector, jni_cursor_config, absolute_mouse);
+
+    if (attached) {
+        detachThreadFromJvm ();
+    }
+}

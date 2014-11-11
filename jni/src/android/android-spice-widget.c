@@ -108,6 +108,11 @@ gint get_display_id(SpiceDisplay *display)
 
 /* ---------------------------------------------------------------- */
 
+static void notify_cursor_config(SpiceDisplayPrivate *d)
+{
+    uiCallbackCursorConfig(d->mouse_mode == SPICE_MOUSE_MODE_CLIENT);
+}
+
 static void update_mouse_mode(SpiceChannel *channel, gpointer data)
 {
     SpiceDisplay *display = data;
@@ -116,16 +121,7 @@ static void update_mouse_mode(SpiceChannel *channel, gpointer data)
     g_object_get(channel, "mouse-mode", &d->mouse_mode, NULL);
     SPICE_DEBUG("mouse mode %d", d->mouse_mode);
 
-    switch (d->mouse_mode) {
-    case SPICE_MOUSE_MODE_CLIENT:
-        break;
-    case SPICE_MOUSE_MODE_SERVER:
-        break;
-    default:
-        g_warn_if_reached();
-    }
-
-    //update_mouse_pointer(display);
+    notify_cursor_config(d);
 }
 
 /* ---------------------------------------------------------------- */

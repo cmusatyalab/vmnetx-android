@@ -71,6 +71,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     jni_get_fd           = (*env)->GetMethodID(env, local_class, "OnGetFd", "(J)V");
     jni_settings_changed = (*env)->GetMethodID(env, local_class, "OnSettingsChanged", "(IIII)V");
     jni_graphics_update  = (*env)->GetMethodID(env, local_class, "OnGraphicsUpdate", "(IIIII)V");
+    jni_cursor_config    = (*env)->GetMethodID(env, local_class, "OnCursorConfig", "(Z)V");
 
     g_thread_init(NULL);
     bindtextdomain(GETTEXT_PACKAGE, SPICE_GTK_LOCALEDIR);
@@ -100,6 +101,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     jni_get_fd           = NULL;
     jni_settings_changed = NULL;
     jni_graphics_update  = NULL;
+    jni_cursor_config    = NULL;
     (*env)->DeleteGlobalRef(env, jni_connector);
     jni_connector        = NULL;
     jvm                  = NULL;

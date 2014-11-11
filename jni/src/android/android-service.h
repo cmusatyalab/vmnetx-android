@@ -32,6 +32,7 @@
     jmethodID jni_get_fd           = NULL;
     jmethodID jni_settings_changed = NULL;
     jmethodID jni_graphics_update  = NULL;
+    jmethodID jni_cursor_config    = NULL;
     GMainLoop            *mainloop = NULL;
     int                connections = 0;
 #else
@@ -42,6 +43,7 @@
     extern jmethodID jni_get_fd;
     extern jmethodID jni_settings_changed;
     extern jmethodID jni_graphics_update;
+    extern jmethodID jni_cursor_config;
     extern GMainLoop *mainloop;
     extern int       connections;
 #endif

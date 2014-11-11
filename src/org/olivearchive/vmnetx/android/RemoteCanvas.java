@@ -700,6 +700,10 @@ public class RemoteCanvas extends ImageView {
         return absoluteYPosition;
     }
     
+    public boolean getAbsoluteMouse() {
+        return spice.getAbsoluteMouse();
+    }
+
     /**
      * Used to wait until getWidth and getHeight return sane values.
      */
@@ -774,6 +778,10 @@ public class RemoteCanvas extends ImageView {
         }
         
         reDraw(x, y, width, height);
+    }
+
+    public void OnCursorConfig() {
+        handler.post(setModes);
     }
 
     private void wantVMState(int wanted) {

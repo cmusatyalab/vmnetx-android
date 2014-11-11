@@ -622,13 +622,19 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     }
     
     /**
-     * Set modes on start to match what is specified in the ConnectionBean;
-     * scaling, input mode
+     * Set scaling and input modes
      */
     void setModes() {
-        AbstractInputHandler handler = getInputHandlerByName(connection.getInputMode());
         AbstractScaling.getByScaleType(connection.getScaleMode()).setScaleTypeForActivity(this, connection);
-        this.inputHandler = handler;
+
+        int id;
+        if (canvas.getAbsoluteMouse())
+            id = R.id.itemInputDragPanZoomMouse;
+        else
+            id = R.id.itemInputTouchpad;
+        inputHandler = getInputHandlerById(id);
+        connection.setInputMode(inputHandler.getName());
+        updateInputMenu();
     }
 
     /*
@@ -808,21 +814,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             inputModeHandlers[i] = null;
         }
         inputModeHandlers = null;
-    }
-    
-    private AbstractInputHandler getInputHandlerByName(String name) {
-        AbstractInputHandler result = null;
-        for (int id : inputModeIds) {
-            AbstractInputHandler handler = getInputHandlerById(id);
-            if (handler.getName().equals(name)) {
-                result = handler;
-                break;
-            }
-        }
-        if (result == null) {
-            result = getInputHandlerById(R.id.itemInputDragPanZoomMouse);
-        }
-        return result;
     }
     
     @Override

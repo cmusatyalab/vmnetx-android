@@ -24,3 +24,4 @@ void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int heig
 void uiCallbackGetFd (SpiceChannel *channel);
 void uiCallbackInvalidate (SpiceDisplayPrivate *d, gint x, gint y, gint w, gint h);
 void uiCallbackSettingsChanged (gint instance, gint width, gint height, gint bpp);
+void uiCallbackCursorConfig (bool absolute_mouse);
