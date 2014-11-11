@@ -605,7 +605,10 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         evt.offsetLocation(pointer.getX() + dx - evt.getX(),
                             pointer.getY() + dy - evt.getY());
 
-        if (pointer.processPointerEvent(evt, trackballButtonDown))
+        if (pointer.processPointerEvent((int) evt.getX(), (int) evt.getY(),
+                                        evt.getAction(), evt.getMetaState(),
+                                        trackballButtonDown, false, false,
+                                        false, -1))
             return true;
         
         return activity.onTouchEvent(evt);

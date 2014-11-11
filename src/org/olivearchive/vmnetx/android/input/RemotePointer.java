@@ -53,63 +53,6 @@ public class RemotePointer {
     }
 
     /**
-     * Convert a motion event to a format suitable for sending over the wire
-     * @param evt motion event; x and y must already have been converted from screen coordinates
-     * to remote frame buffer coordinates.
-     * @param downEvent True if "mouse button" (touch or trackball button) is down when this happens
-     * @return true if event was actually sent
-     */
-    public boolean processPointerEvent(MotionEvent evt, boolean downEvent)
-    {
-        return processPointerEvent(evt, downEvent, false);
-    }
-
-    /**
-     *  Overloaded processPointerEvent method which supports mouse scroll button.
-     * @param evt motion event; x and y must already have been converted from screen coordinates
-     * to remote frame buffer coordinates.
-     * @param downEvent True if "mouse button" (touch or trackball button) is down when this happens
-     * @param useRightButton If true, event is interpreted as happening with right mouse button
-     * @param useMiddleButton If true, event is interpreted as click happening with middle mouse button
-     * @param useScrollButton If true, event is interpreted as click happening with mouse scroll button
-     * @param direction Indicates the direction of the scroll event: 0 for up, 1 for down, 2 for left, 3 for right.
-     * @return true if event was actually sent
-     */
-    public boolean processPointerEvent(MotionEvent evt, boolean downEvent, 
-                                       boolean useRightButton, boolean useMiddleButton, boolean useScrollButton, int direction) {
-        return processPointerEvent((int)evt.getX(),(int)evt.getY(), evt.getActionMasked(), 
-                                    evt.getMetaState(), downEvent, useRightButton, useMiddleButton, useScrollButton, direction);
-    }
-    
-    /**
-     *  Overloaded processPointerEvent method which supports middle mouse button.
-     * @param evt motion event; x and y must already have been converted from screen coordinates
-     * to remote frame buffer coordinates.
-     * @param downEvent True if "mouse button" (touch or trackball button) is down when this happens
-     * @param useRightButton If true, event is interpreted as happening with right mouse button
-     * @param useMiddleButton If true, event is interpreted as click happening with middle mouse button
-     * @return true if event was actually sent
-     */
-    public boolean processPointerEvent(MotionEvent evt, boolean downEvent, 
-                                       boolean useRightButton, boolean useMiddleButton) {
-        return processPointerEvent((int)evt.getX(),(int)evt.getY(), evt.getActionMasked(), 
-                                    evt.getMetaState(), downEvent, useRightButton, useMiddleButton, false, -1);
-    }
-
-    /**
-     * Convert a motion event to a format suitable for sending over the wire
-     * @param evt motion event; x and y must already have been converted from screen coordinates
-     * to remote frame buffer coordinates.
-     * @param downEvent True if "mouse button" (touch or trackball button) is down when this happens
-     * @param useRightButton If true, event is interpreted as happening with right mouse button
-     * @return true if event was actually sent
-     */
-    public boolean processPointerEvent(MotionEvent evt, boolean downEvent, boolean useRightButton) {
-        return processPointerEvent((int)evt.getX(),(int)evt.getY(), evt.getAction(), 
-                                    evt.getMetaState(), downEvent, useRightButton, false, false, -1);
-    }
-
-    /**
      * Overloaded processPointerEvent method which supports right mouse button.
      * @param evt motion event; x and y must already have been converted from screen coordinates
      * to remote frame buffer coordinates.
