@@ -115,27 +115,14 @@ public abstract class AbstractScaling {
         // it to identify Fit-to-screen scale mode. Instead of setting scaleType here, we hard-code MATRIX.
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
         activity.getConnection().setScaleMode(scaleType);
-        if (activity.inputHandler == null || ! isValidInputMode(activity.getModeIdFromHandler(activity.inputHandler))) {
-            activity.inputHandler=activity.getInputHandlerById(getDefaultHandlerId());
-            activity.getConnection().setInputMode(activity.inputHandler.getName());
-        }
         activity.updateInputMenu();
     }
-    
-    abstract int getDefaultHandlerId();
     
     /**
      * True if this scale type allows panning of the image
      * @return
      */
     abstract boolean isAbleToPan();
-    
-    /**
-     * True if the listed input mode is valid for this scaling mode
-     * @param mode Id of the input mode
-     * @return True if the input mode is compatible with the scaling mode
-     */
-    abstract boolean isValidInputMode(int mode);
     
     /**
      * Change the scaling and focus dynamically, as from a detected scale gesture

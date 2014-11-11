@@ -44,14 +44,6 @@ class OneToOneScaling extends AbstractScaling {
     }
     
     /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#getDefaultHandlerId()
-     */
-    @Override
-    int getDefaultHandlerId() {
-        return R.id.itemInputDragPanZoomMouse;
-    }
-
-    /* (non-Javadoc)
      * @see org.olivearchive.vmnetx.android.AbstractScaling#isAbleToPan()
      */
     @Override
@@ -59,14 +51,6 @@ class OneToOneScaling extends AbstractScaling {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#isValidInputMode(int)
-     */
-    @Override
-    boolean isValidInputMode(int mode) {
-        return true;
-    }
-    
     /**
      * Call after scaling and matrix have been changed to resolve scrolling
      * @param activity

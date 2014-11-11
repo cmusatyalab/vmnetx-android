@@ -66,7 +66,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private final static String TAG = "VncCanvasActivity";
     private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
-    AbstractInputHandler inputHandler;
+    private AbstractInputHandler inputHandler;
 
     private RemoteCanvas canvas;
 
@@ -782,7 +782,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     void updateInputMenu() {
         try {
             for (MenuItem item : inputModeMenuItems) {
-                item.setEnabled(canvas.scaling.isValidInputMode(item.getItemId()));
                 if (getInputHandlerById(item.getItemId()) == inputHandler)
                     item.setChecked(true);
             }
@@ -795,7 +794,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
      * @param id
      * @return
      */
-    AbstractInputHandler getInputHandlerById(int id) {
+    private AbstractInputHandler getInputHandlerById(int id) {
         if (inputModeHandlers == null) {
             inputModeHandlers = new AbstractInputHandler[inputModeIds.length];
         }
@@ -827,7 +826,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         inputModeHandlers = null;
     }
     
-    AbstractInputHandler getInputHandlerByName(String name) {
+    private AbstractInputHandler getInputHandlerByName(String name) {
         AbstractInputHandler result = null;
         for (int id : inputModeIds) {
             AbstractInputHandler handler = getInputHandlerById(id);
@@ -842,14 +841,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         return result;
     }
     
-    int getModeIdFromHandler(AbstractInputHandler handler) {
-        for (int id : inputModeIds) {
-            if (handler == getInputHandlerById(id))
-                return id;
-        }
-        return R.id.itemInputDragPanZoomMouse;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
