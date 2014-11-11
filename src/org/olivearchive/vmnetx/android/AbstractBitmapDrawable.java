@@ -42,14 +42,12 @@ public class AbstractBitmapDrawable extends DrawableContainer {
     protected AbstractBitmapData data;
 
     private int hotX, hotY;
-    private Rect clipRect;
 
     public Paint _defaultPaint;
 
     AbstractBitmapDrawable(AbstractBitmapData data)    {
         this.data = data;
         cursorRect = new RectF();
-        clipRect = new Rect();
         // Try to free up some memory.
         System.gc();
         softCursor = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -124,7 +122,6 @@ public class AbstractBitmapDrawable extends DrawableContainer {
             softCursor.recycle();
         softCursor = null;
         cursorRect = null;
-        clipRect = null;
         toDraw = null;
     }
 }

@@ -99,9 +99,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     // What the display density is.
     protected float displayDensity = 0;
     
-    // Indicates that the next onFling will be disregarded.
-    private boolean disregardNextOnFling = false;
-    
     // Queue which holds the last two MotionEvents which triggered onScroll
     protected Queue<Float> distXQueue;
     protected Queue<Float> distYQueue;
@@ -342,9 +339,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         float f = e.getPressure();
         if (f > 2.f)
             f = f / 50.f;
-        if (f > .92f) {
-            disregardNextOnFling = true;
-        }
 
         if (android.os.Build.VERSION.SDK_INT >= 14) {
             // Handle and consume actions performed by a (e.g. USB or bluetooth) mouse.
@@ -363,7 +357,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         case 0:
             switch (action) {
             case MotionEvent.ACTION_DOWN:
-                disregardNextOnFling = false;
                 // We have put down first pointer on the screen, so we can reset the state of all click-state variables.
                 // Permit sending mouse-down event on long-tap again.
                 secondPointerWasDown = false;
