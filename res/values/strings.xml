@@ -16,9 +16,6 @@
 <string name="info_progress_dialog_title">Loading...</string>
 <string name="info_progress_dialog_message">Launching virtual machine.\nPlease wait...</string>
 <string name="info_progress_dialog_aborted">Connection aborted!</string>
-<string name="input_mode">Input Mode</string>
-<string name="input_mode_drag_pan_zoom_mouse">Direct, Hold Pan</string>
-<string name="input_mode_touchpad">Simulated Touchpad</string>
 <string name="one_to_one">One to One</string>
 <string name="scaling">Scaling</string>
 <string name="scaling_zoomable">Zoomable</string>

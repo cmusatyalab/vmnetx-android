@@ -70,12 +70,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     private RemoteCanvas canvas;
 
-    private MenuItem[] inputModeMenuItems;
     private MenuItem[] scalingModeMenuItems;
-    private AbstractInputHandler inputModeHandlers[];
     private ConnectionBean connection;
-    private static final int inputModeIds[] = { R.id.itemInputTouchpad,
-                                                R.id.itemInputDragPanZoomMouse };
     private static final int scalingModeIds[] = { R.id.itemZoomable, R.id.itemFitToScreen,
                                                   R.id.itemOneToOne};
 
@@ -256,7 +252,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         
         panner = new Panner(this, canvas.handler);
 
-        inputHandler = getInputHandlerById(R.id.itemInputDragPanZoomMouse);
+        inputHandler = new TouchMouseDragPanInputHandler(this, canvas);
     }
 
     
@@ -627,14 +623,14 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     void setModes() {
         AbstractScaling.getByScaleType(connection.getScaleMode()).setScaleTypeForActivity(this, connection);
 
-        int id;
-        if (canvas.getAbsoluteMouse())
-            id = R.id.itemInputDragPanZoomMouse;
-        else
-            id = R.id.itemInputTouchpad;
-        inputHandler = getInputHandlerById(id);
-        connection.setInputMode(inputHandler.getName());
-        updateInputMenu();
+        boolean absoluteMouse = canvas.getAbsoluteMouse();
+        if (absoluteMouse &&
+                !(inputHandler instanceof TouchMouseDragPanInputHandler)) {
+            inputHandler = new TouchMouseDragPanInputHandler(this, canvas);
+        } else if (!absoluteMouse &&
+                !(inputHandler instanceof SimulatedTouchpadInputHandler)) {
+            inputHandler = new SimulatedTouchpadInputHandler(this, canvas);
+        }
     }
 
     /*
@@ -723,13 +719,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
             menu.findItem(canvas.scaling.getId()).setChecked(true);
     
-            Menu inputMenu = menu.findItem(R.id.itemInputMode).getSubMenu();
-            inputModeMenuItems = new MenuItem[inputModeIds.length];
-            for (int i = 0; i < inputModeIds.length; i++) {
-                inputModeMenuItems[i] = inputMenu.findItem(inputModeIds[i]);
-            }
-            updateInputMenu();
-            
             Menu scalingMenu = menu.findItem(R.id.itemScaling).getSubMenu();
             scalingModeMenuItems = new MenuItem[scalingModeIds.length];
             for (int i = 0; i < scalingModeIds.length; i++) {
@@ -766,56 +755,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         } catch (NullPointerException e) { }
     }    
     
-    /**
-     * Change the input mode sub-menu to reflect change in scaling
-     */
-    void updateInputMenu() {
-        try {
-            for (MenuItem item : inputModeMenuItems) {
-                if (getInputHandlerById(item.getItemId()) == inputHandler)
-                    item.setChecked(true);
-            }
-        } catch (NullPointerException e) { }
-    }
-
-    /**
-     * If id represents an input handler, return that; otherwise return null
-     * 
-     * @param id
-     * @return
-     */
-    private AbstractInputHandler getInputHandlerById(int id) {
-        if (inputModeHandlers == null) {
-            inputModeHandlers = new AbstractInputHandler[inputModeIds.length];
-        }
-        for (int i = 0; i < inputModeIds.length; ++i) {
-            if (inputModeIds[i] == id) {
-                if (inputModeHandlers[i] == null) {
-                    switch (id) {
-                    case R.id.itemInputDragPanZoomMouse:
-                        inputModeHandlers[i] = new TouchMouseDragPanInputHandler(this, canvas);
-                        break;
-                    case R.id.itemInputTouchpad:
-                        inputModeHandlers[i] = new SimulatedTouchpadInputHandler(this, canvas);
-                        break;
-                    }
-                }
-                return inputModeHandlers[i];
-            }
-        }
-        return null;
-    }
-
-    void clearInputHandlers() {
-        if (inputModeHandlers == null)
-            return;
-
-        for (int i = 0; i < inputModeIds.length; ++i) {
-            inputModeHandlers[i] = null;
-        }
-        inputModeHandlers = null;
-    }
-    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -851,15 +790,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             }
             setKeyStowDrawableAndVisibility();
             return true;
-        default:
-            AbstractInputHandler input = getInputHandlerById(item.getItemId());
-            if (input != null) {
-                inputHandler = input;
-                connection.setInputMode(input.getName());
-
-                item.setChecked(true);
-                return true;
-            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -873,7 +803,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         connection = null;
         keyboardControls = null;
         panner = null;
-        clearInputHandlers();
         inputHandler = null;
         System.gc();
     }

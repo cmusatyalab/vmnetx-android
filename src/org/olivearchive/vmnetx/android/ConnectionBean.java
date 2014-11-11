@@ -22,8 +22,6 @@ package org.olivearchive.vmnetx.android;
 
 import android.widget.ImageView.ScaleType;
 
-import org.olivearchive.vmnetx.android.input.TouchMouseDragPanInputHandler;
-
 import java.lang.Comparable;
 import java.io.Serializable;
 
@@ -40,7 +38,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
     private int port;
     private String token;
     private boolean extraKeys;
-    private String inputMode;
     private String scaleMode;
     private boolean useDpadAsArrows;
     private boolean rotateDpad;
@@ -51,7 +48,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
         setPort(18923);
         setToken("");
         setScaleMode(ScaleType.MATRIX);
-        setInputMode(TouchMouseDragPanInputHandler.TOUCH_ZOOM_MODE_DRAG_PAN);
         setUseDpadAsArrows(true);
         setRotateDpad(false);
         setExtraKeys(true);
@@ -87,14 +83,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
 
     public void setExtraKeys(boolean extraKeys) {
         this.extraKeys = extraKeys;
-    }
-
-    public String getInputMode() {
-        return inputMode;
-    }
-
-    public void setInputMode(String inputMode) {
-        this.inputMode = inputMode;
     }
 
     ScaleType getScaleMode()

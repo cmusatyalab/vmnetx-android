@@ -55,10 +55,4 @@ public interface AbstractInputHandler {
      * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
      */
     boolean onTouchEvent(MotionEvent evt);
-
-    /**
-     * Return an internal name for this handler; this name will be stable across language
-     * and version changes
-     */
-    String getName();
 }

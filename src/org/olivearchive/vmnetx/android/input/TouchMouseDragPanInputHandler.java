@@ -9,7 +9,6 @@ import org.olivearchive.vmnetx.android.Utils;
 
 public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
     static final String TAG = "TouchMouseDragPanInputHandler";
-    public static final String TOUCH_ZOOM_MODE_DRAG_PAN = "TOUCH_ZOOM_MODE_DRAG_PAN";
 
     /**
      * Divide stated fling velocity by this amount to get initial velocity
@@ -22,16 +21,6 @@ public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
      */
     public TouchMouseDragPanInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
         super(va, v);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.olivearchive.vmnetx.android.AbstractInputHandler#getName()
-     */
-    @Override
-    public String getName() {
-        return TOUCH_ZOOM_MODE_DRAG_PAN;
     }
 
     /*

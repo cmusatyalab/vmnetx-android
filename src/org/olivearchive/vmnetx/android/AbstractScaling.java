@@ -115,7 +115,6 @@ public abstract class AbstractScaling {
         // it to identify Fit-to-screen scale mode. Instead of setting scaleType here, we hard-code MATRIX.
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
         connection.setScaleMode(scaleType);
-        activity.updateInputMenu();
     }
     
     /**
