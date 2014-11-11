@@ -23,11 +23,11 @@
 //
 package org.olivearchive.vmnetx.android;
 
+import org.olivearchive.vmnetx.android.input.AbsoluteMouseInputHandler;
 import org.olivearchive.vmnetx.android.input.AbstractInputHandler;
 import org.olivearchive.vmnetx.android.input.Panner;
+import org.olivearchive.vmnetx.android.input.RelativeMouseInputHandler;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
-import org.olivearchive.vmnetx.android.input.SimulatedTouchpadInputHandler;
-import org.olivearchive.vmnetx.android.input.TouchMouseDragPanInputHandler;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -252,7 +252,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         
         panner = new Panner(this, canvas.handler);
 
-        inputHandler = new TouchMouseDragPanInputHandler(this, canvas);
+        inputHandler = new AbsoluteMouseInputHandler(this, canvas);
     }
 
     
@@ -625,11 +625,11 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
         boolean absoluteMouse = canvas.getAbsoluteMouse();
         if (absoluteMouse &&
-                !(inputHandler instanceof TouchMouseDragPanInputHandler)) {
-            inputHandler = new TouchMouseDragPanInputHandler(this, canvas);
+                !(inputHandler instanceof AbsoluteMouseInputHandler)) {
+            inputHandler = new AbsoluteMouseInputHandler(this, canvas);
         } else if (!absoluteMouse &&
-                !(inputHandler instanceof SimulatedTouchpadInputHandler)) {
-            inputHandler = new SimulatedTouchpadInputHandler(this, canvas);
+                !(inputHandler instanceof RelativeMouseInputHandler)) {
+            inputHandler = new RelativeMouseInputHandler(this, canvas);
         }
     }
 

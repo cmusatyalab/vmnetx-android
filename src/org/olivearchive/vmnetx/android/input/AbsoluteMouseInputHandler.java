@@ -7,8 +7,8 @@ import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 import org.olivearchive.vmnetx.android.Utils;
 
-public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
-    static final String TAG = "TouchMouseDragPanInputHandler";
+public class AbsoluteMouseInputHandler extends AbstractGestureInputHandler {
+    static final String TAG = "AbsoluteMouseInputHandler";
 
     /**
      * Divide stated fling velocity by this amount to get initial velocity
@@ -19,7 +19,7 @@ public class TouchMouseDragPanInputHandler extends AbstractGestureInputHandler {
     /**
      * @param c
      */
-    public TouchMouseDragPanInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
+    public AbsoluteMouseInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
         super(va, v);
     }
 

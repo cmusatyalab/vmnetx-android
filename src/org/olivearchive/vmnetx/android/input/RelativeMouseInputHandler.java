@@ -6,15 +6,15 @@ import android.view.MotionEvent;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 
-public class SimulatedTouchpadInputHandler extends AbstractGestureInputHandler {
-    static final String TAG = "SimulatedTouchpadInputHandler";
+public class RelativeMouseInputHandler extends AbstractGestureInputHandler {
+    static final String TAG = "RelativeMouseInputHandler";
     private float sensitivity = 0;
     private boolean acceleration = false;
 
     /**
      * @param c
      */
-    public SimulatedTouchpadInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
+    public RelativeMouseInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
         super(va, v);
         acceleration = activity.getAccelerationEnabled();
         sensitivity = activity.getSensitivity();
