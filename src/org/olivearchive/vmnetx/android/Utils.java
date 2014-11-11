@@ -53,26 +53,6 @@ public class Utils {
             builder.show();
     }
     
-    public static ActivityManager getActivityManager(Context context)
-    {
-        ActivityManager result = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (result == null)
-            throw new UnsupportedOperationException("Could not retrieve ActivityManager");
-        return result;
-    }
-    
-    public static MemoryInfo getMemoryInfo(Context _context) {
-        MemoryInfo info = new MemoryInfo();
-        getActivityManager(_context).getMemoryInfo(info);
-        return info;
-    }
-    
-    private static int nextNoticeID = 0;
-    public static int nextNoticeID() {
-        nextNoticeID++;
-        return nextNoticeID;
-    }
-
     public static void showErrorMessage(Context _context, String message) {
         showMessage(_context, "Error!", message, android.R.drawable.ic_dialog_alert, null);
     }
@@ -104,27 +84,6 @@ public class Utils {
             builder.show();
     }
     
-    /**
-     * Converts a given sequence of bytes to a human-readable colon-separated Hex format. 
-     * @param bytes
-     * @return
-     */
-    public static String toHexString(byte[] bytes) {
-        char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-        char[] hexChars = new char[bytes.length * 3];
-        int v, j;
-        for ( j = 0; j < bytes.length - 1; j++ ) {
-            v = bytes[j] & 0xFF;
-            hexChars[j*3] = hexArray[v/16];
-            hexChars[j*3 + 1] = hexArray[v%16];
-            hexChars[j*3 + 2] = ":".charAt(0);
-        }
-        v = bytes[j] & 0xFF;
-        hexChars[j*3] = hexArray[v/16];
-        hexChars[j*3 + 1] = hexArray[v%16];
-        return new String(hexChars);
-    }
-
     public static boolean performLongPressHaptic(View v) {
         return v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS,HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING|HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
                 );
