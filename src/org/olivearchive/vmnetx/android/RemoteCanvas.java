@@ -495,18 +495,6 @@ public class RemoteCanvas extends ImageView {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see android.view.View#onScrollChanged(int, int, int, int)
-     */
-    @Override
-    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-        super.onScrollChanged(l, t, oldl, oldt);
-        if (bitmapData != null) {
-            pointer.mouseFollowPan();
-        }
-    }
-    
-    
     /**
      * This runnable sets the drawable (contained in bitmapData) for the VncCanvas (ImageView).
      */
@@ -702,10 +690,6 @@ public class RemoteCanvas extends ImageView {
     
     public float getDisplayDensity() {
         return displayDensity;
-    }
-    
-    public boolean getMouseFollowPan() {
-        return connection.getFollowPan();
     }
     
     public int getAbsoluteX () {

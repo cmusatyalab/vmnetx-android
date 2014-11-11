@@ -158,10 +158,9 @@ class ZoomScaling extends AbstractScaling {
         canvas.setImageMatrix(matrix);
         resolveZoom(canvas);
         
-        // Only if we have actually scaled do we pan and potentially set mouse position.
+        // Only if we have actually scaled do we pan.
         if (oldScale != newScale) {
             canvas.pan((int)(newXPan - xPan), (int)(newYPan - yPan));
-            canvas.getPointer().mouseFollowPan();
         }
     }    
     

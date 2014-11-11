@@ -54,21 +54,6 @@ public class RemoteSpicePointer extends RemotePointer {
         spice.writePointerEvent(x, y, 0, MOUSE_BUTTON_MOVE);
     }
     
-    public void mouseFollowPan()
-    {
-        if (vncCanvas.getMouseFollowPan())
-        {
-            int scrollx = vncCanvas.getAbsoluteX();
-            int scrolly = vncCanvas.getAbsoluteY();
-            int width = vncCanvas.getVisibleWidth();
-            int height = vncCanvas.getVisibleHeight();
-            //Log.i(TAG,"scrollx " + scrollx + " scrolly " + scrolly + " mouseX " + mouseX +" Y " + mouseY + " w " + width + " h " + height);
-            if (mouseX < scrollx || mouseX >= scrollx + width || mouseY < scrolly || mouseY >= scrolly + height) {
-                warpMouse(scrollx + width/2, scrolly + height / 2);
-            }
-        }
-    }
-    
     /**
      * Convert a motion event to a format suitable for sending over the wire
      * @param evt motion event; x and y must already have been converted from screen coordinates

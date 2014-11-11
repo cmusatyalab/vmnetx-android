@@ -865,11 +865,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             if (input != null) {
                 inputHandler = input;
                 connection.setInputMode(input.getName());
-                if (input.getName().equals(SimulatedTouchpadInputHandler.TOUCHPAD_MODE)) {
-                    connection.setFollowPan(true);
-                } else {
-                    connection.setFollowPan(false);
-                }
 
                 item.setChecked(true);
                 return true;
