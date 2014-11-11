@@ -60,7 +60,6 @@ class FitToScreenScaling extends AbstractScaling {
     private void resolveZoom(RemoteCanvasActivity activity)
     {
         activity.getCanvas().scrollToAbsolute();
-        //activity.vncCanvas.pan(0,0);
     }
     
     /* (non-Javadoc)

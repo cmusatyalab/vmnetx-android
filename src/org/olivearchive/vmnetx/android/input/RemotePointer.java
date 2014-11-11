@@ -21,7 +21,7 @@ public class RemotePointer {
     private int pointerMask = 0;
     private int prevPointerMask = 0;
 
-    private RemoteCanvas vncCanvas;
+    private RemoteCanvas canvas;
     private SpiceCommunicator spice;
 
     /**
@@ -29,11 +29,11 @@ public class RemotePointer {
      */
     private int mouseX, mouseY;
 
-    public RemotePointer (SpiceCommunicator s, RemoteCanvas v) {
+    public RemotePointer (SpiceCommunicator s, RemoteCanvas c) {
         spice = s;
         mouseX = spice.framebufferWidth()/2;
         mouseY = spice.framebufferHeight()/2;
-        vncCanvas = v;
+        canvas = c;
     }
     
     public int getX() {
@@ -157,7 +157,7 @@ public class RemotePointer {
             if (pointerMask != MOUSE_BUTTON_MOVE) {
                 // If this is a new mouse down event, release previous button pressed to avoid confusing the remote OS.
                 if (prevPointerMask != 0 && prevPointerMask != pointerMask) {
-                    spice.writePointerEvent(mouseX, mouseY, modifiers|vncCanvas.getKeyboard().getMetaState(), prevPointerMask & ~PTRFLAGS_DOWN);
+                    spice.writePointerEvent(mouseX, mouseY, modifiers|canvas.getKeyboard().getMetaState(), prevPointerMask & ~PTRFLAGS_DOWN);
                 }
                 prevPointerMask = pointerMask;
             }
@@ -170,16 +170,16 @@ public class RemotePointer {
                 prevPointerMask = 0;
             }
                         
-            vncCanvas.invalidateMousePosition();
+            canvas.invalidateMousePosition();
             mouseX = x;
             mouseY = y;
             if ( mouseX < 0) mouseX=0;
             else if ( mouseX >= spice.framebufferWidth())  mouseX = spice.framebufferWidth()  - 1;
             if ( mouseY < 0) mouseY=0;
             else if ( mouseY >= spice.framebufferHeight()) mouseY = spice.framebufferHeight() - 1;
-            vncCanvas.invalidateMousePosition();
+            canvas.invalidateMousePosition();
             
-            spice.writePointerEvent(mouseX, mouseY, modifiers|vncCanvas.getKeyboard().getMetaState(), pointerMask);
+            spice.writePointerEvent(mouseX, mouseY, modifiers|canvas.getKeyboard().getMetaState(), pointerMask);
             return true;
         }
         return false;

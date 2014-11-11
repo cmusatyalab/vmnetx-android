@@ -58,7 +58,6 @@ class OneToOneScaling extends AbstractScaling {
     private void resolveZoom(RemoteCanvas canvas)
     {
         canvas.scrollToAbsolute();
-        //activity.vncCanvas.pan(0,0);
     }
     
     /* (non-Javadoc)
@@ -89,6 +88,5 @@ class OneToOneScaling extends AbstractScaling {
         matrix.postScale(1, 1);
         canvas.setImageMatrix(matrix);
         resolveZoom(canvas);
-        //activity.vncCanvas.pan(0, 0);
     }
 }

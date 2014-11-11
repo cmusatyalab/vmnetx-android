@@ -25,7 +25,7 @@ import android.widget.ImageView;
 /**
  * @author Michael A. MacDonald
  * 
- * A scaling mode for the VncCanvas; based on ImageView.ScaleType
+ * A scaling mode for the RemoteCanvas; based on ImageView.ScaleType
  */
 public abstract class AbstractScaling {
     private static final int scaleModeIds[] = { R.id.itemFitToScreen, R.id.itemOneToOne, R.id.itemZoomable };

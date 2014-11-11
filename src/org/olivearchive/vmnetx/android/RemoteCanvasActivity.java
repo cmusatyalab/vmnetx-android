@@ -19,7 +19,7 @@
  */
 
 //
-// CanvasView is the Activity for showing VNC Desktop.
+// RemoteCanvasActivity is the Activity for showing SPICE Desktop.
 //
 package org.olivearchive.vmnetx.android;
 
@@ -63,7 +63,7 @@ import android.content.Context;
 
 public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     
-    private final static String TAG = "VncCanvasActivity";
+    private final static String TAG = "RemoteCanvasActivity";
     private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
     private AbstractInputHandler inputHandler;
@@ -173,7 +173,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         //setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon); 
 
         setContentView(R.layout.canvas);
-        canvas = (RemoteCanvas) findViewById(R.id.vnc_canvas);
+        canvas = (RemoteCanvas) findViewById(R.id.remoteCanvas);
         keyboardControls = (KeyboardControls) findViewById(R.id.keyboardControls);
 
         // Initialize and define actions for on-screen keys.
@@ -189,7 +189,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         canvas.setFocusableInTouchMode(true);
         canvas.setDrawingCacheEnabled(false);
         
-        // This code detects when the soft keyboard is up and sets an appropriate visibleHeight in vncCanvas.
+        // This code detects when the soft keyboard is up and sets an appropriate visibleHeight in canvas.
         // When the keyboard is gone, it resets visibleHeight and pans zero distance to prevent us from being
         // below the desktop image (if we scrolled all the way down when the keyboard was up).
         // TODO: Move this into a separate thread, and post the visibility changes to the handler.
@@ -446,7 +446,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         });
         
         // TODO: Evaluate whether I should instead be using:
-        // vncCanvas.sendMetaKey(MetaKeyBean.keyArrowLeft);
+        // canvas.sendMetaKey(MetaKeyBean.keyArrowLeft);
 
         // Define action of arrow keys.
         keyUp = (ImageButton) findViewById(R.id.keyUpArrow);
@@ -715,7 +715,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         try {
-            getMenuInflater().inflate(R.menu.vnccanvasactivitymenu, menu);
+            getMenuInflater().inflate(R.menu.canvasactivitymenu, menu);
 
             menu.findItem(canvas.scaling.getId()).setChecked(true);
     
@@ -915,8 +915,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         return canvas;
     }
 
-    public void setCanvas(RemoteCanvas vncCanvas) {
-        this.canvas = vncCanvas;
+    public void setCanvas(RemoteCanvas canvas) {
+        this.canvas = canvas;
     }
     
     public Panner getPanner() {

@@ -47,7 +47,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     protected ScaleGestureDetector scaleGestures;
 
     /**
-     * Handles to the VncCanvas view and VncCanvasActivity activity.
+     * Handles to the RemoteCanvas view and RemoteCanvasActivity activity.
      */
     protected RemoteCanvas canvas;
     protected RemoteCanvasActivity activity;

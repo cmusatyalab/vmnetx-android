@@ -62,11 +62,10 @@ class ZoomScaling extends AbstractScaling {
     private void resolveZoom(RemoteCanvas canvas)
     {
         canvas.scrollToAbsolute();
-        //activity.vncCanvas.pan(0,0);
     }
     
     /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#zoomIn(org.olivearchive.vmnetx.android.VncCanvasActivity)
+     * @see org.olivearchive.vmnetx.android.AbstractScaling#zoomIn(org.olivearchive.vmnetx.android.RemoteCanvasActivity)
      */
     @Override
     void zoomIn(RemoteCanvasActivity activity) {
@@ -78,7 +77,7 @@ class ZoomScaling extends AbstractScaling {
             scaling = (float)4.0;
         }
         matrix.postScale(scaling, scaling);
-        //Log.v(TAG,String.format("before set matrix scrollx = %d scrolly = %d", activity.vncCanvas.getScrollX(), activity.vncCanvas.getScrollY()));
+        //Log.v(TAG,String.format("before set matrix scrollx = %d scrolly = %d", activity.getCanvas().getScrollX(), activity.getCanvas().getScrollY()));
         activity.getCanvas().setImageMatrix(matrix);
         resolveZoom(activity.getCanvas());
     }
@@ -92,7 +91,7 @@ class ZoomScaling extends AbstractScaling {
     }
 
     /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#zoomOut(org.olivearchive.vmnetx.android.VncCanvasActivity)
+     * @see org.olivearchive.vmnetx.android.AbstractScaling#zoomOut(org.olivearchive.vmnetx.android.RemoteCanvasActivity)
      */
     @Override
     void zoomOut(RemoteCanvasActivity activity) {
@@ -104,14 +103,14 @@ class ZoomScaling extends AbstractScaling {
             scaling = minimumScale;
         }
         matrix.postScale(scaling, scaling);
-        //Log.v(TAG,String.format("before set matrix scrollx = %d scrolly = %d", activity.vncCanvas.getScrollX(), activity.vncCanvas.getScrollY()));
+        //Log.v(TAG,String.format("before set matrix scrollx = %d scrolly = %d", activity.getCanvas().getScrollX(), activity.getCanvas().getScrollY()));
         activity.getCanvas().setImageMatrix(matrix);
-        //Log.v(TAG,String.format("after set matrix scrollx = %d scrolly = %d", activity.vncCanvas.getScrollX(), activity.vncCanvas.getScrollY()));
+        //Log.v(TAG,String.format("after set matrix scrollx = %d scrolly = %d", activity.geCanvas().getScrollX(), activity.getCanvas().getScrollY()));
         resolveZoom(activity.getCanvas());
     }
 
     /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#adjust(org.olivearchive.vmnetx.android.VncCanvasActivity, float, float, float)
+     * @see org.olivearchive.vmnetx.android.AbstractScaling#adjust(org.olivearchive.vmnetx.android.RemoteCanvasActivity, float, float, float)
      */
     @Override
     public void adjust(RemoteCanvasActivity activity, float scaleFactor, float fx, float fy) {

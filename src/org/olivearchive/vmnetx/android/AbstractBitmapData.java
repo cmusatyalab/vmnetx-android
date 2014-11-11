@@ -27,7 +27,7 @@ import android.widget.ImageView;
 import android.util.Log;
 
 /**
- * Abstract interface between the VncCanvas and the bitmap and pixel data buffers that actually contain
+ * Abstract interface between the RemoteCanvas and the bitmap and pixel data buffers that actually contain
  * the data.
  * This allows for implementations that use smaller bitmaps or buffers to save memory. 
  * @author Michael A. MacDonald
@@ -42,13 +42,13 @@ abstract public class AbstractBitmapData {
     protected SpiceCommunicator spice;
     protected int bitmapPixels[];
     protected Canvas memGraphics;
-    private RemoteCanvas vncCanvas;
+    private RemoteCanvas canvas;
     public AbstractBitmapDrawable drawable;
 
     AbstractBitmapData(SpiceCommunicator s, RemoteCanvas c)
     {
         spice = s;
-        vncCanvas = c;
+        canvas = c;
         framebufferwidth  = spice.framebufferWidth();
         framebufferheight = spice.framebufferHeight();
         drawable = createDrawable();
@@ -89,7 +89,7 @@ abstract public class AbstractBitmapData {
      * the bitmap would be smaller than the screen
      */
     float getMinimumScale() {
-        return Math.min((float)vncCanvas.getWidth()/bitmapwidth, (float)vncCanvas.getHeight()/bitmapheight);
+        return Math.min((float)canvas.getWidth()/bitmapwidth, (float)canvas.getHeight()/bitmapheight);
     }
 
     /**

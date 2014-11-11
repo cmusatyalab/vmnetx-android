@@ -23,7 +23,7 @@ public class RelativeMouseInputHandler extends AbstractGestureInputHandler {
     /*
      * (non-Javadoc)
      * 
-     * @see org.olivearchive.vmnetx.android.VncCanvasActivity.ZoomInputHandler#onKeyDown(int,
+     * @see org.olivearchive.vmnetx.android.RemoteCanvasActivity.ZoomInputHandler#onKeyDown(int,
      *      android.view.KeyEvent)
      */
     @Override
@@ -34,7 +34,7 @@ public class RelativeMouseInputHandler extends AbstractGestureInputHandler {
     /*
      * (non-Javadoc)
      * 
-     * @see org.olivearchive.vmnetx.android.VncCanvasActivity.ZoomInputHandler#onKeyUp(int,
+     * @see org.olivearchive.vmnetx.android.RemoteCanvasActivity.ZoomInputHandler#onKeyUp(int,
      *      android.view.KeyEvent)
      */
     @Override

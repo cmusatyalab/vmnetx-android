@@ -6,7 +6,7 @@
     >
 
 <org.olivearchive.vmnetx.android.RemoteCanvas
-    android:id="@+id/vnc_canvas"
+    android:id="@+id/remoteCanvas"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="bottom|center"

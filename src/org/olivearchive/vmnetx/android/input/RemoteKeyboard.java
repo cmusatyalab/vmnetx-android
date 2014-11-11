@@ -34,7 +34,7 @@ public class RemoteKeyboard {
     public final static int SUPER_MASK = 8;
     public final static int META_MASK  = 0;
     
-    private RemoteCanvas vncCanvas;
+    private RemoteCanvas canvas;
     private SpiceCommunicator spice;
     private Context context;
     private KeyboardMapper keyboardMapper;
@@ -56,9 +56,9 @@ public class RemoteKeyboard {
     // SDK >= 16 and LatinIME next time a multi-character event comes along.
     public boolean skippedJunkChars = true;
 
-    public RemoteKeyboard (SpiceCommunicator s, RemoteCanvas v, Handler h) {
+    public RemoteKeyboard (SpiceCommunicator s, RemoteCanvas c, Handler h) {
         spice = s;
-        vncCanvas = v;
+        canvas = c;
         keyRepeater = new KeyRepeater (this, h);
         
         if (android.os.Build.MODEL.contains("BlackBerry") ||
@@ -67,7 +67,7 @@ public class RemoteKeyboard {
             bb = true;
         }
 
-        context = v.getContext();
+        context = c.getContext();
 
         keyboardMapper = new KeyboardMapper();
         keyboardMapper.init(context);
@@ -169,7 +169,7 @@ public class RemoteKeyboard {
     public void stopRepeatingKeyEvent() { keyRepeater.stop(); }
 
     public void sendMetaKey(MetaKeyBean meta) {
-        RemotePointer pointer = vncCanvas.getPointer();
+        RemotePointer pointer = canvas.getPointer();
         int x = pointer.getX();
         int y = pointer.getY();
         

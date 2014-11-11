@@ -24,7 +24,7 @@
  */
 
 //
-// RemoteCanvas is a subclass of android.view.SurfaceView which draws a VNC
+// RemoteCanvas is a subclass of android.widget.ImageView which draws a SPICE
 // desktop on it.
 //
 
@@ -62,7 +62,7 @@ import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
 
 public class RemoteCanvas extends ImageView {
-    private final static String TAG = "VncCanvas";
+    private final static String TAG = "RemoteCanvas";
     
     public AbstractScaling scaling;
     
@@ -494,7 +494,7 @@ public class RemoteCanvas extends ImageView {
     }
 
     /**
-     * This runnable sets the drawable (contained in bitmapData) for the VncCanvas (ImageView).
+     * This runnable sets the drawable (contained in bitmapData) for the RemoteCanvas (ImageView).
      */
     private Runnable drawableSetter = new Runnable() {
         public void run() {
