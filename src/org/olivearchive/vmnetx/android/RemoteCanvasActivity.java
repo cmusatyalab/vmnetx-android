@@ -736,22 +736,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_disable);
             else
                 menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_enable);
-            
-    /*        menu.findItem(R.id.itemFollowMouse).setChecked(
-                    connection.getFollowMouse());
-            menu.findItem(R.id.itemFollowPan).setChecked(connection.getFollowPan());
-     */
-    /* TODO: This is how one detects long-presses on menu items. However, getActionView is not available in Android 2.3...
-            menu.findItem(R.id.itemExtraKeys).getActionView().setOnLongClickListener(new OnLongClickListener () {
-    
-                @Override
-                public boolean onLongClick(View arg0) {
-                    Toast.makeText(arg0.getContext(), "Long Press Detected.", Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                
-            });
-    */
         } catch (NullPointerException e) { }
         return true;
     }
@@ -863,20 +847,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         case R.id.itemCtrlAltDel:
             canvas.getKeyboard().sendMetaKey(MetaKeyBean.keyCtrlAltDel);
             return true;
-/*        case R.id.itemFollowMouse:
-            boolean newFollow = !connection.getFollowMouse();
-            item.setChecked(newFollow);
-            connection.setFollowMouse(newFollow);
-            if (newFollow) {
-                vncCanvas.panToMouse();
-            }
-            return true;
-        case R.id.itemFollowPan:
-            boolean newFollowPan = !connection.getFollowPan();
-            item.setChecked(newFollowPan);
-            connection.setFollowPan(newFollowPan);
-            return true;
-*/
         case R.id.itemExtraKeys:
             if (connection.getExtraKeys()) {
                 connection.setExtraKeys(false);
@@ -896,10 +866,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 inputHandler = input;
                 connection.setInputMode(input.getName());
                 if (input.getName().equals(SimulatedTouchpadInputHandler.TOUCHPAD_MODE)) {
-                    connection.setFollowMouse(true);
                     connection.setFollowPan(true);
                 } else {
-                    connection.setFollowMouse(false);
                     connection.setFollowPan(false);
                 }
 

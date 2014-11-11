@@ -44,7 +44,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
     private String scaleMode;
     private boolean useDpadAsArrows;
     private boolean rotateDpad;
-    private boolean followMouse;
     private boolean followPan;
 
     ConnectionBean()
@@ -131,14 +130,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
 
     public void setRotateDpad(boolean rotateDpad) {
         this.rotateDpad = rotateDpad;
-    }
-
-    public boolean getFollowMouse() {
-        return followMouse;
-    }
-
-    public void setFollowMouse(boolean followMouse) {
-        this.followMouse = followMouse;
     }
 
     public boolean getFollowPan() {
