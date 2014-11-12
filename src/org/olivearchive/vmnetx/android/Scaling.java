@@ -60,8 +60,9 @@ public class Scaling {
         canvasYOffset = -canvas.getCenteredYOffset();
         canvas.computeShiftFromFullToView ();
         minimumScale = canvas.getMinimumScale();
-        scaling = 1.f;
+        scaling = minimumScale;
         resetMatrix();
+        matrix.postScale(scaling, scaling);
         canvas.setImageMatrix(matrix);
         resolveZoom(canvas);
     }
