@@ -50,35 +50,6 @@ public class Scaling {
         return scaling;
     }
 
-    void zoomIn(RemoteCanvasActivity activity) {
-        resetMatrix();
-        standardizeScaling();
-        scaling += 0.25;
-        if (scaling > 4.0)
-        {
-            scaling = (float)4.0;
-        }
-        matrix.postScale(scaling, scaling);
-        //Log.v(TAG,String.format("before set matrix scrollx = %d scrolly = %d", activity.getCanvas().getScrollX(), activity.getCanvas().getScrollY()));
-        activity.getCanvas().setImageMatrix(matrix);
-        resolveZoom(activity.getCanvas());
-    }
-
-    void zoomOut(RemoteCanvasActivity activity) {
-        resetMatrix();
-        standardizeScaling();
-        scaling -= 0.25;
-        if (scaling < minimumScale)
-        {
-            scaling = minimumScale;
-        }
-        matrix.postScale(scaling, scaling);
-        //Log.v(TAG,String.format("before set matrix scrollx = %d scrolly = %d", activity.getCanvas().getScrollX(), activity.getCanvas().getScrollY()));
-        activity.getCanvas().setImageMatrix(matrix);
-        //Log.v(TAG,String.format("after set matrix scrollx = %d scrolly = %d", activity.geCanvas().getScrollX(), activity.getCanvas().getScrollY()));
-        resolveZoom(activity.getCanvas());
-    }
-
     /**
      * Sets the activity's scale type to the scaling
      * @param activity
@@ -98,14 +69,6 @@ public class Scaling {
         resolveZoom(canvas);
     }
 
-    /**
-     * True if this scale type allows panning of the image
-     * @return
-     */
-    boolean isAbleToPan() {
-        return true;
-    }
-    
     /**
      * Change the scaling and focus dynamically, as from a detected scale gesture
      * @param activity Activity containing to canvas to scale
@@ -175,13 +138,5 @@ public class Scaling {
     {
         matrix.reset();
         matrix.preTranslate(canvasXOffset, canvasYOffset);
-    }
-
-    /**
-     *  Set scaling to one of the clicks on the zoom scale
-     */
-    private void standardizeScaling()
-    {
-        scaling = ((float)((int)(scaling * 4))) / 4;
     }
 }

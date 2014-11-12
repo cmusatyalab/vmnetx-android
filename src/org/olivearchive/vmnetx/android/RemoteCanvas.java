@@ -403,10 +403,6 @@ public class RemoteCanvas extends ImageView {
         if (spice.framebufferHeight() <= getVisibleHeight())
             panY = false;
         
-        // We only pan if the current scaling is able to pan.
-        if (scaling != null && ! scaling.isAbleToPan())
-            return;
-        
         int x = pointer.getX();
         int y = pointer.getY();
         boolean panned = false;
@@ -461,11 +457,6 @@ public class RemoteCanvas extends ImageView {
      * @return True if the pan changed the view (did not move view out of bounds); false otherwise
      */
     public boolean pan(int dX, int dY) {
-        
-        // We only pan if the current scaling is able to pan.
-        if (scaling != null && ! scaling.isAbleToPan())
-            return false;
-        
         double scale = getScale();
         
         double sX = (double)dX / scale;
