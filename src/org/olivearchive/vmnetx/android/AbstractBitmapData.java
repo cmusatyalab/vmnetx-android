@@ -40,8 +40,6 @@ abstract public class AbstractBitmapData {
     int bitmapheight;
     Bitmap mbitmap;
     protected SpiceCommunicator spice;
-    protected int bitmapPixels[];
-    protected Canvas memGraphics;
     private RemoteCanvas canvas;
     public AbstractBitmapDrawable drawable;
 
@@ -93,45 +91,6 @@ abstract public class AbstractBitmapData {
     }
 
     /**
-     * Determine if a rectangle in full-frame coordinates can be drawn in the existing buffer
-     * @param x Top left x
-     * @param y Top left y
-     * @param w width (pixels)
-     * @param h height (pixels)
-     * @return True if entire rectangle fits into current screen buffer, false otherwise
-     */
-    public abstract boolean validDraw(int x, int y, int w, int h);
-
-    /**
-     * Return an offset in the bitmapPixels array of a point in full-frame coordinates
-     * @param x
-     * @param y
-     * @return Offset in bitmapPixels array of color data for that point
-     */
-    public abstract int offset(int x, int y);
-
-    /**
-     * Update pixels in the bitmap with data from the bitmapPixels array, positioned
-     * in full-frame coordinates
-     * @param x Top left x
-     * @param y Top left y
-     * @param w width (pixels)
-     * @param h height (pixels)
-     */
-    public abstract void updateBitmap(int x, int y, int w, int h);
-
-    /**
-     * Update pixels in the bitmap with data from the given bitmap, positioned
-     * in full-frame coordinates
-     * @param b The bitmap to copy from.
-     * @param x Top left x
-     * @param y Top left y
-     * @param w width (pixels)
-     * @param h height (pixels)
-     */
-    public abstract void updateBitmap(Bitmap b, int x, int y, int w, int h);
-
-    /**
      * Create drawable appropriate for this data
      * @return drawable
      */
@@ -166,9 +125,6 @@ abstract public class AbstractBitmapData {
         if (mbitmap != null)
             mbitmap.recycle();
         mbitmap      = null;
-
-        memGraphics  = null;
-        bitmapPixels = null;
     }
     
     public int fbWidth () {

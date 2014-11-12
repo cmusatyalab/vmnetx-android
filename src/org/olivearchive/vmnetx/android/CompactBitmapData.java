@@ -24,11 +24,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 class CompactBitmapData extends AbstractBitmapData {
-    /**
-     * Multiply this times total number of pixels to get estimate of process size with all buffers plus
-     * safety factor
-     */
-    static final int CAPACITY_MULTIPLIER = 7;
     static final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
     
     class CompactBitmapDrawable extends AbstractBitmapDrawable {
@@ -62,19 +57,6 @@ class CompactBitmapData extends AbstractBitmapData {
 
         mbitmap = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
         mbitmap.setHasAlpha(false);
-
-        memGraphics = new Canvas(mbitmap);
-        bitmapPixels = new int[bitmapwidth * bitmapheight];
-    }
-
-    @Override
-    public boolean validDraw(int x, int y, int w, int h) {
-        return true;
-    }
-
-    @Override
-    public int offset(int x, int y) {
-        return y * bitmapwidth + x;
     }
 
     /* (non-Javadoc)
@@ -83,26 +65,6 @@ class CompactBitmapData extends AbstractBitmapData {
     @Override
     AbstractBitmapDrawable createDrawable() {
         return new CompactBitmapDrawable();
-    }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#updateBitmap(int, int, int, int)
-     */
-    @Override
-    public void updateBitmap(int x, int y, int w, int h) {
-        synchronized (mbitmap) {
-            mbitmap.setPixels(bitmapPixels, offset(x,y), bitmapwidth, x, y, w, h);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractBitmapData#updateBitmap(Bitmap, int, int, int, int)
-     */
-    @Override
-    public void updateBitmap(Bitmap b, int x, int y, int w, int h) {
-        synchronized (mbitmap) {
-            memGraphics.drawBitmap(b, x, y, null);
-        }
     }
 
     /* (non-Javadoc)
@@ -119,9 +81,7 @@ class CompactBitmapData extends AbstractBitmapData {
             System.gc();
             bitmapwidth  = framebufferwidth;
             bitmapheight = framebufferheight;
-            bitmapPixels = new int[bitmapwidth * bitmapheight];
             mbitmap      = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
-            memGraphics  = new Canvas(mbitmap);
             drawable     = createDrawable();
         }
     }
