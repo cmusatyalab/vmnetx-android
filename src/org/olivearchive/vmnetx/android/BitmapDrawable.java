@@ -68,13 +68,6 @@ public class BitmapDrawable extends DrawableContainer {
         } catch (Throwable e) { }
     }
 
-    void draw(Canvas canvas, int xoff, int yoff) {
-        try {
-            canvas.drawBitmap(data.mbitmap, xoff, yoff, _defaultPaint);
-            canvas.drawBitmap(softCursor, cursorRect.left, cursorRect.top, _defaultPaint);
-        } catch (Throwable e) { }
-    }
-
     void setCursorRect(int x, int y, float w, float h, int hX, int hY) {
         hotX = hX;
         hotY = hY;
