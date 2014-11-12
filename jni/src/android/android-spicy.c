@@ -29,6 +29,7 @@
 #include "spice-audio.h"
 #include "spice-common.h"
 #include "spice-cmdline.h"
+#include "android-io.h"
 #include "android-spicy.h"
 #include "android-service.h"
 
@@ -37,6 +38,10 @@
 G_DEFINE_TYPE (SpiceWindow, spice_window, G_TYPE_OBJECT);
 
 static void connection_destroy(spice_connection *conn);
+
+void spice_window_class_init (SpiceWindowClass *klass) {}
+
+void spice_window_init (SpiceWindow *self) {}
 
 /* ------------------------------------------------------------------ */
 

@@ -48,10 +48,6 @@ struct _SpiceWindowClass
   GObjectClass parent_class;
 };
 
-static void spice_window_class_init (SpiceWindowClass *klass) {}
-
-static void spice_window_init (SpiceWindow *self) {}
-
 #define CHANNELID_MAX 4
 #define MONITORID_MAX 4
 
