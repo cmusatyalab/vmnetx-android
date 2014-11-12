@@ -615,10 +615,10 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     }
     
     /**
-     * Set scaling and input modes
+     * Set up scaling and input modes
      */
     void setModes() {
-        new Scaling().setScaleTypeForActivity(this);
+        canvas.scaling.updateForCanvas(canvas);
 
         boolean absoluteMouse = canvas.getAbsoluteMouse();
         if (absoluteMouse &&
@@ -661,7 +661,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         float oldScale = canvas.scaling.getScale();
         int x = canvas.absoluteXPosition;
         int y = canvas.absoluteYPosition;
-        canvas.scaling.setScaleTypeForActivity(RemoteCanvasActivity.this);
+        canvas.scaling.updateForCanvas(canvas);
         float newScale = canvas.scaling.getScale();
         canvas.scaling.adjust(this, oldScale/newScale, 0, 0);
         newScale = canvas.scaling.getScale();

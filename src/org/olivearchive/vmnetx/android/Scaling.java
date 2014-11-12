@@ -51,13 +51,10 @@ public class Scaling {
     }
 
     /**
-     * Sets the activity's scale type to the scaling
+     * Update state from canvas
      * @param activity
      */
-    void setScaleTypeForActivity(RemoteCanvasActivity activity) {
-        RemoteCanvas canvas = activity.getCanvas();
-        activity.keyboardControls.hide();
-        canvas.scaling = this;
+    void updateForCanvas(RemoteCanvas canvas) {
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
         canvasXOffset = -canvas.getCenteredXOffset();
         canvasYOffset = -canvas.getCenteredYOffset();

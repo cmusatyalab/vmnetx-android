@@ -150,6 +150,7 @@ public class RemoteCanvas extends ImageView {
     void initializeCanvas(ConnectionBean bean, final Runnable setModes) {
         this.setModes = setModes;
         connection = bean;
+        scaling = new Scaling();
 
         // Startup the connection thread with a progress dialog
         pd = new ProgressDialog(getContext());
