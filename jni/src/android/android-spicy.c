@@ -20,6 +20,7 @@
 #include "config.h"
 #endif
 #include <glib/gi18n.h>
+#include <android/log.h>
 
 #include <sys/stat.h>
 #define SPICY_C
@@ -31,6 +32,7 @@
 #include "android-spicy.h"
 #include "android-service.h"
 
+#define TAG "vmnetx-spicy"
 
 G_DEFINE_TYPE (SpiceWindow, spice_window, G_TYPE_OBJECT);
 
@@ -190,7 +192,7 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
 
 static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer data)
 {
-	__android_log_write(6, "android-spice", "channel_destroy called");
+    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "channel_destroy called");
 
     spice_connection *conn = data;
     int id;
@@ -224,9 +226,7 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     //        stdin_port = NULL;
     //}
     conn->channels--;
-    char buf[100];
-    snprintf (buf, 100, "Number of channels: %d", conn->channels);
-    __android_log_write(6, "android-spice", buf);
+    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Number of channels: %d", conn->channels);
     if (conn->channels > 0) {
         return;
     }
@@ -288,7 +288,7 @@ void connection_disconnect(spice_connection *conn)
 
 static void connection_destroy(spice_connection *conn)
 {
-	__android_log_write(6, "android-spicy", "connection_destroy called");
+    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "connection_destroy called");
     g_object_unref(conn->session);
     free(conn);
 
@@ -298,7 +298,7 @@ static void connection_destroy(spice_connection *conn)
         return;
     }
 
-    __android_log_write(6, "android-spicy", "quitting main loop");
+    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "quitting main loop");
     g_main_loop_quit(mainloop);
 }
 

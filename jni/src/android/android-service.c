@@ -19,6 +19,7 @@
 
 #include <jni.h>
 #include <android/bitmap.h>
+#include <android/log.h>
 
 #define ANDROID_SERVICE_C
 #include "android-service.h"
@@ -26,6 +27,7 @@
 #include "android-spice-widget.h"
 #include "android-spicy.h"
 
+#define TAG "vmnetx-service"
 
 static void spice_session_setup(JNIEnv *env, SpiceSession *session, jstring pw) {
     g_return_if_fail(SPICE_IS_SESSION(session));
@@ -59,7 +61,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     // Get a reference to the JVM to get JNIEnv from in (other) threads.
     jint rs = (*env)->GetJavaVM(env, &jvm);
     if (rs != JNI_OK) {
-        __android_log_write(6, "spicy", "ERROR: Could not obtain jvm reference.");
+        __android_log_write(ANDROID_LOG_ERROR, TAG, "Could not obtain jvm reference.");
         return 255;
     }
 
@@ -92,9 +94,9 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
         g_main_loop_run(mainloop);
         connection_disconnect(conn);
         g_object_unref(mainloop);
-        __android_log_write(6, "spicy", "Exiting main loop.");
+        __android_log_write(ANDROID_LOG_INFO, TAG, "Exiting main loop.");
     } else {
-        __android_log_write(6, "spicy", "Wrong hostname, port, or password.");
+        __android_log_write(ANDROID_LOG_ERROR, TAG, "Wrong hostname, port, or password.");
         result = 2;
     }
 
