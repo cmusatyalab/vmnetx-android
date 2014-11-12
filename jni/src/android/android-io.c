@@ -73,7 +73,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv
 }
 
 
-int win32key2spice (int keycode)
+static int win32key2spice (int keycode)
 {
     int newKeyCode = keymap_win322xtkbd[keycode];
     /*
@@ -84,7 +84,7 @@ int win32key2spice (int keycode)
     return newKeyCode;
 }
 
-inline bool attachThreadToJvm (JNIEnv** env) {
+static inline bool attachThreadToJvm (JNIEnv** env) {
     bool attached = false;
     int rs2 = 0;
     int rs1 = (*jvm)->GetEnv(jvm, (void**)env, JNI_VERSION_1_6);
@@ -104,13 +104,9 @@ inline bool attachThreadToJvm (JNIEnv** env) {
     return attached;
 }
 
-inline void detachThreadFromJvm () {
+static inline void detachThreadFromJvm () {
     (*jvm)->DetachCurrentThread(jvm);
 }
-
-bool attachThreadToJvm (JNIEnv** env);
-void detachThreadFromJvm ();
-
 
 static int update_mask (int button, gboolean down) {
     static int mask;

@@ -27,7 +27,7 @@
 #include "android-spicy.h"
 
 
-void spice_session_setup(JNIEnv *env, SpiceSession *session, jstring pw) {
+static void spice_session_setup(JNIEnv *env, SpiceSession *session, jstring pw) {
     g_return_if_fail(SPICE_IS_SESSION(session));
 
     const char *password = (*env)->GetStringUTFChars(env, pw, NULL);
