@@ -21,53 +21,35 @@
 package org.olivearchive.vmnetx.android;
 
 import android.graphics.Matrix;
-import android.util.Log;
-import android.widget.ImageView.ScaleType;
+import android.widget.ImageView;
 
 /**
  * @author Michael A. MacDonald
+ * 
+ * A scaling mode for the RemoteCanvas
  */
-class ZoomScaling extends AbstractScaling {
-    
-    static final String TAG = "ZoomScaling";
+public class Scaling {
+    static final String TAG = "Scaling";
 
     private Matrix matrix;
     private int canvasXOffset;
     private int canvasYOffset;
     private float scaling;
     private float minimumScale;
-    
-    /**
-     * @param id
-     * @param scaleType
-     */
-    public ZoomScaling() {
-        super(ScaleType.MATRIX);
+
+    public Scaling() {
         matrix = new Matrix();
         scaling = 1;
     }
 
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#isAbleToPan()
+    /**
+     * Returns the scale factor of this scaling mode.
+     * @return
      */
-    @Override
-    boolean isAbleToPan() {
-        return true;
+    float getScale() {
+        return scaling;
     }
 
-    /**
-     * Call after scaling and matrix have been changed to resolve scrolling
-     * @param activity
-     */
-    private void resolveZoom(RemoteCanvas canvas)
-    {
-        canvas.scrollToAbsolute();
-    }
-    
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#zoomIn(org.olivearchive.vmnetx.android.RemoteCanvasActivity)
-     */
-    @Override
     void zoomIn(RemoteCanvasActivity activity) {
         resetMatrix();
         standardizeScaling();
@@ -82,18 +64,6 @@ class ZoomScaling extends AbstractScaling {
         resolveZoom(activity.getCanvas());
     }
 
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#getScale()
-     */
-    @Override
-    float getScale() {
-        return scaling;
-    }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#zoomOut(org.olivearchive.vmnetx.android.RemoteCanvasActivity)
-     */
-    @Override
     void zoomOut(RemoteCanvasActivity activity) {
         resetMatrix();
         standardizeScaling();
@@ -109,12 +79,41 @@ class ZoomScaling extends AbstractScaling {
         resolveZoom(activity.getCanvas());
     }
 
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#adjust(org.olivearchive.vmnetx.android.RemoteCanvasActivity, float, float, float)
+    /**
+     * Sets the activity's scale type to the scaling
+     * @param activity
      */
-    @Override
+    void setScaleTypeForActivity(RemoteCanvasActivity activity) {
+        RemoteCanvas canvas = activity.getCanvas();
+        activity.keyboardControls.hide();
+        canvas.scaling = this;
+        canvas.setScaleType(ImageView.ScaleType.MATRIX);
+        canvasXOffset = -canvas.getCenteredXOffset();
+        canvasYOffset = -canvas.getCenteredYOffset();
+        canvas.computeShiftFromFullToView ();
+        minimumScale = canvas.getMinimumScale();
+        scaling = 1.f;
+        resetMatrix();
+        canvas.setImageMatrix(matrix);
+        resolveZoom(canvas);
+    }
+
+    /**
+     * True if this scale type allows panning of the image
+     * @return
+     */
+    boolean isAbleToPan() {
+        return true;
+    }
+    
+    /**
+     * Change the scaling and focus dynamically, as from a detected scale gesture
+     * @param activity Activity containing to canvas to scale
+     * @param scaleFactor Factor by which to adjust scaling
+     * @param fx Focus X of center of scale change
+     * @param fy Focus Y of center of scale change
+     */
     public void adjust(RemoteCanvasActivity activity, float scaleFactor, float fx, float fy) {
-        
         float oldScale;
         float newScale = scaleFactor * scaling;
         if (scaleFactor < 1)
@@ -131,7 +130,7 @@ class ZoomScaling extends AbstractScaling {
                 newScale = 4;
             }
         }
-        
+
         RemoteCanvas canvas = activity.getCanvas();
         // ax is the absolute x of the focus
         int xPan = canvas.absoluteXPosition;
@@ -140,7 +139,7 @@ class ZoomScaling extends AbstractScaling {
         int yPan = canvas.absoluteYPosition;
         float ay = (fy / scaling) + yPan;
         float newYPan = (scaling * yPan - scaling * ay + newScale * ay)/newScale;
-        
+
         // Here we do snapping to 1:1. If we are approaching scale = 1, we snap to it.
         oldScale = scaling;
         if ( (newScale > 0.90f && newScale < 1.00f) ||
@@ -150,25 +149,34 @@ class ZoomScaling extends AbstractScaling {
             if (oldScale < 0.90f || oldScale > 1.10f)
                 canvas.displayShortToastMessage(R.string.snap_one_to_one);
         }
-        
+
         resetMatrix();
         scaling = newScale;
         matrix.postScale(scaling, scaling);
         canvas.setImageMatrix(matrix);
         resolveZoom(canvas);
-        
+
         // Only if we have actually scaled do we pan.
         if (oldScale != newScale) {
             canvas.pan((int)(newXPan - xPan), (int)(newYPan - yPan));
         }
-    }    
-    
+    }
+
+    /**
+     * Call after scaling and matrix have been changed to resolve scrolling
+     * @param activity
+     */
+    private void resolveZoom(RemoteCanvas canvas)
+    {
+        canvas.scrollToAbsolute();
+    }
+
     private void resetMatrix()
     {
         matrix.reset();
         matrix.preTranslate(canvasXOffset, canvasYOffset);
     }
-    
+
     /**
      *  Set scaling to one of the clicks on the zoom scale
      */
@@ -176,22 +184,4 @@ class ZoomScaling extends AbstractScaling {
     {
         scaling = ((float)((int)(scaling * 4))) / 4;
     }
-
-    /* (non-Javadoc)
-     * @see org.olivearchive.vmnetx.android.AbstractScaling#setScaleTypeForActivity(org.olivearchive.vmnetx.android.RemoteCanvasActivity, org.olivearchive.vmnetx.android.ConnectionBean)
-     */
-    @Override
-    void setScaleTypeForActivity(RemoteCanvasActivity activity) {
-        super.setScaleTypeForActivity(activity);
-        RemoteCanvas canvas = activity.getCanvas();
-        canvasXOffset = -canvas.getCenteredXOffset();
-        canvasYOffset = -canvas.getCenteredYOffset();
-        canvas.computeShiftFromFullToView ();
-        minimumScale = canvas.getMinimumScale();
-        scaling = 1.f;
-        resetMatrix();
-        canvas.setImageMatrix(matrix);
-        resolveZoom(canvas);
-    }
-
 }

@@ -618,7 +618,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
      * Set scaling and input modes
      */
     void setModes() {
-        new ZoomScaling().setScaleTypeForActivity(this);
+        new Scaling().setScaleTypeForActivity(this);
 
         boolean absoluteMouse = canvas.getAbsoluteMouse();
         if (absoluteMouse &&

@@ -64,7 +64,7 @@ import org.olivearchive.vmnetx.android.input.RemotePointer;
 public class RemoteCanvas extends ImageView {
     private final static String TAG = "RemoteCanvas";
     
-    public AbstractScaling scaling;
+    public Scaling scaling;
     
     // Variable indicating that we are currently scrolling in simulated touchpad mode.
     public boolean inScrolling = false;
