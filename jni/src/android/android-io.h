@@ -17,10 +17,6 @@
  * USA.
  */
 
-typedef unsigned char uchar;
-
-void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int height, int buffwidth, int buffheight);
-
 void uiCallbackGetFd (SpiceChannel *channel);
 void uiCallbackInvalidate (SpiceDisplayPrivate *d, gint x, gint y, gint w, gint h);
 void uiCallbackSettingsChanged (gint instance, gint width, gint height, gint bpp);

@@ -17,6 +17,7 @@
  * USA.
  */
 
+#include <endian.h>
 #include <jni.h>
 #include <android/bitmap.h>
 
@@ -36,22 +37,24 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceSetFd(JNIEnv *env, j
 }
 
 
-void updatePixels (uchar* dest, uchar* source, int x, int y, int width, int height, int buffwidth, int buffheight) {
+static void updatePixels (uint32_t *dest, uint32_t *source, int x, int y, int width, int height, int buffwidth, int buffheight) {
     //char buf[100];
     //snprintf (buf, 100, "Drawing x: %d, y: %d, w: %d, h: %d, wBuf: %d, hBuf: %d", x, y, width, height, wBuf, hBuf);
     //__android_log_write(6, "android-io", buf);
-    int slen = buffwidth * 4;
-    uchar *sourcepix = (uchar*) &source[(slen * y) + (x * 4)];
-    uchar *destpix   = (uchar*) &dest[(slen * y) + (x * 4)];
+    uint32_t *sourcepix = &source[(buffwidth * y) + x];
+    uint32_t *destpix   = &dest[(buffwidth * y) + x];
 
     for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width * 4; j += 4) {
-            destpix[j + 0] = sourcepix[j + 2];
-            destpix[j + 1] = sourcepix[j + 1];
-            destpix[j + 2] = sourcepix[j + 0];
+        for (int j = 0; j < width; j++) {
+            // ARGB -> R G B X
+            uint32_t value = sourcepix[j] << 8;
+#if BYTE_ORDER == LITTLE_ENDIAN
+            value = __builtin_bswap32(value);
+#endif
+            destpix[j] = value;
         }
-        sourcepix = sourcepix + slen;
-        destpix   = destpix + slen;
+        sourcepix = sourcepix + buffwidth;
+        destpix   = destpix + buffwidth;
     }
 }
 
