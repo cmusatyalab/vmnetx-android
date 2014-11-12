@@ -20,8 +20,6 @@
 
 package org.olivearchive.vmnetx.android;
 
-import android.widget.ImageView.ScaleType;
-
 import java.lang.Comparable;
 import java.io.Serializable;
 
@@ -38,7 +36,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
     private int port;
     private String token;
     private boolean extraKeys;
-    private String scaleMode;
     private boolean useDpadAsArrows;
     private boolean rotateDpad;
 
@@ -47,7 +44,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
         setAddress("");
         setPort(18923);
         setToken("");
-        setScaleMode(ScaleType.MATRIX);
         setUseDpadAsArrows(true);
         setRotateDpad(false);
         setExtraKeys(true);
@@ -83,24 +79,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
 
     public void setExtraKeys(boolean extraKeys) {
         this.extraKeys = extraKeys;
-    }
-
-    ScaleType getScaleMode()
-    {
-        return ScaleType.valueOf(getScaleModeAsString());
-    }
-    
-    void setScaleMode(ScaleType value)
-    {
-        setScaleModeAsString(value.toString());
-    }
-    
-    public String getScaleModeAsString() {
-        return scaleMode;
-    }
-
-    public void setScaleModeAsString(String scaleMode) {
-        this.scaleMode = scaleMode;
     }
 
     public boolean getUseDpadAsArrows() {

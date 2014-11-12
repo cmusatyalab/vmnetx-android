@@ -28,41 +28,6 @@ import android.widget.ImageView;
  * A scaling mode for the RemoteCanvas; based on ImageView.ScaleType
  */
 public abstract class AbstractScaling {
-    private static final int scaleModeIds[] = { R.id.itemFitToScreen, R.id.itemOneToOne, R.id.itemZoomable };
-    
-    private static AbstractScaling[] scalings;
-
-    static AbstractScaling getById(int id)
-    {
-        if ( scalings==null)
-        {
-            scalings=new AbstractScaling[scaleModeIds.length];
-        }
-        for ( int i=0; i<scaleModeIds.length; ++i)
-        {
-            if ( scaleModeIds[i]==id)
-            {
-                if ( scalings[i]==null)
-                {
-                    switch ( id )
-                    {
-                    case R.id.itemFitToScreen :
-                        scalings[i]=new FitToScreenScaling();
-                        break;
-                    case R.id.itemOneToOne :
-                        scalings[i]=new OneToOneScaling();
-                        break;
-                    case R.id.itemZoomable :
-                        scalings[i]=new ZoomScaling();
-                        break;
-                    }
-                }
-                return scalings[i];
-            }
-        }
-        throw new IllegalArgumentException("Unknown scaling id " + id);
-    }
-    
     /**
      * Returns the scale factor of this scaling mode.
      * @return
@@ -72,49 +37,22 @@ public abstract class AbstractScaling {
     void zoomIn(RemoteCanvasActivity activity) {}
     void zoomOut(RemoteCanvasActivity activity) {}
     
-    static AbstractScaling getByScaleType(ImageView.ScaleType scaleType)
-    {
-        for (int i : scaleModeIds)
-        {
-            AbstractScaling s = getById(i);
-            if (s.scaleType==scaleType)
-                return s;
-        }
-        throw new IllegalArgumentException("Unsupported scale type: "+ scaleType.toString());
-    }
-    
-    private int id;
     protected ImageView.ScaleType scaleType;
     
-    protected AbstractScaling(int id, ImageView.ScaleType scaleType)
+    protected AbstractScaling(ImageView.ScaleType scaleType)
     {
-        this.id = id;
         this.scaleType = scaleType;
     }
     
     /**
-     * 
-     * @return Id corresponding to menu item that sets this scale type
-     */
-    int getId()
-    {
-        return id;
-    }
-
-    /**
      * Sets the activity's scale type to the scaling
      * @param activity
      */
-    void setScaleTypeForActivity(RemoteCanvasActivity activity, ConnectionBean connection)
-    {
+    void setScaleTypeForActivity(RemoteCanvasActivity activity) {
         RemoteCanvas canvas = activity.getCanvas();
         activity.keyboardControls.hide();
         canvas.scaling = this;
-        // This is a bit of a hack because Scaletype.FIT_CENTER is now obsolete, since fit-to-screen scaling is now
-        // essentially zoom-scaling with minimumScale and zoom disabled. However, we still use
-        // it to identify Fit-to-screen scale mode. Instead of setting scaleType here, we hard-code MATRIX.
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
-        connection.setScaleMode(scaleType);
     }
     
     /**

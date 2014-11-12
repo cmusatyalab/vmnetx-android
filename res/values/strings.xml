@@ -12,12 +12,8 @@
 <string name="error_vm_terminated">Virtual machine terminated.</string>
 <string name="extra_keys_enable">Enable Extra Keys</string>
 <string name="extra_keys_disable">Disable Extra Keys</string>
-<string name="fit_to_screen">Fit to Screen</string>
 <string name="info_progress_dialog_title">Loading...</string>
 <string name="info_progress_dialog_message">Launching virtual machine.\nPlease wait...</string>
 <string name="info_progress_dialog_aborted">Connection aborted!</string>
-<string name="one_to_one">One to One</string>
-<string name="scaling">Scaling</string>
-<string name="scaling_zoomable">Zoomable</string>
 <string name="snap_one_to_one">Snapped to 1:1 zoom</string>
 </resources>

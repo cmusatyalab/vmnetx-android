@@ -70,10 +70,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     private RemoteCanvas canvas;
 
-    private MenuItem[] scalingModeMenuItems;
     private ConnectionBean connection;
-    private static final int scalingModeIds[] = { R.id.itemZoomable, R.id.itemFitToScreen,
-                                                  R.id.itemOneToOne};
 
     KeyboardControls keyboardControls;
     private Panner panner;
@@ -621,7 +618,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
      * Set scaling and input modes
      */
     void setModes() {
-        AbstractScaling.getByScaleType(connection.getScaleMode()).setScaleTypeForActivity(this, connection);
+        new ZoomScaling().setScaleTypeForActivity(this);
 
         boolean absoluteMouse = canvas.getAbsoluteMouse();
         if (absoluteMouse &&
@@ -664,7 +661,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         float oldScale = canvas.scaling.getScale();
         int x = canvas.absoluteXPosition;
         int y = canvas.absoluteYPosition;
-        canvas.scaling.setScaleTypeForActivity(RemoteCanvasActivity.this, connection);
+        canvas.scaling.setScaleTypeForActivity(RemoteCanvasActivity.this);
         float newScale = canvas.scaling.getScale();
         canvas.scaling.adjust(this, oldScale/newScale, 0, 0);
         newScale = canvas.scaling.getScale();
@@ -717,15 +714,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         try {
             getMenuInflater().inflate(R.menu.canvasactivitymenu, menu);
 
-            menu.findItem(canvas.scaling.getId()).setChecked(true);
-    
-            Menu scalingMenu = menu.findItem(R.id.itemScaling).getSubMenu();
-            scalingModeMenuItems = new MenuItem[scalingModeIds.length];
-            for (int i = 0; i < scalingModeIds.length; i++) {
-                scalingModeMenuItems[i] = scalingMenu.findItem(scalingModeIds[i]);
-            }
-            updateScalingMenu();
-            
             // Set the text of the Extra Keys menu item appropriately.
             if (connection.getExtraKeys())
                 menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_disable);
@@ -735,36 +723,9 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         return true;
     }
 
-    /**
-     * Change the scaling mode sub-menu to reflect available scaling modes.
-     */
-    void updateScalingMenu() {
-        try {
-            for (MenuItem item : scalingModeMenuItems) {
-                // If the entire framebuffer is NOT contained in the bitmap, fit-to-screen is meaningless.
-                if (item.getItemId() == R.id.itemFitToScreen) {
-                    if ( canvas != null && canvas.bitmapData != null &&
-                         (canvas.bitmapData.bitmapheight != canvas.bitmapData.framebufferheight ||
-                          canvas.bitmapData.bitmapwidth  != canvas.bitmapData.framebufferwidth) )
-                        item.setEnabled(false);
-                    else
-                        item.setEnabled(true);
-                } else
-                    item.setEnabled(true);
-            }
-        } catch (NullPointerException e) { }
-    }    
-    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // Following sets one of the scaling options
-        case R.id.itemZoomable:
-        case R.id.itemOneToOne:
-        case R.id.itemFitToScreen:
-            AbstractScaling.getById(item.getItemId()).setScaleTypeForActivity(this, connection);
-            item.setChecked(true);
-            return true;
         case R.id.itemDisconnect:
             Utils.showYesNoPrompt(this, getString(R.string.disconnect_prompt_title), getString(R.string.disconnect_prompt), new DialogInterface.OnClickListener() {
                 @Override

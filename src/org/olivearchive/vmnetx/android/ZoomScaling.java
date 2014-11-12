@@ -42,7 +42,7 @@ class ZoomScaling extends AbstractScaling {
      * @param scaleType
      */
     public ZoomScaling() {
-        super(R.id.itemZoomable, ScaleType.MATRIX);
+        super(ScaleType.MATRIX);
         matrix = new Matrix();
         scaling = 1;
     }
@@ -181,8 +181,8 @@ class ZoomScaling extends AbstractScaling {
      * @see org.olivearchive.vmnetx.android.AbstractScaling#setScaleTypeForActivity(org.olivearchive.vmnetx.android.RemoteCanvasActivity, org.olivearchive.vmnetx.android.ConnectionBean)
      */
     @Override
-    void setScaleTypeForActivity(RemoteCanvasActivity activity, ConnectionBean connection) {
-        super.setScaleTypeForActivity(activity, connection);
+    void setScaleTypeForActivity(RemoteCanvasActivity activity) {
+        super.setScaleTypeForActivity(activity);
         RemoteCanvas canvas = activity.getCanvas();
         canvasXOffset = -canvas.getCenteredXOffset();
         canvasYOffset = -canvas.getCenteredYOffset();

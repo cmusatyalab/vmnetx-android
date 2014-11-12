@@ -1,14 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/itemExtraKeys" android:title="@string/extra_keys_disable" android:icon="@drawable/extra_keys"/>
-    <item android:numericShortcut="4" android:alphabeticShortcut="z" android:id="@+id/itemScaling" android:title="@string/scaling" android:icon="@android:drawable/ic_menu_zoom">
-    	<menu>
-	    	<group android:id="@+id/groupScaling" android:checkableBehavior="single">
-	    		<item android:id="@+id/itemZoomable" android:title="@string/scaling_zoomable" />
-	    		<item android:id="@+id/itemFitToScreen" android:title="@string/fit_to_screen" android:checked="true"/>
-                <item android:id="@+id/itemOneToOne" android:title="@string/one_to_one"/>
-	    	</group>
-    	</menu>
-    </item>
     <item android:numericShortcut="8" android:alphabeticShortcut="r" android:id="@+id/itemCtrlAltDel" android:title="@string/ctrl_alt_del" android:icon="@android:drawable/ic_menu_share"/>
     <item android:numericShortcut="7" android:alphabeticShortcut="x" android:id="@+id/itemDisconnect" android:title="@string/disconnect" android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
 </menu>
