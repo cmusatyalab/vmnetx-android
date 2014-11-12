@@ -87,7 +87,7 @@ public class RemoteCanvas extends ImageView {
     private RemoteKeyboard keyboard;
     
     // Internal bitmap data
-    public AbstractBitmapData bitmapData;
+    public BitmapData bitmapData;
     
     // Progress dialog shown at connection time.
     private ProgressDialog pd;
@@ -747,12 +747,11 @@ public class RemoteCanvas extends ImageView {
         disposeDrawable ();
         try {
             // TODO: Use frameBufferSizeChanged instead.
-            bitmapData = new CompactBitmapData(spice, this);
+            bitmapData = new BitmapData(spice, this);
         } catch (Throwable e) {
             showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
             return;
         }
-        android.util.Log.i(TAG, "Using CompactBufferBitmapData.");
         
         // TODO: In RDP mode, pointer is not visible, so we use a soft cursor.
         initializeSoftCursor();

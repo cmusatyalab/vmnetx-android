@@ -39,13 +39,13 @@ public class AbstractBitmapDrawable extends DrawableContainer {
 
     protected Rect toDraw;
     protected Bitmap softCursor;
-    protected AbstractBitmapData data;
+    protected BitmapData data;
 
     private int hotX, hotY;
 
     public Paint _defaultPaint;
 
-    AbstractBitmapDrawable(AbstractBitmapData data)    {
+    AbstractBitmapDrawable(BitmapData data) {
         this.data = data;
         cursorRect = new RectF();
         // Try to free up some memory.

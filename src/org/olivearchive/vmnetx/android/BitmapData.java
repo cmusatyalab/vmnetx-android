@@ -27,29 +27,56 @@ import android.widget.ImageView;
 import android.util.Log;
 
 /**
- * Abstract interface between the RemoteCanvas and the bitmap and pixel data buffers that actually contain
+ * Interface between the RemoteCanvas and the bitmap data buffers that actually contain
  * the data.
- * This allows for implementations that use smaller bitmaps or buffers to save memory. 
  * @author Michael A. MacDonald
- *
  */
-abstract public class AbstractBitmapData {
+public class BitmapData {
+    static private final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
+
+    class BitmapDrawable extends AbstractBitmapDrawable {
+        BitmapDrawable() {
+            super(BitmapData.this);
+        }
+
+        /* (non-Javadoc)
+         * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
+         */
+        @Override
+        public void draw(Canvas canvas) {
+            try {
+                synchronized (mbitmap) {
+                    canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, _defaultPaint);
+                    canvas.drawBitmap(softCursor, cursorRect.left, cursorRect.top, _defaultPaint);
+                }
+            } catch (Throwable e) { }
+        }
+    }
+
     int framebufferwidth;
     int framebufferheight;
     int bitmapwidth;
     int bitmapheight;
     Bitmap mbitmap;
-    protected SpiceCommunicator spice;
+    private SpiceCommunicator spice;
     private RemoteCanvas canvas;
     public AbstractBitmapDrawable drawable;
 
-    AbstractBitmapData(SpiceCommunicator s, RemoteCanvas c)
-    {
+    BitmapData(SpiceCommunicator s, RemoteCanvas c) {
         spice = s;
         canvas = c;
         framebufferwidth  = spice.framebufferWidth();
         framebufferheight = spice.framebufferHeight();
         drawable = createDrawable();
+
+        bitmapwidth = framebufferwidth;
+        bitmapheight = framebufferheight;
+        // To please createBitmap, we ensure the size it at least 1x1.
+        if (bitmapwidth  == 0) bitmapwidth  = 1;
+        if (bitmapheight == 0) bitmapheight = 1;
+
+        mbitmap = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
+        mbitmap.setHasAlpha(false);
     }
 
     void setCursorRect(int x, int y, int w, int h, int hX, int hY) {
@@ -94,8 +121,9 @@ abstract public class AbstractBitmapData {
      * Create drawable appropriate for this data
      * @return drawable
      */
-    abstract AbstractBitmapDrawable createDrawable();
-
+    AbstractBitmapDrawable createDrawable() {
+        return new BitmapDrawable();
+    }
 
     /**
      * Sets the canvas's drawable
@@ -112,7 +140,20 @@ abstract public class AbstractBitmapData {
      * This method is called when the framebuffer has changed size and reinitializes the
      * necessary data structures to support that change.
      */
-    public abstract void frameBufferSizeChanged ();
+    public void frameBufferSizeChanged() {
+        framebufferwidth = spice.framebufferWidth();
+        framebufferheight = spice.framebufferHeight();
+        android.util.Log.i("CBM", "bitmapsize changed = ("+bitmapwidth+","+bitmapheight+")");
+        if ( bitmapwidth < framebufferwidth || bitmapheight < framebufferheight ) {
+            dispose();
+            // Try to free up some memory.
+            System.gc();
+            bitmapwidth  = framebufferwidth;
+            bitmapheight = framebufferheight;
+            mbitmap      = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
+            drawable     = createDrawable();
+        }
+    }
     
     /**
      * Release resources
