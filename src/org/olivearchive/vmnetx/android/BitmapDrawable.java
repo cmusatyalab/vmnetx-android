@@ -27,25 +27,23 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.DrawableContainer;
-import android.util.Log;
 
 /**
  * @author Michael A. MacDonald
- *
  */
-public class AbstractBitmapDrawable extends DrawableContainer {
+public class BitmapDrawable extends DrawableContainer {
     RectF cursorRect;
     boolean softCursorInit;
 
-    protected Rect toDraw;
-    protected Bitmap softCursor;
-    protected BitmapData data;
+    private Rect toDraw;
+    private Bitmap softCursor;
+    private BitmapData data;
 
     private int hotX, hotY;
 
     public Paint _defaultPaint;
 
-    AbstractBitmapDrawable(BitmapData data) {
+    BitmapDrawable(BitmapData data) {
         this.data = data;
         cursorRect = new RectF();
         // Try to free up some memory.
@@ -56,7 +54,20 @@ public class AbstractBitmapDrawable extends DrawableContainer {
         _defaultPaint = new Paint();
         _defaultPaint.setFilterBitmap(true);
     }
-    
+
+    /* (non-Javadoc)
+     * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
+     */
+    @Override
+    public void draw(Canvas canvas) {
+        try {
+            synchronized (data.mbitmap) {
+                canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, _defaultPaint);
+                canvas.drawBitmap(softCursor, cursorRect.left, cursorRect.top, _defaultPaint);
+            }
+        } catch (Throwable e) { }
+    }
+
     void draw(Canvas canvas, int xoff, int yoff) {
         try {
             canvas.drawBitmap(data.mbitmap, xoff, yoff, _defaultPaint);
@@ -72,7 +83,7 @@ public class AbstractBitmapDrawable extends DrawableContainer {
         cursorRect.top    = y-hotY;
         cursorRect.bottom = cursorRect.top + h;
     }
-    
+
     void moveCursorRect(int x, int y) {
         setCursorRect(x, y, cursorRect.width(), cursorRect.height(), hotX, hotY);
     }
@@ -84,7 +95,7 @@ public class AbstractBitmapDrawable extends DrawableContainer {
         softCursorInit = true;
         oldSoftCursor.recycle();
     }
-    
+
     /* (non-Javadoc)
      * @see android.graphics.drawable.DrawableContainer#getIntrinsicHeight()
      */
@@ -116,7 +127,7 @@ public class AbstractBitmapDrawable extends DrawableContainer {
     public boolean isStateful() {
         return false;
     }
-    
+
     public void dispose() {
         if (softCursor != null)
             softCursor.recycle();

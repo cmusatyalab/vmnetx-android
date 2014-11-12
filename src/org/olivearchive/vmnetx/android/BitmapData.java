@@ -21,10 +21,8 @@
 package org.olivearchive.vmnetx.android;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.widget.ImageView;
-import android.util.Log;
 
 /**
  * Interface between the RemoteCanvas and the bitmap data buffers that actually contain
@@ -34,25 +32,6 @@ import android.util.Log;
 public class BitmapData {
     static private final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
 
-    class BitmapDrawable extends AbstractBitmapDrawable {
-        BitmapDrawable() {
-            super(BitmapData.this);
-        }
-
-        /* (non-Javadoc)
-         * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
-         */
-        @Override
-        public void draw(Canvas canvas) {
-            try {
-                synchronized (mbitmap) {
-                    canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, _defaultPaint);
-                    canvas.drawBitmap(softCursor, cursorRect.left, cursorRect.top, _defaultPaint);
-                }
-            } catch (Throwable e) { }
-        }
-    }
-
     int framebufferwidth;
     int framebufferheight;
     int bitmapwidth;
@@ -60,7 +39,7 @@ public class BitmapData {
     Bitmap mbitmap;
     private SpiceCommunicator spice;
     private RemoteCanvas canvas;
-    public AbstractBitmapDrawable drawable;
+    public BitmapDrawable drawable;
 
     BitmapData(SpiceCommunicator s, RemoteCanvas c) {
         spice = s;
@@ -121,8 +100,8 @@ public class BitmapData {
      * Create drawable appropriate for this data
      * @return drawable
      */
-    AbstractBitmapDrawable createDrawable() {
-        return new BitmapDrawable();
+    BitmapDrawable createDrawable() {
+        return new BitmapDrawable(this);
     }
 
     /**
