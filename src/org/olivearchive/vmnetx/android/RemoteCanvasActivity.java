@@ -442,9 +442,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             }
         });
         
-        // TODO: Evaluate whether I should instead be using:
-        // canvas.sendMetaKey(MetaKeyBean.keyArrowLeft);
-
         // Define action of arrow keys.
         keyUp = (ImageButton) findViewById(R.id.keyUpArrow);
         keyUp.setOnTouchListener(new OnTouchListener () {
@@ -736,7 +733,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             }, null, null);
             return true;
         case R.id.itemCtrlAltDel:
-            canvas.getKeyboard().sendMetaKey(MetaKeyBean.keyCtrlAltDel);
+            canvas.getKeyboard().sendCtrlAltDel();
             return true;
         case R.id.itemExtraKeys:
             if (connection.getExtraKeys()) {
