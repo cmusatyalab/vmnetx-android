@@ -276,30 +276,6 @@ public class RemoteKeyboard {
         onScreenMetaState = 0;
     }
     
-    public void sendText(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            KeyEvent event = null;
-            char c = s.charAt(i);
-            if (Character.isISOControl(c)) {
-                if (c == '\n') {
-                    int keyCode = KeyEvent.KEYCODE_ENTER;
-                    processLocalKeyEvent(keyCode, new KeyEvent(KeyEvent.ACTION_DOWN, keyCode));
-                    try { Thread.sleep(10); } catch (InterruptedException e) { }
-                    processLocalKeyEvent(keyCode, new KeyEvent(KeyEvent.ACTION_UP, keyCode));
-                }
-            } else {
-                event = new KeyEvent(SystemClock.uptimeMillis(), s.substring(i, i+1), KeyCharacterMap.FULL, 0);
-                processLocalKeyEvent(event.getKeyCode(), event);
-                try { Thread.sleep(10); } catch (InterruptedException e) { }
-            }
-        }
-    }
-    
-    public void sendKeySym (int keysym, int metaState) {
-        char c = (char)XKeySymCoverter.keysym2ucs(keysym);
-        sendUnicode(c, metaState);
-    }
-    
     /**
      * Tries to convert a unicode character to a KeyEvent and if successful sends with keyEvent().
      * @param unicodeChar

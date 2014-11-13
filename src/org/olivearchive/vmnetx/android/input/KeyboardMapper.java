@@ -418,14 +418,6 @@ public class KeyboardMapper
         return false;
     }
     
-    public void sendAltF4()
-    {
-        listener.processVirtualKey(VK_LMENU, true);            
-        listener.processVirtualKey(VK_F4, true);            
-        listener.processVirtualKey(VK_F4, false);            
-        listener.processVirtualKey(VK_LMENU, false);                    
-    }
-
     private int getVirtualKeyCode(int keycode) {
         if(keycode >= 0 && keycode <= 0xFF)
             return keymapAndroid[keycode];
