@@ -114,7 +114,6 @@ public class RelativeMouseInputHandler extends AbstractGestureInputHandler {
      */
     @Override
     public boolean onDown(MotionEvent e) {
-        activity.stopPanner();
         return true;
     }
     

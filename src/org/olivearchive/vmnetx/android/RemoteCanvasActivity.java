@@ -25,7 +25,6 @@ package org.olivearchive.vmnetx.android;
 
 import org.olivearchive.vmnetx.android.input.AbsoluteMouseInputHandler;
 import org.olivearchive.vmnetx.android.input.AbstractInputHandler;
-import org.olivearchive.vmnetx.android.input.Panner;
 import org.olivearchive.vmnetx.android.input.RelativeMouseInputHandler;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 
@@ -73,7 +72,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private ConnectionBean connection;
 
     KeyboardControls keyboardControls;
-    private Panner panner;
     private Handler handler;
 
     private RelativeLayout layoutKeys;
@@ -247,8 +245,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
         keyboardControls.hide();
         
-        panner = new Panner(this, canvas.handler);
-
         inputHandler = new AbsoluteMouseInputHandler(this, canvas);
     }
 
@@ -760,7 +756,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         canvas = null;
         connection = null;
         keyboardControls = null;
-        panner = null;
         inputHandler = null;
         System.gc();
     }
@@ -813,10 +808,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     static final long KEYBOARD_CONTROLS_HIDE_DELAY_MS = 2500;
     HideKeyboardControlsRunnable hideKeyboardControlsInstance = new HideKeyboardControlsRunnable();
 
-    public void stopPanner() {
-        panner.stop ();
-    }
-    
     public void showKeyboardControls(boolean force) {
         if (force || keyboardControls.getVisibility() != View.VISIBLE) {
             keyboardControls.show();
@@ -854,13 +845,5 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     public void setCanvas(RemoteCanvas canvas) {
         this.canvas = canvas;
-    }
-    
-    public Panner getPanner() {
-        return panner;
-    }
-
-    public void setPanner(Panner panner) {
-        this.panner = panner;
     }
 }
