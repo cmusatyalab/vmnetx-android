@@ -74,11 +74,8 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     private boolean twoFingerSwipeLeft  = false;
     private boolean twoFingerSwipeRight = false;
     
-    // These variables indicate whether the dpad should be used as arrow keys
-    // and whether it should be rotated.
-    private boolean useDpadAsArrows    = false;
+    // This variable indicates whether the dpad should be rotated.
     private boolean rotateDpad         = false;
-    private boolean trackballButtonDown;
     
     // The variables which indicates how many scroll events to send per swipe 
     // event and the maximum number to send at one time.
@@ -128,9 +125,8 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         gestures = new GestureDetector(c, this);
         gestures.setOnDoubleTapListener(this);
         scaleGestures = new ScaleGestureDetector(c, this);
-        useDpadAsArrows = activity.getUseDpadAsArrows();
         rotateDpad      = activity.getRotateDpad();
-        keyHandler = new DPadMouseKeyHandler(activity, canvas.handler, useDpadAsArrows, rotateDpad);
+        keyHandler = new DPadMouseKeyHandler(activity, canvas.handler, rotateDpad);
         displayDensity = canvas.getDisplayDensity();
         
         distXQueue = new LinkedList<Float>();
@@ -581,37 +577,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         inScaling = false;
         inSwiping = false;
         scalingJustFinished = true;
-    }
-    
-    private static int convertTrackballDelta(double delta) {
-        return (int) Math.pow(Math.abs(delta) * 6.01, 2.5) * (delta < 0.0 ? -1 : 1);
-    }
-
-    boolean trackballMouse(MotionEvent evt) {
-        
-        int dx = convertTrackballDelta(evt.getX());
-        int dy = convertTrackballDelta(evt.getY());
-
-        switch (evt.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                trackballButtonDown = true;
-                break;
-            case MotionEvent.ACTION_UP:
-                trackballButtonDown = false;
-                break;
-        }
-        
-        RemotePointer pointer = canvas.getPointer();
-        evt.offsetLocation(pointer.getX() + dx - evt.getX(),
-                            pointer.getY() + dy - evt.getY());
-
-        if (pointer.processPointerEvent((int) evt.getX(), (int) evt.getY(),
-                                        evt.getAction(), evt.getMetaState(),
-                                        trackballButtonDown, false, false,
-                                        false, -1))
-            return true;
-        
-        return activity.onTouchEvent(evt);
     }
     
     /**

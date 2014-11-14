@@ -38,29 +38,18 @@ import android.view.MotionEvent;
  *
  */
 class DPadMouseKeyHandler {
-    private MouseMover mouseMover;
-    private boolean mouseDown;
     private RemoteCanvas canvas;
-    private boolean isMoving;
-    private boolean useDpadAsArrows = false;
     private boolean rotateDpad      = false;
     private RemoteKeyboard keyboard;
-    private RemotePointer pointer;
 
-    DPadMouseKeyHandler(RemoteCanvasActivity activity, Handler handler, boolean arrows, boolean rotate)
+    DPadMouseKeyHandler(RemoteCanvasActivity activity, Handler handler, boolean rotate)
     {
         canvas = activity.getCanvas();
-        mouseMover = new MouseMover(activity, handler);
-        useDpadAsArrows = arrows;
         rotateDpad      = rotate;
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent evt) {
-        int xv = 0;
-        int yv = 0;
-        boolean result = true;
         keyboard = canvas.getKeyboard();
-        pointer  = canvas.getPointer();
 
         // If we are instructed to rotate the Dpad at 90 degrees, reassign KeyCodes.
         if (rotateDpad) {
@@ -80,98 +69,11 @@ class DPadMouseKeyHandler {
             }
         }
 
-        // If we are supposed to use the Dpad as arrows, pass the event to the default handler.
-        if (useDpadAsArrows) {
-            return keyboard.processLocalKeyEvent(keyCode, evt);
-            // Otherwise, control the mouse.
-        } else {
-            switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                xv = -1;
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                xv = 1;
-                break;
-            case KeyEvent.KEYCODE_DPAD_UP:
-                yv = -1;
-                break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                yv = 1;
-                break;
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-                if (!mouseDown) {
-                    mouseDown = true;
-                    result = pointer.processPointerEvent(pointer.getX(), pointer.getY(), MotionEvent.ACTION_DOWN,
-                                                                evt.getMetaState(), mouseDown, false);
-                }
-                break;
-            default:
-                result = keyboard.processLocalKeyEvent(keyCode, evt);
-                break;
-            }
-        }
-        if ((xv != 0 || yv != 0) && !isMoving) {
-            final int x = xv;
-            final int y = yv;
-            isMoving = true;
-            mouseMover.start(x, y, new Panner.VelocityUpdater() {
-
-                /*
-                 * (non-Javadoc)
-                 * 
-                 * @see org.olivearchive.vmnetx.android.Panner.VelocityUpdater#updateVelocity(android.graphics.Point,
-                 *      long)
-                 */
-                @Override
-                public boolean updateVelocity(PointF p, long interval) {
-                    double scale = (1.2 * (double) interval / 50.0);
-                    if (Math.abs(p.x) < 500)
-                        p.x += (int) (scale * x);
-                    if (Math.abs(p.y) < 500)
-                        p.y += (int) (scale * y);
-                    return true;
-                }
-
-            });
-            pointer.processPointerEvent(pointer.getX() + x, pointer.getY() + y, MotionEvent.ACTION_MOVE,
-                                        evt.getMetaState(), mouseDown, false);
-
-        }
-        return result;
+        // Pass the event to the default handler.
+        return keyboard.processLocalKeyEvent(keyCode, evt);
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent evt) {
-
-        pointer  = canvas.getPointer();
-
-        // Pass the event on if we are not controlling the mouse.
-        if (useDpadAsArrows)
-            return keyboard.processLocalKeyEvent(keyCode, evt);
-
-        boolean result = false;
-
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_DPAD_LEFT:
-        case KeyEvent.KEYCODE_DPAD_RIGHT:
-        case KeyEvent.KEYCODE_DPAD_UP:
-        case KeyEvent.KEYCODE_DPAD_DOWN:
-            mouseMover.stop();
-            isMoving = false;
-            result = true;
-            break;
-        case KeyEvent.KEYCODE_DPAD_CENTER:
-            if (mouseDown) {
-                mouseDown = false;
-                result = pointer.processPointerEvent(pointer.getX(), pointer.getY(), MotionEvent.ACTION_UP,
-                                                        evt.getMetaState(), mouseDown, false);
-            } else {
-                result = true;
-            }
-            break;
-        default:
-            result = keyboard.processLocalKeyEvent(keyCode, evt);
-            break;
-        }
-        return result;
+        return keyboard.processLocalKeyEvent(keyCode, evt);
     }
 }

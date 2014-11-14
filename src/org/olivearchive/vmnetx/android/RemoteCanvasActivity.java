@@ -785,22 +785,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         return consumed;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onTrackballEvent(android.view.MotionEvent)
-     */
-    @Override
-    public boolean onTrackballEvent(MotionEvent event) {
-        try {
-            // If we are using the Dpad as arrow keys, don't send the event to the inputHandler.
-            if (connection.getUseDpadAsArrows())
-                return false;
-            return inputHandler.onTrackballEvent(event);
-        } catch (NullPointerException e) { }
-        return super.onTrackballEvent(event);
-    }
-
     // Send touch events or mouse events like button clicks to be handled.
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -847,11 +831,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 keyboardControls.hide();
             }
         }
-    }
-    
-    // Returns whether we are using D-pad/Trackball to send arrow key events.
-    public boolean getUseDpadAsArrows() {
-        return connection.getUseDpadAsArrows();
     }
     
     // Returns whether the D-pad should be rotated to accommodate BT keyboards paired with phones.

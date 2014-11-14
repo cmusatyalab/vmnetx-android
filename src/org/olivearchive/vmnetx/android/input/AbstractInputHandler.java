@@ -48,10 +48,6 @@ public interface AbstractInputHandler {
      */
     boolean onKeyUp(int keyCode, KeyEvent evt);
     /* (non-Javadoc)
-     * @see android.app.Activity#onTrackballEvent(android.view.MotionEvent)
-     */
-    boolean onTrackballEvent(MotionEvent evt);
-    /* (non-Javadoc)
      * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
      */
     boolean onTouchEvent(MotionEvent evt);

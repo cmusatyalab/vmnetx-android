@@ -45,16 +45,6 @@ public class RelativeMouseInputHandler extends AbstractGestureInputHandler {
     /*
      * (non-Javadoc)
      * 
-     * @see org.olivearchive.vmnetx.android.AbstractInputHandler#onTrackballEvent(android.view.MotionEvent)
-     */
-    @Override
-    public boolean onTrackballEvent(MotionEvent evt) {
-        return trackballMouse(evt);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see android.view.GestureDetector.SimpleOnGestureListener#onScroll(android.view.MotionEvent,
      *      android.view.MotionEvent, float, float)
      */
