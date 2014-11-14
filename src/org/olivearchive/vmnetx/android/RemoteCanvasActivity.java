@@ -623,18 +623,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onPrepareDialog(int, android.app.Dialog, android.os.Bundle)
-     */
-    @Override
-    protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
-        super.onPrepareDialog(id, dialog, args);
-        if (dialog instanceof ConnectionSettable)
-            ((ConnectionSettable) dialog).setConnection(connection);
-    }
-
     /**
      * This runnable fixes things up after a rotation.
      */
