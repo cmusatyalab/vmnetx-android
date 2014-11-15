@@ -23,10 +23,8 @@ package org.olivearchive.vmnetx.android.input;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 
-import android.graphics.PointF;
 import android.os.Handler;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 
 /**
  * Input handlers delegate to this class to handle keystrokes; this detects keystrokes

@@ -214,16 +214,8 @@ public class KeyboardMapper
     final static int VK_UNICODE = 0x80000000;
     final static int VK_EXT_KEY = 0x00000100;
 
-    // key codes to switch between custom keyboard 
-    private final static int EXTKEY_KBFUNCTIONKEYS = 0x1100; 
-    private final static int EXTKEY_KBNUMPAD = 0x1101; 
-    private final static int EXTKEY_KBCURSOR = 0x1102; 
-
     // this flag indicates if we got a VK or a unicode character in our translation map 
     private static final int KEY_FLAG_UNICODE = 0x80000000;
-
-    // this flag indicates if the key is a toggle key (remains down when pressed and goes up if pressed again)
-    private static final int KEY_FLAG_TOGGLE = 0x40000000;
 
     // Indicates we should add shift to the event.
     private static final int KEY_FLAG_SHIFT = 0x20000000;

@@ -2,10 +2,8 @@ package org.olivearchive.vmnetx.android.input;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 
@@ -33,7 +31,6 @@ public class RemoteKeyboard {
     public final static int SUPER_MASK = 8;
     public final static int META_MASK  = 0;
     
-    private RemoteCanvas canvas;
     private SpiceCommunicator spice;
     private Context context;
     private KeyboardMapper keyboardMapper;
@@ -57,7 +54,6 @@ public class RemoteKeyboard {
 
     public RemoteKeyboard (SpiceCommunicator s, RemoteCanvas c, Handler h) {
         spice = s;
-        canvas = c;
         keyRepeater = new KeyRepeater (this, h);
         
         if (android.os.Build.MODEL.contains("BlackBerry") ||

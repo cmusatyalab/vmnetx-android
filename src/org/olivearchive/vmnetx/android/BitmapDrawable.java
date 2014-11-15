@@ -24,7 +24,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.DrawableContainer;
 
@@ -35,7 +34,6 @@ public class BitmapDrawable extends DrawableContainer {
     RectF cursorRect;
     boolean softCursorInit;
 
-    private Rect toDraw;
     private Bitmap softCursor;
     private BitmapData data;
 
@@ -126,6 +124,5 @@ public class BitmapDrawable extends DrawableContainer {
             softCursor.recycle();
         softCursor = null;
         cursorRect = null;
-        toDraw = null;
     }
 }

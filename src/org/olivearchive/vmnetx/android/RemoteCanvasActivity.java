@@ -29,7 +29,6 @@ import org.olivearchive.vmnetx.android.input.RelativeMouseInputHandler;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
