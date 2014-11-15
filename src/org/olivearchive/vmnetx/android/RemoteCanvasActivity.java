@@ -238,7 +238,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                             }
                         }
                     }
-                    setKeyStowDrawableAndVisibility();
+                    setKeyStowDrawable();
                     prevBottomOffset = offset;
              }
         });
@@ -249,18 +249,13 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     }
 
     
-    private void setKeyStowDrawableAndVisibility() {
+    private void setKeyStowDrawable() {
         Drawable replacer = null;
         if (layoutKeys.getVisibility() == View.GONE)
             replacer = getResources().getDrawable(R.drawable.showkeys);
         else
             replacer = getResources().getDrawable(R.drawable.hidekeys);
         keyStow.setBackgroundDrawable(replacer);
-
-        if (!connection.getExtraKeys())
-            keyStow.setVisibility(View.GONE);
-        else
-            keyStow.setVisibility(View.VISIBLE);
     }
     
     /**
@@ -271,7 +266,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         layoutKeys = (RelativeLayout) findViewById(R.id.layoutKeys);
 
         keyStow = (ImageButton)    findViewById(R.id.keyStow);
-        setKeyStowDrawableAndVisibility();
+        setKeyStowDrawable();
         keyStow.setOnClickListener(new OnClickListener () {
             @Override
             public void onClick(View arg0) {
@@ -283,7 +278,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                     setExtraKeysVisibility(View.VISIBLE, true);
                 }
                 layoutKeys.offsetTopAndBottom(prevBottomOffset);
-                setKeyStowDrawableAndVisibility();
+                setKeyStowDrawable();
             }
         });
 
@@ -565,7 +560,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         if (config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
             makeVisible = true;
 
-        if (!extraKeysHidden && makeVisible && connection.getExtraKeys()) {
+        if (!extraKeysHidden && makeVisible) {
             layoutKeys.setVisibility(View.VISIBLE);
             layoutKeys.invalidate();
             return;
@@ -694,12 +689,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         try {
             getMenuInflater().inflate(R.menu.canvasactivitymenu, menu);
-
-            // Set the text of the Extra Keys menu item appropriately.
-            if (connection.getExtraKeys())
-                menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_disable);
-            else
-                menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_enable);
         } catch (NullPointerException e) { }
         return true;
     }
@@ -718,19 +707,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             return true;
         case R.id.itemCtrlAltDel:
             canvas.getKeyboard().sendCtrlAltDel();
-            return true;
-        case R.id.itemExtraKeys:
-            if (connection.getExtraKeys()) {
-                connection.setExtraKeys(false);
-                item.setTitle(R.string.extra_keys_enable);
-                setExtraKeysVisibility(View.GONE, false);
-            } else {
-                connection.setExtraKeys(true);
-                item.setTitle(R.string.extra_keys_disable);
-                setExtraKeysVisibility(View.VISIBLE, false);
-                extraKeysHidden = false;
-            }
-            setKeyStowDrawableAndVisibility();
             return true;
         }
         return super.onOptionsItemSelected(item);
