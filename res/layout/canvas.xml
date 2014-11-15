@@ -35,7 +35,7 @@
     android:padding="10sp"
     />
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
     android:id="@+id/layoutKeys"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
 	android:visibility="gone"
 	android:paddingBottom="2dip"
 	>
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout
 	    android:id="@+id/layoutMetaKeys"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -53,8 +53,8 @@
 		android:orientation="vertical"
 		android:padding="0sp"
 		>
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		    android:id="@+id/layoutCtrlAltKeys"
+		<LinearLayout
+		    android:id="@+id/layoutTabEscShiftKeys"
     	    android:layout_gravity="top|left"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -77,8 +77,8 @@
 	    	    android:layout_height="wrap_content"
 	    	    />
 		</LinearLayout>
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		    android:id="@+id/layoutCtrlAltKeys"
+		<LinearLayout
+		    android:id="@+id/layoutCtrlSuperAltKeys"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal"
@@ -102,7 +102,7 @@
 		</LinearLayout>
 	</LinearLayout>
 			
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout
 	    android:id="@+id/layoutArrowKeys"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -117,11 +117,10 @@
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="top|center"
 	        />
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		    android:id="@+id/layoutArrowKeys"
+		<LinearLayout
+		    android:id="@+id/layoutArrowKeysBottomRow"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
 		    android:layout_gravity="bottom|center"
 			android:padding="0sp"
 			>
