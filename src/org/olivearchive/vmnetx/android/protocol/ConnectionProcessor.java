@@ -11,9 +11,9 @@
  * for more details.
  */
 
-package org.olivearchive.vmnetx.android;
+package org.olivearchive.vmnetx.android.protocol;
 
-interface ConnectionProcessor {
-    void setEndpoint(ProtocolEndpoint endpoint);
-    void send(byte[] data);
+abstract class ConnectionProcessor {
+    abstract void setEndpoint(ProtocolEndpoint endpoint);
+    abstract void send(byte[] data);
 }

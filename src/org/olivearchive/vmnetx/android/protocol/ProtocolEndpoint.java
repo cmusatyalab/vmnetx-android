@@ -11,7 +11,7 @@
  * for more details.
  */
 
-package org.olivearchive.vmnetx.android;
+package org.olivearchive.vmnetx.android.protocol;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,6 +22,8 @@ import android.os.Handler;
 import android.os.Message;
 
 import net.asdfa.msgpack.MsgPack;
+
+import org.olivearchive.vmnetx.android.Constants;
 
 abstract class ProtocolEndpoint {
     static private final String MTYPE_KEY = "_";
@@ -125,7 +127,7 @@ abstract class ProtocolEndpoint {
     }
 
     // The object that receives decoded messages from us.
-    public interface MessageProcessor {
+    interface MessageProcessor {
         void processMessage(int what, Bundle args);
     }
 

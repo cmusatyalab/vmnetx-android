@@ -11,12 +11,15 @@
  * for more details.
  */
 
-package org.olivearchive.vmnetx.android;
+package org.olivearchive.vmnetx.android.protocol;
 
 import android.os.Bundle;
 import android.util.Log;
 
-class ViewerConnectionProcessor implements ConnectionProcessor, ProtocolEndpoint.MessageProcessor {
+import org.olivearchive.vmnetx.android.Constants;
+
+public class ViewerConnectionProcessor extends ConnectionProcessor
+        implements ProtocolEndpoint.MessageProcessor {
     private static final String TAG = "ViewerConnectionProcessor";
 
     private static final int CONNECT_CONTINUE = 0;
@@ -33,7 +36,7 @@ class ViewerConnectionProcessor implements ConnectionProcessor, ProtocolEndpoint
     private int state = CONNECT_CONTINUE;
     private int fd = -1;
 
-    ViewerConnectionProcessor(String host, String port, String token) {
+    public ViewerConnectionProcessor(String host, String port, String token) {
         this.host = host;
         this.port = port;
         this.token = token;
@@ -41,10 +44,10 @@ class ViewerConnectionProcessor implements ConnectionProcessor, ProtocolEndpoint
     }
 
     @Override
-    public void setEndpoint(ProtocolEndpoint endpoint) {}
+    void setEndpoint(ProtocolEndpoint endpoint) {}
 
     @Override
-    public void send(byte[] data) {
+    void send(byte[] data) {
         if (fd != -1 && state == CONNECT_CONTINUE)
             SendMessage(fd, data);
         else

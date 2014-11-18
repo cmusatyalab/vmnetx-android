@@ -60,6 +60,8 @@ import android.graphics.RectF;
 
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
+import org.olivearchive.vmnetx.android.protocol.ClientProtocolEndpoint;
+import org.olivearchive.vmnetx.android.protocol.ControlConnectionProcessor;
 
 public class RemoteCanvas extends ImageView {
     private final static String TAG = "RemoteCanvas";

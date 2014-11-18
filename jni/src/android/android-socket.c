@@ -95,7 +95,7 @@ static bool recv_reliably(int fd, void *buf, size_t len) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_ViewerConnectionProcessor_Connect(JNIEnv *env, jobject obj, jstring h, jstring p) {
+Java_org_olivearchive_vmnetx_android_protocol_ViewerConnectionProcessor_Connect(JNIEnv *env, jobject obj, jstring h, jstring p) {
     // Find callbacks
     jclass cls = (*env)->GetObjectClass(env, obj);
     jmethodID connect_method = (*env)->GetMethodID(env, cls, "OnConnect", "(I)V");
@@ -149,7 +149,7 @@ Java_org_olivearchive_vmnetx_android_ViewerConnectionProcessor_Connect(JNIEnv *e
 }
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_ViewerConnectionProcessor_SendMessage(JNIEnv *env, jobject obj, jint fd, jbyteArray data) {
+Java_org_olivearchive_vmnetx_android_protocol_ViewerConnectionProcessor_SendMessage(JNIEnv *env, jobject obj, jint fd, jbyteArray data) {
     jbyte *buf = (*env)->GetByteArrayElements(env, data, NULL);
     jsize len = (*env)->GetArrayLength(env, data);
     uint32_t n_len = htonl(len);

@@ -11,18 +11,18 @@
  * for more details.
  */
 
-package org.olivearchive.vmnetx.android;
+package org.olivearchive.vmnetx.android.protocol;
 
 import java.io.IOException;
 
-class ProtocolException extends IOException {
+public class ProtocolException extends IOException {
     private static final long serialVersionUID = 0;
 
-    public ProtocolException(String message) {
+    ProtocolException(String message) {
         super(message);
     }
 
-    public ProtocolException(String message, Throwable cause) {
+    ProtocolException(String message, Throwable cause) {
         super(message, cause);
     }
 }

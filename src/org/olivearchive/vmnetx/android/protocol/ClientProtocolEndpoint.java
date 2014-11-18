@@ -11,7 +11,7 @@
  * for more details.
  */
 
-package org.olivearchive.vmnetx.android;
+package org.olivearchive.vmnetx.android.protocol;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,9 @@ import java.util.Map;
 import android.os.Bundle;
 import android.os.Handler;
 
-class ClientProtocolEndpoint extends ProtocolEndpoint {
+import org.olivearchive.vmnetx.android.Constants;
+
+public class ClientProtocolEndpoint extends ProtocolEndpoint {
     private static final String TAG = "ClientProtocolEndpoint";
 
     protected static final int STATE_UNAUTHENTICATED = 0;
@@ -30,7 +32,7 @@ class ClientProtocolEndpoint extends ProtocolEndpoint {
 
     protected int state = STATE_UNAUTHENTICATED;
 
-    ClientProtocolEndpoint(ConnectionProcessor conn, Handler handler) {
+    public ClientProtocolEndpoint(ConnectionProcessor conn, Handler handler) {
         super(conn, handler);
     }
 

@@ -11,7 +11,7 @@
  * for more details.
  */
 
-package org.olivearchive.vmnetx.android;
+package org.olivearchive.vmnetx.android.protocol;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -24,7 +24,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.util.Log;
 
-class ControlConnectionProcessor implements ConnectionProcessor, Runnable {
+public class ControlConnectionProcessor extends ConnectionProcessor
+        implements Runnable {
     static private final String TAG = "ControlConnectionProcessor";
 
     static private final int HEADER_SIZE = 4;
@@ -46,19 +47,20 @@ class ControlConnectionProcessor implements ConnectionProcessor, Runnable {
     private ByteBuffer recvBuf = ByteBuffer.allocate(HEADER_SIZE);
     private boolean recvInLength = true;
 
-    ControlConnectionProcessor(String host, int port) throws IOException {
+    public ControlConnectionProcessor(String host, int port)
+            throws IOException {
         this.host = host;
         this.port = port;
         selector = Selector.open();
     }
 
     @Override
-    public void setEndpoint(ProtocolEndpoint endpoint) {
+    void setEndpoint(ProtocolEndpoint endpoint) {
         this.endpoint = endpoint;
     }
 
     @Override
-    public void send(byte[] data) {
+    void send(byte[] data) {
         ByteBuffer buf = ByteBuffer.allocate(data.length + HEADER_SIZE);
         buf.putInt(data.length);
         buf.put(data);

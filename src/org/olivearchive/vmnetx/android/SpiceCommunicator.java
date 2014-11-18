@@ -7,6 +7,8 @@ import android.os.Handler;
 import org.olivearchive.vmnetx.android.input.KeyboardMapper;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
+import org.olivearchive.vmnetx.android.protocol.ProtocolException;
+import org.olivearchive.vmnetx.android.protocol.ViewerConnectionProcessor;
 import com.gstreamer.*;
 
 public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
