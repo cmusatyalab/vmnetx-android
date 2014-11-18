@@ -37,37 +37,15 @@ import android.view.KeyEvent;
  */
 class DPadMouseKeyHandler {
     private RemoteCanvas canvas;
-    private boolean rotateDpad      = false;
     private RemoteKeyboard keyboard;
 
-    DPadMouseKeyHandler(RemoteCanvasActivity activity, Handler handler, boolean rotate)
+    DPadMouseKeyHandler(RemoteCanvasActivity activity, Handler handler)
     {
         canvas = activity.getCanvas();
-        rotateDpad      = rotate;
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent evt) {
         keyboard = canvas.getKeyboard();
-
-        // If we are instructed to rotate the Dpad at 90 degrees, reassign KeyCodes.
-        if (rotateDpad) {
-            switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                keyCode = KeyEvent.KEYCODE_DPAD_UP;
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                keyCode = KeyEvent.KEYCODE_DPAD_DOWN;
-                break;
-            case KeyEvent.KEYCODE_DPAD_UP:
-                keyCode = KeyEvent.KEYCODE_DPAD_RIGHT;
-                break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                keyCode = KeyEvent.KEYCODE_DPAD_LEFT;
-                break;
-            }
-        }
-
-        // Pass the event to the default handler.
         return keyboard.processLocalKeyEvent(keyCode, evt);
     }
 

@@ -35,14 +35,12 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
     private String address;
     private int port;
     private String token;
-    private boolean rotateDpad;
 
     ConnectionBean()
     {
         setAddress("");
         setPort(18923);
         setToken("");
-        setRotateDpad(false);
     }
     
     public String getAddress() {
@@ -67,14 +65,6 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public boolean getRotateDpad() {
-        return rotateDpad;
-    }
-
-    public void setRotateDpad(boolean rotateDpad) {
-        this.rotateDpad = rotateDpad;
     }
 
     @Override

@@ -787,11 +787,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         }
     }
     
-    // Returns whether the D-pad should be rotated to accommodate BT keyboards paired with phones.
-    public boolean getRotateDpad() {
-        return connection.getRotateDpad();
-    }
-    
     public float getSensitivity() {
         // TODO: Make this a slider config option.
         return 2.0f;

@@ -74,9 +74,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     private boolean twoFingerSwipeLeft  = false;
     private boolean twoFingerSwipeRight = false;
     
-    // This variable indicates whether the dpad should be rotated.
-    private boolean rotateDpad         = false;
-    
     // The variables which indicates how many scroll events to send per swipe 
     // event and the maximum number to send at one time.
     private long swipeSpeed = 1;
@@ -125,8 +122,7 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         gestures = new GestureDetector(c, this);
         gestures.setOnDoubleTapListener(this);
         scaleGestures = new ScaleGestureDetector(c, this);
-        rotateDpad      = activity.getRotateDpad();
-        keyHandler = new DPadMouseKeyHandler(activity, canvas.handler, rotateDpad);
+        keyHandler = new DPadMouseKeyHandler(activity, canvas.handler);
         displayDensity = canvas.getDisplayDensity();
         
         distXQueue = new LinkedList<Float>();
