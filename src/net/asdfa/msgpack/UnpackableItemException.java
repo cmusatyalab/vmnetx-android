@@ -1,12 +1,12 @@
 package net.asdfa.msgpack;
 
-import java.io.IOException;
-
 /**
  * Thrown when we try to pack something we can't pack.
  * @author jon
  */
 public class UnpackableItemException extends IllegalArgumentException {
+	private static final long serialVersionUID = 1;
+
 	public UnpackableItemException() {
 		super();
 	}

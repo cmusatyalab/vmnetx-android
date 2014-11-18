@@ -7,6 +7,8 @@ import java.io.IOException;
  * @author jon
  */
 public class InvalidMsgPackDataException extends IOException {
+	private static final long serialVersionUID = 1;
+
 	public InvalidMsgPackDataException() {
 		super();
 	}

@@ -224,7 +224,7 @@ public class MsgPack {
 			}
 			out.write(data);
 		} else if (item instanceof List) {
-			List<Object> list = (List<Object>)item;
+			List<?> list = (List<?>)item;
 			if (list.size() <= MAX_4BIT) {
 				out.write(list.size() | MP_FIXARRAY);
 			} else if (list.size() <= MAX_16BIT) {
@@ -238,7 +238,7 @@ public class MsgPack {
 				pack(element, out);
 			}
 		} else if (item instanceof Map) {
-			Map<Object, Object> map = (Map<Object, Object>)item;
+			Map<?, ?> map = (Map<?, ?>)item;
 			if (map.size() <= MAX_4BIT) {
 				out.write(map.size() | MP_FIXMAP);
 			} else if (map.size() <= MAX_16BIT) {
@@ -248,7 +248,7 @@ public class MsgPack {
 				out.write(MP_MAP32);
 				out.writeInt(map.size());
 			}
-			for (Map.Entry<Object, Object> kvp : map.entrySet()) {
+			for (Map.Entry<?, ?> kvp : map.entrySet()) {
 				pack(kvp.getKey(), out);
 				pack(kvp.getValue(), out);
 			}
@@ -271,7 +271,6 @@ public class MsgPack {
 		if (value < 0) throw new InvalidMsgPackDataException("No more input available when expecting a value");
 
 		try {
-			int size;
 			switch ((byte)value) {
 				case MP_NULL:
 					return null;
@@ -343,18 +342,18 @@ public class MsgPack {
 		}
 	}
 
-	protected static List unpackList(int size, DataInputStream in, int options) throws IOException {
+	protected static List<Object> unpackList(int size, DataInputStream in, int options) throws IOException {
 		if (size < 0) throw new InvalidMsgPackDataException("Array to unpack too large for Java (more than 2^31 elements)!");
-		List ret = new ArrayList(size);
+		List<Object> ret = new ArrayList<Object>(size);
 		for (int i = 0; i < size; ++i) {
 			ret.add(unpack(in, options));
 		}
 		return ret;
 	}
 
-	protected static Map unpackMap(int size, DataInputStream in, int options) throws IOException {
+	protected static Map<Object, Object> unpackMap(int size, DataInputStream in, int options) throws IOException {
 		if (size < 0) throw new InvalidMsgPackDataException("Map to unpack too large for Java (more than 2^31 elements)!");
-		Map ret = new HashMap(size);
+		Map<Object, Object> ret = new HashMap<Object, Object>(size);
 		for (int i = 0; i < size; ++i) {
 			Object key = unpack(in, options);
 			Object value = unpack(in, options);
