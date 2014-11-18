@@ -35,12 +35,14 @@ import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 import org.olivearchive.vmnetx.android.Utils;
 
 /**
- * An AbstractInputHandler that uses GestureDetector to detect standard gestures in touch events
+ * An input handler that uses GestureDetector to detect standard gestures
+ * in touch events
  * 
  * @author Michael A. MacDonald
  */
-abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestureListener 
-                                           implements AbstractInputHandler, OnScaleGestureListener {
+abstract public class AbstractGestureInputHandler
+        extends GestureDetector.SimpleOnGestureListener
+        implements OnScaleGestureListener {
     private static final String TAG = "AbstractGestureInputHandler";
 
     protected GestureDetector gestures;
@@ -314,7 +316,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         e.setLocation(x, y);
     }
 
-    @Override
     public boolean onTouchEvent(MotionEvent e) {
         final int action     = e.getActionMasked();
         final int index      = e.getActionIndex();

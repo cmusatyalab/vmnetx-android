@@ -24,7 +24,7 @@
 package org.olivearchive.vmnetx.android;
 
 import org.olivearchive.vmnetx.android.input.AbsoluteMouseInputHandler;
-import org.olivearchive.vmnetx.android.input.AbstractInputHandler;
+import org.olivearchive.vmnetx.android.input.AbstractGestureInputHandler;
 import org.olivearchive.vmnetx.android.input.RelativeMouseInputHandler;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 
@@ -64,7 +64,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private final static String TAG = "RemoteCanvasActivity";
     private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
-    private AbstractInputHandler inputHandler;
+    private AbstractGestureInputHandler inputHandler;
 
     private RemoteCanvas canvas;
 
