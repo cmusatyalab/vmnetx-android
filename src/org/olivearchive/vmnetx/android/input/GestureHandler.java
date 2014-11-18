@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -43,6 +42,7 @@ import org.olivearchive.vmnetx.android.Utils;
 abstract public class GestureHandler
         extends GestureDetector.SimpleOnGestureListener
         implements OnScaleGestureListener {
+    @SuppressWarnings("unused")
     private static final String TAG = "GestureHandler";
 
     protected GestureDetector gestures;
@@ -519,19 +519,19 @@ abstract public class GestureHandler
                 
                 swipeSpeed = baseSwipeTime/elapsedTime;
                 if (swipeSpeed == 0)  swipeSpeed = 1;
-                //if (consumed)        Log.d(TAG,"Current swipe speed: " + swipeSpeed);
+                //if (consumed)        android.util.Log.d(TAG,"Current swipe speed: " + swipeSpeed);
             }
         }
         
         if (!inSwiping) {
             if ( !inScaling && Math.abs(1.0 - detector.getScaleFactor()) < minScaleFactor ) {
-                //Log.i(TAG,"Not scaling due to small scale factor.");
+                //android.util.Log.i(TAG,"Not scaling due to small scale factor.");
                 consumed = false;
             }
 
             if (consumed) {
                 inScaling = true;
-                //Log.i(TAG,"Adjust scaling " + detector.getScaleFactor());
+                //android.util.Log.i(TAG,"Adjust scaling " + detector.getScaleFactor());
                 if (canvas != null && canvas.scaling != null)
                     canvas.scaling.adjust(activity, detector.getScaleFactor(), xCurrentFocus, yCurrentFocus);
             }
@@ -555,7 +555,7 @@ abstract public class GestureHandler
         twoFingerSwipeDown  = false;
         twoFingerSwipeLeft  = false;                    
         twoFingerSwipeRight = false;
-        //Log.i(TAG,"scale begin ("+xInitialFocus+","+yInitialFocus+")");
+        //android.util.Log.i(TAG,"scale begin ("+xInitialFocus+","+yInitialFocus+")");
         return true;
     }
 
@@ -564,7 +564,7 @@ abstract public class GestureHandler
      */
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
-        //Log.i(TAG,"scale end");
+        //android.util.Log.i(TAG,"scale end");
         inScaling = false;
         inSwiping = false;
         scalingJustFinished = true;

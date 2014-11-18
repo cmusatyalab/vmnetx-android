@@ -22,6 +22,7 @@ import android.os.Handler;
 import org.olivearchive.vmnetx.android.Constants;
 
 public class ClientProtocolEndpoint extends ProtocolEndpoint {
+    @SuppressWarnings("unused")
     private static final String TAG = "ClientProtocolEndpoint";
 
     protected static final int STATE_UNAUTHENTICATED = 0;
