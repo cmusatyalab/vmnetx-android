@@ -732,10 +732,13 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             return false;
 
         try {
-            if (evt.getAction() == KeyEvent.ACTION_DOWN || evt.getAction() == KeyEvent.ACTION_MULTIPLE) {
-                consumed = inputHandler.onKeyDown(keyCode, evt);
-            } else if (evt.getAction() == KeyEvent.ACTION_UP){
-                consumed = inputHandler.onKeyUp(keyCode, evt);
+            switch (evt.getAction()) {
+            case KeyEvent.ACTION_DOWN:
+            case KeyEvent.ACTION_MULTIPLE:
+            case KeyEvent.ACTION_UP:
+                RemoteKeyboard keyboard = canvas.getKeyboard();
+                consumed = keyboard.processLocalKeyEvent(keyCode, evt);
+                break;
             }
             resetOnScreenKeys (keyCode);
         } catch (NullPointerException e) { }

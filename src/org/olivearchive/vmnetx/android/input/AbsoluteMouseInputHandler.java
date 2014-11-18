@@ -1,6 +1,5 @@
 package org.olivearchive.vmnetx.android.input;
 
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import org.olivearchive.vmnetx.android.RemoteCanvas;
@@ -21,28 +20,6 @@ public class AbsoluteMouseInputHandler extends AbstractGestureInputHandler {
      */
     public AbsoluteMouseInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
         super(va, v);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.olivearchive.vmnetx.android.RemoteCanvasActivity.ZoomInputHandler#onKeyDown(int,
-     *      android.view.KeyEvent)
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent evt) {
-        return keyHandler.onKeyDown(keyCode, evt);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.olivearchive.vmnetx.android.RemoteCanvasActivity.ZoomInputHandler#onKeyUp(int,
-     *      android.view.KeyEvent)
-     */
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent evt) {
-        return keyHandler.onKeyUp(keyCode, evt);
     }
 
     /*

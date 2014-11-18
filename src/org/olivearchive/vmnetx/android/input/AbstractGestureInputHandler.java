@@ -52,11 +52,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
     protected RemoteCanvas canvas;
     protected RemoteCanvasActivity activity;
     
-    /**
-     * Key handler delegate that handles DPad-based mouse motion
-     */
-    protected DPadMouseKeyHandler keyHandler;
-    
     // This is the initial "focal point" of the gesture (between the two fingers).
     private float xInitialFocus;
     private float yInitialFocus;
@@ -122,7 +117,6 @@ abstract class AbstractGestureInputHandler extends GestureDetector.SimpleOnGestu
         gestures = new GestureDetector(c, this);
         gestures.setOnDoubleTapListener(this);
         scaleGestures = new ScaleGestureDetector(c, this);
-        keyHandler = new DPadMouseKeyHandler(activity, canvas.handler);
         displayDensity = canvas.getDisplayDensity();
         
         distXQueue = new LinkedList<Float>();

@@ -20,7 +20,6 @@
 
 package org.olivearchive.vmnetx.android.input;
 
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 /**
@@ -37,16 +36,6 @@ import android.view.MotionEvent;
  *
  */
 public interface AbstractInputHandler {
-    /**
-     * Note: Menu/Back key codes are handled before this is called
-     * @see android.app.Activity#onKeyDown(int keyCode, KeyEvent evt)
-     */
-    boolean onKeyDown(int keyCode, KeyEvent evt);
-    /**
-     * Note: Menu/Back key codes are handled before this is called
-     * @see android.app.Activity#onKeyUp(int keyCode, KeyEvent evt)
-     */
-    boolean onKeyUp(int keyCode, KeyEvent evt);
     /* (non-Javadoc)
      * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
      */
