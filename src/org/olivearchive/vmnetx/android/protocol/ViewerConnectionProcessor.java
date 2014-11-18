@@ -18,8 +18,7 @@ import android.util.Log;
 
 import org.olivearchive.vmnetx.android.Constants;
 
-public class ViewerConnectionProcessor extends ConnectionProcessor
-        implements ProtocolEndpoint.MessageProcessor {
+public class ViewerConnectionProcessor extends ConnectionProcessor {
     private static final String TAG = "ViewerConnectionProcessor";
 
     private static final int CONNECT_CONTINUE = 0;
@@ -36,11 +35,53 @@ public class ViewerConnectionProcessor extends ConnectionProcessor
     private int state = CONNECT_CONTINUE;
     private int fd = -1;
 
+    private class ViewerMessageProcessor
+            implements ProtocolEndpoint.MessageProcessor {
+        @Override
+        public void processMessage(int what, Bundle args) {
+            // callback from ProtocolEndpoint
+            switch (what) {
+            case Constants.PROTOCOL_CONNECTED:
+                endpoint.sendAuthenticate(token);
+                break;
+
+            case Constants.CLIENT_PROTOCOL_AUTH_OK:
+                int vmState = args.getInt(Constants.ARG_VM_STATE);
+                if (vmState != Constants.VM_STATE_RUNNING) {
+                    Log.e(TAG, "Server in unexpected state " + Integer.toString(vmState));
+                    transition(CONNECT_FAILED);
+                } else {
+                    endpoint.sendAttachViewer();
+                }
+                break;
+
+            case Constants.CLIENT_PROTOCOL_AUTH_FAILED:
+                Log.e(TAG, "Viewer auth failed: " + args.getString(Constants.ARG_ERROR));
+                transition(CONNECT_FAILED);
+                break;
+
+            case Constants.CLIENT_PROTOCOL_ATTACHING_VIEWER:
+                transition(CONNECT_DONE);
+                break;
+
+            case Constants.PROTOCOL_ERROR:
+                Log.e(TAG, "Protocol error: " + args.getString(Constants.ARG_ERROR));
+                transition(CONNECT_FAILED);
+                break;
+
+            default:
+                Log.e(TAG, "Ignored message " + Integer.toString(what));
+                break;
+            }
+        }
+    }
+
     public ViewerConnectionProcessor(String host, String port, String token) {
         this.host = host;
         this.port = port;
         this.token = token;
-        endpoint = new ClientProtocolEndpoint(this, this);
+        endpoint = new ClientProtocolEndpoint(this,
+                new ViewerMessageProcessor());
     }
 
     @Override
@@ -84,43 +125,5 @@ public class ViewerConnectionProcessor extends ConnectionProcessor
     private void transition(int state) {
         if (this.state == CONNECT_CONTINUE)
             this.state = state;
-    }
-
-    @Override
-    public void processMessage(int what, Bundle args) {
-        // callback from ProtocolEndpoint
-        switch (what) {
-        case Constants.PROTOCOL_CONNECTED:
-            endpoint.sendAuthenticate(token);
-            break;
-
-        case Constants.CLIENT_PROTOCOL_AUTH_OK:
-            int vmState = args.getInt(Constants.ARG_VM_STATE);
-            if (vmState != Constants.VM_STATE_RUNNING) {
-                Log.e(TAG, "Server in unexpected state " + Integer.toString(vmState));
-                transition(CONNECT_FAILED);
-            } else {
-                endpoint.sendAttachViewer();
-            }
-            break;
-
-        case Constants.CLIENT_PROTOCOL_AUTH_FAILED:
-            Log.e(TAG, "Viewer auth failed: " + args.getString(Constants.ARG_ERROR));
-            transition(CONNECT_FAILED);
-            break;
-
-        case Constants.CLIENT_PROTOCOL_ATTACHING_VIEWER:
-            transition(CONNECT_DONE);
-            break;
-
-        case Constants.PROTOCOL_ERROR:
-            Log.e(TAG, "Protocol error: " + args.getString(Constants.ARG_ERROR));
-            transition(CONNECT_FAILED);
-            break;
-
-        default:
-            Log.e(TAG, "Ignored message " + Integer.toString(what));
-            break;
-        }
     }
 }
