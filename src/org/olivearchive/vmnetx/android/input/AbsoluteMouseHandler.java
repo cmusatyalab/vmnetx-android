@@ -6,8 +6,8 @@ import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 import org.olivearchive.vmnetx.android.Utils;
 
-public class AbsoluteMouseInputHandler extends AbstractGestureInputHandler {
-    static final String TAG = "AbsoluteMouseInputHandler";
+public class AbsoluteMouseHandler extends GestureHandler {
+    static final String TAG = "AbsoluteMouseHandler";
 
     /**
      * Divide stated fling velocity by this amount to get initial velocity
@@ -18,7 +18,7 @@ public class AbsoluteMouseInputHandler extends AbstractGestureInputHandler {
     /**
      * @param c
      */
-    public AbsoluteMouseInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
+    public AbsoluteMouseHandler(RemoteCanvasActivity va, RemoteCanvas v) {
         super(va, v);
     }
 

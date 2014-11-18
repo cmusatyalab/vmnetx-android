@@ -40,10 +40,10 @@ import org.olivearchive.vmnetx.android.Utils;
  * 
  * @author Michael A. MacDonald
  */
-abstract public class AbstractGestureInputHandler
+abstract public class GestureHandler
         extends GestureDetector.SimpleOnGestureListener
         implements OnScaleGestureListener {
-    private static final String TAG = "AbstractGestureInputHandler";
+    private static final String TAG = "GestureHandler";
 
     protected GestureDetector gestures;
     protected ScaleGestureDetector scaleGestures;
@@ -112,7 +112,7 @@ abstract public class AbstractGestureInputHandler
     protected boolean secondPointerWasDown = false;
     protected boolean thirdPointerWasDown  = false;
     
-    AbstractGestureInputHandler(RemoteCanvasActivity c, RemoteCanvas v)
+    GestureHandler(RemoteCanvasActivity c, RemoteCanvas v)
     {
         activity = c;
         canvas = v;

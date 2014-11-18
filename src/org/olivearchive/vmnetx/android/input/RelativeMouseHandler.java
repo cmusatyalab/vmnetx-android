@@ -5,15 +5,15 @@ import android.view.MotionEvent;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 
-public class RelativeMouseInputHandler extends AbstractGestureInputHandler {
-    static final String TAG = "RelativeMouseInputHandler";
+public class RelativeMouseHandler extends GestureHandler {
+    static final String TAG = "RelativeMouseHandler";
     private float sensitivity = 0;
     private boolean acceleration = false;
 
     /**
      * @param c
      */
-    public RelativeMouseInputHandler(RemoteCanvasActivity va, RemoteCanvas v) {
+    public RelativeMouseHandler(RemoteCanvasActivity va, RemoteCanvas v) {
         super(va, v);
         acceleration = activity.getAccelerationEnabled();
         sensitivity = activity.getSensitivity();

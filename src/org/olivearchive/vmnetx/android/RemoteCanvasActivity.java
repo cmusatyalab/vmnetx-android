@@ -23,9 +23,9 @@
 //
 package org.olivearchive.vmnetx.android;
 
-import org.olivearchive.vmnetx.android.input.AbsoluteMouseInputHandler;
-import org.olivearchive.vmnetx.android.input.AbstractGestureInputHandler;
-import org.olivearchive.vmnetx.android.input.RelativeMouseInputHandler;
+import org.olivearchive.vmnetx.android.input.AbsoluteMouseHandler;
+import org.olivearchive.vmnetx.android.input.GestureHandler;
+import org.olivearchive.vmnetx.android.input.RelativeMouseHandler;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 
 import android.app.Activity;
@@ -64,7 +64,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private final static String TAG = "RemoteCanvasActivity";
     private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
-    private AbstractGestureInputHandler inputHandler;
+    private GestureHandler gestureHandler;
 
     private RemoteCanvas canvas;
 
@@ -244,7 +244,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
         keyboardControls.hide();
         
-        inputHandler = new AbsoluteMouseInputHandler(this, canvas);
+        gestureHandler = new AbsoluteMouseHandler(this, canvas);
     }
 
     
@@ -609,11 +609,11 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
         boolean absoluteMouse = canvas.getAbsoluteMouse();
         if (absoluteMouse &&
-                !(inputHandler instanceof AbsoluteMouseInputHandler)) {
-            inputHandler = new AbsoluteMouseInputHandler(this, canvas);
+                !(gestureHandler instanceof AbsoluteMouseHandler)) {
+            gestureHandler = new AbsoluteMouseHandler(this, canvas);
         } else if (!absoluteMouse &&
-                !(inputHandler instanceof RelativeMouseInputHandler)) {
-            inputHandler = new RelativeMouseInputHandler(this, canvas);
+                !(gestureHandler instanceof RelativeMouseHandler)) {
+            gestureHandler = new RelativeMouseHandler(this, canvas);
         }
     }
 
@@ -719,7 +719,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         canvas = null;
         connection = null;
         keyboardControls = null;
-        inputHandler = null;
+        gestureHandler = null;
         System.gc();
     }
 
@@ -750,7 +750,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         try {
-            return inputHandler.onTouchEvent(event);
+            return gestureHandler.onTouchEvent(event);
         } catch (NullPointerException e) { }
         return super.onTouchEvent(event);
     }
@@ -764,7 +764,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                event.getSource() == InputDevice.SOURCE_TOUCHSCREEN &&
                event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER) ) {
             try {
-                return inputHandler.onTouchEvent(event);
+                return gestureHandler.onTouchEvent(event);
             } catch (NullPointerException e) { }
         }
         return super.onGenericMotionEvent(event);
