@@ -15,15 +15,6 @@ import android.view.KeyEvent;
 
 public class KeyboardMapper
 {
-    public static final int KEYBOARD_TYPE_FUNCTIONKEYS = 1;
-    public static final int KEYBOARD_TYPE_NUMPAD = 2;
-    public static final int KEYBOARD_TYPE_CURSOR = 3;
-
-    // defines key states for modifier keys - locked means on and no auto-release if an other key is pressed
-    public static final int KEYSTATE_ON = 1;
-    public static final int KEYSTATE_LOCKED = 2;
-    public static final int KEYSTATE_OFF = 3;
-
     // interface that gets called for input handling
     public interface KeyProcessingListener {
         abstract void processVirtualKey(int virtualKeyCode, boolean down);
@@ -211,11 +202,7 @@ public class KeyboardMapper
     final static int VK_NONAME = 0xFC;
     final static int VK_PA1    = 0xFD;
     final static int VK_OEM_CLEAR = 0xFE;
-    final static int VK_UNICODE = 0x80000000;
     final static int VK_EXT_KEY = 0x00000100;
-
-    // this flag indicates if we got a VK or a unicode character in our translation map 
-    private static final int KEY_FLAG_UNICODE = 0x80000000;
 
     // Indicates we should add shift to the event.
     private static final int KEY_FLAG_SHIFT = 0x20000000;
@@ -326,25 +313,6 @@ public class KeyboardMapper
         keymapAndroid[KeyEvent.KEYCODE_POUND] = VK_KEY_3 | KEY_FLAG_SHIFT;
         keymapAndroid[KeyEvent.KEYCODE_STAR] = VK_KEY_8 | KEY_FLAG_SHIFT;
 
-//        keymapAndroid[KeyEvent.KEYCODE_ALT_LEFT] = VK_LMENU;
-//        keymapAndroid[KeyEvent.KEYCODE_ALT_RIGHT] = VK_RMENU;
-        
-//        keymapAndroid[KeyEvent.KEYCODE_AT] = (KEY_FLAG_UNICODE | 64);
-//        keymapAndroid[KeyEvent.KEYCODE_APOSTROPHE] = (KEY_FLAG_UNICODE | 39);
-//        keymapAndroid[KeyEvent.KEYCODE_BACKSLASH] = (KEY_FLAG_UNICODE | 92);
-//        keymapAndroid[KeyEvent.KEYCODE_COMMA] = (KEY_FLAG_UNICODE | 44);
-//        keymapAndroid[KeyEvent.KEYCODE_EQUALS] = (KEY_FLAG_UNICODE | 61);
-//        keymapAndroid[KeyEvent.KEYCODE_GRAVE] = (KEY_FLAG_UNICODE | 96);        
-//        keymapAndroid[KeyEvent.KEYCODE_LEFT_BRACKET] = (KEY_FLAG_UNICODE | 91);
-//        keymapAndroid[KeyEvent.KEYCODE_RIGHT_BRACKET] = (KEY_FLAG_UNICODE | 93);
-//        keymapAndroid[KeyEvent.KEYCODE_MINUS] = (KEY_FLAG_UNICODE | 45);
-//        keymapAndroid[KeyEvent.KEYCODE_PERIOD] = (KEY_FLAG_UNICODE | 46);
-//        keymapAndroid[KeyEvent.KEYCODE_PLUS] = (KEY_FLAG_UNICODE | 43);
-//        keymapAndroid[KeyEvent.KEYCODE_POUND] = (KEY_FLAG_UNICODE | 35);
-//        keymapAndroid[KeyEvent.KEYCODE_SEMICOLON] = (KEY_FLAG_UNICODE | 59);
-//        keymapAndroid[KeyEvent.KEYCODE_SLASH] = (KEY_FLAG_UNICODE | 47);
-//        keymapAndroid[KeyEvent.KEYCODE_STAR] = (KEY_FLAG_UNICODE | 42);        
-        
         initialized = true;
     }
 
@@ -368,9 +336,7 @@ public class KeyboardMapper
                 // and notifiy our listener.
                 int vkcode = getVirtualKeyCode(event.getKeyCode());
                 //android.util.Log.e("KeyMapper", "VK KeyCode is: " + vkcode);
-                if((vkcode & KEY_FLAG_UNICODE) != 0) {
-                    listener.processUnicodeKey(vkcode & (~KEY_FLAG_UNICODE));
-                } else if ((vkcode & KEY_FLAG_SHIFT) != 0){
+                if ((vkcode & KEY_FLAG_SHIFT) != 0){
                     vkcode = vkcode & ~KEY_FLAG_SHIFT;
                     listener.processVirtualKey(VK_LSHIFT, true);
                     listener.processVirtualKey(vkcode, true);
