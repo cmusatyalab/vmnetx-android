@@ -10,7 +10,6 @@
 
 package org.olivearchive.vmnetx.android.input;
 
-import android.content.Context;
 import android.view.KeyEvent;
 
 public class KeyboardMapper
@@ -23,8 +22,7 @@ public class KeyboardMapper
 
     private KeyProcessingListener listener = null;
 
-    private static int[] keymapAndroid;
-    private static boolean initialized = false;
+    private static final int[] keymapAndroid;
 
     final static int VK_LBUTTON = 0x01;
     final static int VK_RBUTTON = 0x02;
@@ -207,11 +205,7 @@ public class KeyboardMapper
     // Indicates we should add shift to the event.
     private static final int KEY_FLAG_SHIFT = 0x20000000;
 
-    public void init(Context context)
-    {
-        if(initialized == true)
-            return;
-
+    static {
         keymapAndroid = new int[256];
 
         keymapAndroid[KeyEvent.KEYCODE_0] = VK_KEY_0;
@@ -312,8 +306,6 @@ public class KeyboardMapper
         keymapAndroid[KeyEvent.KEYCODE_AT] = VK_KEY_2 | KEY_FLAG_SHIFT;
         keymapAndroid[KeyEvent.KEYCODE_POUND] = VK_KEY_3 | KEY_FLAG_SHIFT;
         keymapAndroid[KeyEvent.KEYCODE_STAR] = VK_KEY_8 | KEY_FLAG_SHIFT;
-
-        initialized = true;
     }
 
     public void setKeyProcessingListener(KeyProcessingListener listener)  {
