@@ -6,8 +6,8 @@
         android:versionCode="100"
         android:versionName="0.1.0">
     <uses-sdk
-            android:minSdkVersion="10"
-            android:targetSdkVersion="10"/>
+            android:minSdkVersion="16"
+            android:targetSdkVersion="21"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <supports-screens
             android:xlargeScreens="true"

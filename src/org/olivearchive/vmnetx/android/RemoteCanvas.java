@@ -37,7 +37,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -588,9 +587,8 @@ public class RemoteCanvas extends ImageView {
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         android.util.Log.d(TAG, "onCreateInputConnection called");
-        int version = android.os.Build.VERSION.SDK_INT;
         BaseInputConnection bic = null;
-        if (!bb && version >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (!bb) {
             bic = new BaseInputConnection(this, false) {
                 final static String junk_unit = "%%%%%%%%%%";
                 final static int multiple = 1000;
@@ -621,10 +619,9 @@ public class RemoteCanvas extends ImageView {
         /* TODO: If people complain about kbd not working, this is a possible workaround to
          * test and add an option for.
         // Workaround for IME's that don't support InputType.TYPE_NULL.
-        if (version >= 11) {
-            outAttrs.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-            outAttrs.imeOptions |= EditorInfo.IME_FLAG_NO_FULLSCREEN;
-        }*/
+        outAttrs.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+        outAttrs.imeOptions |= EditorInfo.IME_FLAG_NO_FULLSCREEN;
+        */
         return bic;
     }
     

@@ -107,10 +107,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     }
 
     void initialize () {
-        if (android.os.Build.VERSION.SDK_INT >= 9) {
-            android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
-            android.os.StrictMode.setThreadPolicy(policy);
-        }
+        android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
+        android.os.StrictMode.setThreadPolicy(policy);
         
         handler = new Handler ();
         

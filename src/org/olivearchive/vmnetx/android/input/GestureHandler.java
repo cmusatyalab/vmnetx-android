@@ -329,11 +329,9 @@ abstract public class GestureHandler
         final int meta       = e.getMetaState();
         RemotePointer p = canvas.getPointer();
         
-        if (android.os.Build.VERSION.SDK_INT >= 14) {
-            // Handle and consume actions performed by a (e.g. USB or bluetooth) mouse.
-            if (handleMouseActions (e))
-                return true;
-        }
+        // Handle and consume actions performed by a (e.g. USB or bluetooth) mouse.
+        if (handleMouseActions (e))
+            return true;
 
         if (action == MotionEvent.ACTION_UP) {
             // Turn filtering back on and invalidate to make things pretty.
