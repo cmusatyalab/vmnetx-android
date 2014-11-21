@@ -246,7 +246,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             replacer = getResources().getDrawable(R.drawable.showkeys);
         else
             replacer = getResources().getDrawable(R.drawable.hidekeys);
-        keyStow.setBackgroundDrawable(replacer);
+        keyStow.setBackground(replacer);
     }
     
     /**
