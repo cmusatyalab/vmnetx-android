@@ -125,6 +125,12 @@ abstract public class GestureHandler
         distYQueue = new LinkedList<Float>();
     }
 
+    protected int getCanvasTop() {
+        int[] location = new int[2];
+        canvas.getLocationOnScreen(location);
+        return location[1];
+    }
+
     /**
      * Function to get appropriate X coordinate from motion event for this input handler.
      * @return the appropriate X coordinate.
@@ -140,7 +146,7 @@ abstract public class GestureHandler
      */
     protected int getY (MotionEvent e) {
         float scale = canvas.getScale();
-        return (int)(canvas.getAbsoluteY() + (e.getY() - 1.f * canvas.getTop()) / scale);
+        return (int)(canvas.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
     }
 
     /**
@@ -154,8 +160,8 @@ abstract public class GestureHandler
         final int bstate = e.getButtonState();
         RemotePointer p  = canvas.getPointer();
         float scale = canvas.getScale();
-        int x = (int)(canvas.getAbsoluteX() +  e.getX()                          / scale);
-        int y = (int)(canvas.getAbsoluteY() + (e.getY() - 1.f * canvas.getTop()) / scale);
+        int x = (int)(canvas.getAbsoluteX() +  e.getX()                         / scale);
+        int y = (int)(canvas.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
 
         switch (action) {
         // If a mouse button was pressed or mouse was moved.

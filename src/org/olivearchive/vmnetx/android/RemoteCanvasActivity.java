@@ -51,8 +51,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.View.OnKeyListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.view.inputmethod.InputMethodManager;
@@ -116,10 +114,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         
         handler = new Handler ();
         
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         if (connection == null) {
             Intent i = getIntent();
             connection = new ConnectionBean();
