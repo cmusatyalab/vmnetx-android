@@ -674,7 +674,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         try {
-            getMenuInflater().inflate(R.menu.canvasactivitymenu, menu);
+            getMenuInflater().inflate(R.menu.canvas, menu);
         } catch (NullPointerException e) { }
         return true;
     }
