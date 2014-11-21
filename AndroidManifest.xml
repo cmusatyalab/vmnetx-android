@@ -24,7 +24,8 @@
                 android:configChanges="orientation|keyboardHidden|keyboard"
                 android:name="RemoteCanvasActivity"
                 android:windowSoftInputMode="stateHidden|adjustResize"
-                android:theme="@android:style/Theme.DeviceDefault">
+                android:theme="@android:style/Theme.DeviceDefault"
+                android:autoRemoveFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
