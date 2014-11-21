@@ -76,6 +76,7 @@ public class RemoteCanvas extends ImageView {
     // VMNetX control connection
     private ControlConnectionProcessor controlConn;
     private ClientProtocolEndpoint endpoint;
+    private String vmName = null;
     private int vmState = Constants.VM_STATE_UNKNOWN;
     
     // SPICE protocol connection
@@ -693,6 +694,10 @@ public class RemoteCanvas extends ImageView {
         return spice.getAbsoluteMouse();
     }
 
+    public String getVMName() {
+        return vmName;
+    }
+
     /**
      * Used to wait until getWidth and getHeight return sane values.
      */
@@ -897,13 +902,16 @@ public class RemoteCanvas extends ImageView {
                 break;
 
             case Constants.CLIENT_PROTOCOL_AUTH_OK:
-                String vmName = args.getString(Constants.ARG_VM_NAME);
+                vmName = args.getString(Constants.ARG_VM_NAME);
                 vmState = args.getInt(Constants.ARG_VM_STATE);
                 int maxMouseRate = args.getInt(Constants.ARG_MAX_MOUSE_RATE);
                 Log.d(TAG, "auth ok " + vmName + " " + Integer.toString(vmState) + " " + Integer.toString(maxMouseRate));
 
                 // Start pinging
                 pinger.start();
+
+                // Update window title
+                post(setModes);
 
                 // If the VM is in a stable state, synthesize a state transition.
                 switch (vmState) {

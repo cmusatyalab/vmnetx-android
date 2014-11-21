@@ -597,6 +597,13 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
      * Set up scaling and input modes
      */
     void setModes() {
+        // Update VM name first, since the later methods may throw
+        // NullPointerException which the caller will swallow
+        String vmName = canvas.getVMName();
+        if (vmName != null) {
+            setTitle(vmName);
+        }
+
         canvas.scaling.updateForCanvas(canvas);
 
         boolean absoluteMouse = canvas.getAbsoluteMouse();
