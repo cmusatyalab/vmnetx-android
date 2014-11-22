@@ -152,10 +152,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     }
 
     void continueConnecting () {
-        // TODO: Implement left-icon
-        //requestWindowFeature(Window.FEATURE_LEFT_ICON);
-        //setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon); 
-
         setContentView(R.layout.canvas);
         canvas = (RemoteCanvas) findViewById(R.id.remoteCanvas);
 
