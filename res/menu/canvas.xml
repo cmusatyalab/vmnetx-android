@@ -1,4 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:numericShortcut="8" android:alphabeticShortcut="r" android:id="@+id/itemCtrlAltDel" android:title="@string/ctrl_alt_del" android:icon="@android:drawable/ic_menu_share"/>
-    <item android:numericShortcut="7" android:alphabeticShortcut="x" android:id="@+id/itemDisconnect" android:title="@string/disconnect" android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
+    <item
+            android:id="@+id/itemDisconnect"
+            android:title="@string/disconnect"
+            android:icon="@drawable/ic_action_remove"
+            android:showAsAction="ifRoom"/>
+
+    <item
+            android:id="@+id/itemCtrlAltDel"
+            android:title="@string/ctrl_alt_del"/>
 </menu>
