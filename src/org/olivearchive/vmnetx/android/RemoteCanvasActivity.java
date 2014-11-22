@@ -37,7 +37,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -68,7 +67,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     private ConnectionBean connection;
 
-    KeyboardControls keyboardControls;
     private Handler handler;
 
     private RelativeLayout layoutKeys;
@@ -160,7 +158,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
         setContentView(R.layout.canvas);
         canvas = (RemoteCanvas) findViewById(R.id.remoteCanvas);
-        keyboardControls = (KeyboardControls) findViewById(R.id.keyboardControls);
 
         // Initialize and define actions for on-screen keys.
         initializeOnScreenKeys ();
@@ -212,7 +209,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                             if (prevBottomOffset != offset) { 
                                 setExtraKeysVisibility(View.GONE, false);
                                 canvas.invalidate();
-                                keyboardControls.enable();
                             }
                         }
                     } else {
@@ -224,8 +220,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                             if (prevBottomOffset != offset) { 
                                 setExtraKeysVisibility(View.VISIBLE, true);
                                 canvas.invalidate();
-                                keyboardControls.hide();
-                                keyboardControls.disable();
                             }
                         }
                     }
@@ -234,8 +228,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
              }
         });
 
-        keyboardControls.hide();
-        
         gestureHandler = new AbsoluteMouseHandler(this, canvas);
     }
 
@@ -717,7 +709,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             canvas.closeConnection();
         canvas = null;
         connection = null;
-        keyboardControls = null;
         gestureHandler = null;
         System.gc();
     }
@@ -769,26 +760,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         return super.onGenericMotionEvent(event);
     }
 
-    long hideKeyboardControlsAfterMs;
-    static final long KEYBOARD_CONTROLS_HIDE_DELAY_MS = 2500;
-    HideKeyboardControlsRunnable hideKeyboardControlsInstance = new HideKeyboardControlsRunnable();
-
-    public void showKeyboardControls(boolean force) {
-        if (force || keyboardControls.getVisibility() != View.VISIBLE) {
-            keyboardControls.show();
-            hideKeyboardControlsAfterMs = SystemClock.uptimeMillis() + KEYBOARD_CONTROLS_HIDE_DELAY_MS;
-            canvas.handler.postAtTime(hideKeyboardControlsInstance, hideKeyboardControlsAfterMs + 10);
-        }
-    }
-
-    private class HideKeyboardControlsRunnable implements Runnable {
-        public void run() {
-            if (SystemClock.uptimeMillis() >= hideKeyboardControlsAfterMs) {
-                keyboardControls.hide();
-            }
-        }
-    }
-    
     public float getSensitivity() {
         // TODO: Make this a slider config option.
         return 2.0f;

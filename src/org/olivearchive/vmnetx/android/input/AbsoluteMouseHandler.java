@@ -65,8 +65,6 @@ public class AbsoluteMouseHandler extends GestureHandler {
         if (twoFingers||inSwiping||inScaling||scalingJustFinished)
             return true;
 
-        activity.showKeyboardControls(false);
-        
         if (!dragMode) {
             dragMode = true;
             p.processPointerEvent(getX(e1), getY(e1), e1.getActionMasked(), e1.getMetaState(), true, false, false, false, 0);

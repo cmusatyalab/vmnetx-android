@@ -13,20 +13,6 @@
     >
 </org.olivearchive.vmnetx.android.RemoteCanvas>
 
-<org.olivearchive.vmnetx.android.KeyboardControls
-    android:id="@+id/keyboardControls"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center|right"
-    android:padding="10sp"
-    >
-    <ImageButton android:id="@+id/showKeyboard"
-        android:background="@drawable/ic_keyboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-</org.olivearchive.vmnetx.android.KeyboardControls>
-
 <ImageButton android:id="@+id/keyStow"
 	android:background="@drawable/showkeys"
     android:layout_width="wrap_content"
