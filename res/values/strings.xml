@@ -13,5 +13,6 @@
 <string name="info_progress_dialog_title">Loading&#8230;</string>
 <string name="info_progress_dialog_message">Launching virtual machine.\nPlease wait&#8230;</string>
 <string name="info_progress_dialog_aborted">Connection aborted!</string>
+<string name="show_keyboard">Show Keyboard</string>
 <string name="snap_one_to_one">Snapped to 1:1 zoom</string>
 </resources>
