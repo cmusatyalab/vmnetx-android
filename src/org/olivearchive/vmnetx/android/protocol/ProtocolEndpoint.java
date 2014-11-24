@@ -29,7 +29,7 @@ abstract class ProtocolEndpoint {
     static private final String MTYPE_KEY = "_";
 
     static protected final class RecvMessage {
-        static private final String TAG = "RecvMessage";
+        //static private final String TAG = "RecvMessage";
 
         public final String mtype;
         private final Map<Object, Object> items;
@@ -51,7 +51,7 @@ abstract class ProtocolEndpoint {
                     mtype = (String) mt;
                 else
                     throw new ProtocolException("Received message without a type");
-                android.util.Log.d(TAG, "Received message: " + mtype);
+                //android.util.Log.d(TAG, "Received message: " + mtype);
             } else {
                 throw new ProtocolException("Received message is not a map object");
             }

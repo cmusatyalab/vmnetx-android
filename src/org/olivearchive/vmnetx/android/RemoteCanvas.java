@@ -976,7 +976,7 @@ public class RemoteCanvas extends ImageView {
                 break;
 
             case Constants.CLIENT_PROTOCOL_PONG:
-                Log.d(TAG, "pong!");
+                //Log.d(TAG, "pong!");
                 pinger.pong();
                 break;
 
