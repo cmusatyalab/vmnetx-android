@@ -13,4 +13,7 @@
     <item
             android:id="@+id/itemCtrlAltDel"
             android:title="@string/ctrl_alt_del"/>
+    <item
+            android:id="@+id/itemRestart"
+            android:title="@string/restart"/>
 </menu>

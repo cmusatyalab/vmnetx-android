@@ -298,6 +298,10 @@ public class RemoteCanvas extends ImageView {
         handler.post(showMessage);
     }
     
+    public void restartVM() {
+        endpoint.sendStopVM();
+        // VM_STATE_STOPPED handler will restart it
+    }
     
     /**
      * Method that disconnects from the remote server.

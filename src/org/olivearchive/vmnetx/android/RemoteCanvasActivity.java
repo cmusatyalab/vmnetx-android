@@ -694,6 +694,14 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         case R.id.itemCtrlAltDel:
             canvas.getKeyboard().sendCtrlAltDel();
             return true;
+        case R.id.itemRestart:
+            Utils.showYesNoPrompt(this, getString(R.string.restart_prompt_title), getString(R.string.restart_prompt), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    canvas.restartVM();
+                }
+            }, null, null);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
