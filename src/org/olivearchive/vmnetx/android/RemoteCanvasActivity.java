@@ -258,7 +258,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             @Override
             public boolean onTouch(View arg0, MotionEvent e) {
                 RemoteKeyboard k = canvas.getKeyboard();
-                int key = 111; /* KEYCODE_ESCAPE */
+                int key = KeyEvent.KEYCODE_ESCAPE;
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
                     keyEsc.setImageResource(R.drawable.escon);
