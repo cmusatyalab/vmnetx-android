@@ -13,14 +13,6 @@
     >
 </org.olivearchive.vmnetx.android.RemoteCanvas>
 
-<ImageButton android:id="@+id/keyStow"
-	android:background="@drawable/showkeys"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom|center"
-    android:padding="10sp"
-    />
-
 <RelativeLayout
     android:id="@+id/layoutKeys"
 	android:layout_width="fill_parent"

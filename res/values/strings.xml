@@ -17,5 +17,6 @@
 <string name="restart_prompt">Unsaved data will be lost.</string>
 <string name="restart_prompt_title">Really reboot the guest?</string>
 <string name="show_keyboard">Show Keyboard</string>
+<string name="show_soft_keys">Toggle Soft Keys</string>
 <string name="snap_one_to_one">Snapped to 1:1 zoom</string>
 </resources>

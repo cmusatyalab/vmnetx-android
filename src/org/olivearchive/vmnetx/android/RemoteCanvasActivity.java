@@ -33,7 +33,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -70,7 +69,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private Handler handler;
 
     private RelativeLayout layoutKeys;
-    private ImageButton keyStow;
     private ImageButton keyCtrl;
     private boolean keyCtrlLocked;
     private ImageButton keySuper;
@@ -201,7 +199,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                         // Soft Kbd gone, shift the meta keys and arrows down.
                         if (layoutKeys != null) {
                             layoutKeys.offsetTopAndBottom(offset);
-                            keyStow.offsetTopAndBottom(offset);
                             if (prevBottomOffset != offset) { 
                                 setExtraKeysVisibility(View.GONE, false);
                                 canvas.invalidate();
@@ -212,14 +209,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                         //  Soft Kbd up, shift the meta keys and arrows up.
                         if (layoutKeys != null) {
                             layoutKeys.offsetTopAndBottom(offset);
-                            keyStow.offsetTopAndBottom(offset);
                             if (prevBottomOffset != offset) { 
                                 setExtraKeysVisibility(View.VISIBLE, true);
                                 canvas.invalidate();
                             }
                         }
                     }
-                    setKeyStowDrawable();
                     prevBottomOffset = offset;
              }
         });
@@ -227,39 +222,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         gestureHandler = new AbsoluteMouseHandler(this, canvas);
     }
 
-    
-    private void setKeyStowDrawable() {
-        Drawable replacer = null;
-        if (layoutKeys.getVisibility() == View.GONE)
-            replacer = getResources().getDrawable(R.drawable.showkeys);
-        else
-            replacer = getResources().getDrawable(R.drawable.hidekeys);
-        keyStow.setBackground(replacer);
-    }
-    
     /**
      * Initializes the on-screen keys for meta keys and arrow keys.
      */
     private void initializeOnScreenKeys () {
         
         layoutKeys = (RelativeLayout) findViewById(R.id.layoutKeys);
-
-        keyStow = (ImageButton)    findViewById(R.id.keyStow);
-        setKeyStowDrawable();
-        keyStow.setOnClickListener(new OnClickListener () {
-            @Override
-            public void onClick(View arg0) {
-                if (layoutKeys.getVisibility() == View.VISIBLE) {
-                    extraKeysHidden = true;
-                    setExtraKeysVisibility(View.GONE, false);
-                } else {
-                    extraKeysHidden = false;
-                    setExtraKeysVisibility(View.VISIBLE, true);
-                }
-                layoutKeys.offsetTopAndBottom(prevBottomOffset);
-                setKeyStowDrawable();
-            }
-        });
 
         // Define action of tab key and meta keys.
         keyTab = (ImageButton) findViewById(R.id.keyTab);
@@ -681,6 +649,16 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             InputMethodManager inputMgr = (InputMethodManager)
                     getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMgr.toggleSoftInput(0, 0);
+            break;
+        case R.id.itemSoftKeys:
+            if (layoutKeys.getVisibility() == View.VISIBLE) {
+                extraKeysHidden = true;
+                setExtraKeysVisibility(View.GONE, false);
+            } else {
+                extraKeysHidden = false;
+                setExtraKeysVisibility(View.VISIBLE, true);
+            }
+            layoutKeys.offsetTopAndBottom(prevBottomOffset);
             break;
         case R.id.itemDisconnect:
             Utils.showYesNoPrompt(this, getString(R.string.disconnect_prompt_title), getString(R.string.disconnect_prompt), new DialogInterface.OnClickListener() {
