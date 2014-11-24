@@ -36,7 +36,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -56,8 +55,7 @@ import android.content.Context;
 
 
 public class RemoteCanvasActivity extends Activity implements OnKeyListener {
-    
-    private final static String TAG = "RemoteCanvasActivity";
+    //private final static String TAG = "RemoteCanvasActivity";
     private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
     private GestureHandler gestureHandler;
@@ -501,9 +499,9 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
      */
     private void setExtraKeysVisibility (int visibility, boolean forceVisible) {
         Configuration config = getResources().getConfiguration();
-        //Log.e(TAG, "Hardware kbd hidden: " + Integer.toString(config.hardKeyboardHidden));
-        //Log.e(TAG, "Any keyboard hidden: " + Integer.toString(config.keyboardHidden));
-        //Log.e(TAG, "Keyboard type: " + Integer.toString(config.keyboard));
+        //android.util.Log.e(TAG, "Hardware kbd hidden: " + Integer.toString(config.hardKeyboardHidden));
+        //android.util.Log.e(TAG, "Any keyboard hidden: " + Integer.toString(config.keyboardHidden));
+        //android.util.Log.e(TAG, "Keyboard type: " + Integer.toString(config.keyboard));
 
         boolean makeVisible = forceVisible;
         if (config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
@@ -519,36 +517,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             layoutKeys.setVisibility(View.GONE);
             layoutKeys.invalidate();
         }
-    }
-    
-    /*
-     * TODO: REMOVE THIS AS SOON AS POSSIBLE.
-     * onPause: This is an ugly hack for the Playbook, because the Playbook hides the keyboard upon unlock.
-     * This causes the visible height to remain less, as if the soft keyboard is still up. This hack must go 
-     * away as soon as the Playbook doesn't need it anymore.
-     */
-    @Override
-    protected void onPause(){
-        super.onPause();
-        try {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(canvas.getWindowToken(), 0);
-        } catch (NullPointerException e) { }
-    }
-
-    /*
-     * TODO: REMOVE THIS AS SOON AS POSSIBLE.
-     * onResume: This is an ugly hack for the Playbook which hides the keyboard upon unlock. This causes the visible
-     * height to remain less, as if the soft keyboard is still up. This hack must go away as soon
-     * as the Playbook doesn't need it anymore.
-     */
-    @Override
-    protected void onResume(){
-        super.onResume();
-        Log.i(TAG, "onResume called.");
-        try {
-            canvas.postInvalidateDelayed(600);
-        } catch (NullPointerException e) { }
     }
     
     /**

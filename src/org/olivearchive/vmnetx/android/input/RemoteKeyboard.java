@@ -45,19 +45,10 @@ public class RemoteKeyboard {
     // Variable holding the state of the last metaState resulting from a button press.
     private int lastDownMetaState = 0;
     
-    // Variable used for BB10 workarounds
-    private boolean bb = false;
-    
     public RemoteKeyboard (SpiceCommunicator s, RemoteCanvas c, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
         
-        if (android.os.Build.MODEL.contains("BlackBerry") ||
-            android.os.Build.BRAND.contains("BlackBerry") || 
-            android.os.Build.MANUFACTURER.contains("BlackBerry")) {
-            bb = true;
-        }
-
         context = c.getContext();
 
         keyboardMapper = new KeyboardMapper();
@@ -305,7 +296,7 @@ public class RemoteKeyboard {
         // Detect whether this event is coming from a default hardware keyboard.
         // We have to leave KeyEvent.KEYCODE_ALT_LEFT for symbol input on a default hardware keyboard.
         boolean defaultHardwareKbd = (event.getDeviceId() == 0);
-        if (!bb && !defaultHardwareKbd) {
+        if (!defaultHardwareKbd) {
             altMask = KeyEvent.META_ALT_MASK;
         }
         
