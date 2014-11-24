@@ -40,9 +40,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.Selection;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -117,11 +115,6 @@ public class RemoteCanvas extends ImageView {
     
     boolean spiceUpdateReceived = false;
     
-    /*
-     * Variable used for BB workarounds.
-     */
-    private boolean bb = false;
-    
     /**
      * Constructor used by the inflation apparatus
      * 
@@ -134,12 +127,6 @@ public class RemoteCanvas extends ImageView {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         displayDensity = metrics.density;
-        
-        if (android.os.Build.MODEL.contains("BlackBerry") ||
-            android.os.Build.BRAND.contains("BlackBerry") || 
-            android.os.Build.MANUFACTURER.contains("BlackBerry")) {
-            bb = true;
-        }
     }
     
     
@@ -587,34 +574,6 @@ public class RemoteCanvas extends ImageView {
     
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        android.util.Log.d(TAG, "onCreateInputConnection called");
-        BaseInputConnection bic = null;
-        if (!bb) {
-            bic = new BaseInputConnection(this, false) {
-                final static String junk_unit = "%%%%%%%%%%";
-                final static int multiple = 1000;
-                Editable e;
-                @Override
-                public Editable getEditable() {
-                    if (e == null) {
-                        int numTotalChars = junk_unit.length()*multiple;
-                        String junk = new String();
-                        for (int i = 0; i < multiple ; i++) {
-                            junk += junk_unit;
-                        }
-                        e = Editable.Factory.getInstance().newEditable(junk);
-                        Selection.setSelection(e, numTotalChars);
-                        if (RemoteCanvas.this.keyboard != null) {
-                            RemoteCanvas.this.keyboard.skippedJunkChars = false;
-                        }
-                    }
-                    return e;
-                }
-            };
-        } else {
-            bic = new BaseInputConnection(this, false);
-        }
-        
         outAttrs.actionLabel = null;
         outAttrs.inputType = InputType.TYPE_NULL;
         /* TODO: If people complain about kbd not working, this is a possible workaround to
@@ -623,7 +582,7 @@ public class RemoteCanvas extends ImageView {
         outAttrs.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
         outAttrs.imeOptions |= EditorInfo.IME_FLAG_NO_FULLSCREEN;
         */
-        return bic;
+        return new BaseInputConnection(this, false);
     }
     
     public RemotePointer getPointer() {

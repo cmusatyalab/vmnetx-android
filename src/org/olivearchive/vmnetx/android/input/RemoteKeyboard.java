@@ -48,10 +48,6 @@ public class RemoteKeyboard {
     // Variable used for BB10 workarounds
     private boolean bb = false;
     
-    // This variable tells us whether we need to skip junk characters for
-    // SDK >= 16 and LatinIME next time a multi-character event comes along.
-    public boolean skippedJunkChars = true;
-
     public RemoteKeyboard (SpiceCommunicator s, RemoteCanvas c, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
@@ -142,9 +138,7 @@ public class RemoteKeyboard {
             if (keyCode == 0 /*KEYCODE_UNKNOWN*/) {
                 String s = evt.getCharacters();
                 if (s != null) {
-                    int numchars = s.length();
-                    int i = numJunkCharactersToSkip (numchars, evt);
-                    for (; i < numchars; i++) {
+                    for (int i = 0; i < s.length(); i++) {
                         //android.util.Log.e(TAG, "Sending unicode: " + s.charAt(i));
                         sendUnicode (s.charAt(i), metaState);
                     }
@@ -325,34 +319,5 @@ public class RemoteKeyboard {
         if ((eventMetaState & 0x00070000 /*KeyEvent.META_META_MASK*/) != 0)
             metaState |= SUPER_MASK;
         return metaState;
-    }
-    
-    
-    /**
-     * Used to calculate how many junk characters to skip.
-     * @param numchars
-     * @param evt
-     * @return
-     */
-    private int numJunkCharactersToSkip (int numchars, KeyEvent evt) {
-        int i = 0;
-        if (!skippedJunkChars) {
-            if (numchars == 10000) {
-                // We received the event not because the user typed something but
-                // because of another reason (for example lock/unlock screen).
-                i = numchars;
-            } else {
-                // The user has typed at least one char, so we need to skip just the junk
-                // characters, so skip backward until we hit the first junk character.
-                for (i = Math.max(numchars - 2, 0); i > 0 ; i--) {
-                    if (evt.getCharacters().charAt(i) == '%') {
-                        i = i + 1;
-                        break;
-                    }
-                }
-                skippedJunkChars = true;
-            }
-        }
-        return i;
     }
 }
