@@ -5,8 +5,8 @@
             android:icon="@drawable/ic_action_keyboard"
             android:showAsAction="ifRoom"/>
     <item
-            android:id="@+id/itemSoftKeys"
-            android:title="@string/show_soft_keys"
+            android:id="@+id/itemExtraKeys"
+            android:title="@string/show_extra_keys"
             android:icon="@drawable/ic_action_gamepad"
             android:showAsAction="ifRoom"/>
     <item

@@ -599,7 +599,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                     getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMgr.toggleSoftInput(0, 0);
             break;
-        case R.id.itemSoftKeys:
+        case R.id.itemExtraKeys:
             if (layoutKeys.getVisibility() == View.VISIBLE) {
                 layoutKeys.setVisibility(View.GONE);
             } else {
