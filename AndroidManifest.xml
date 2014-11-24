@@ -21,7 +21,7 @@
             android:allowBackup="true">
         <activity
                 android:screenOrientation="unspecified"
-                android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+                android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation"
                 android:name="RemoteCanvasActivity"
                 android:windowSoftInputMode="stateHidden|adjustResize"
                 android:theme="@android:style/Theme.DeviceDefault"
