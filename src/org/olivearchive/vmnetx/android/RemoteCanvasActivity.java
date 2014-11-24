@@ -83,7 +83,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private ImageButton keyDown;
     private ImageButton keyLeft;
     private ImageButton keyRight;
-    private boolean extraKeysHidden = false;
     private int prevBottomOffset = 0;
     
     @Override
@@ -199,7 +198,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                         if (layoutKeys != null) {
                             layoutKeys.offsetTopAndBottom(offset);
                             if (prevBottomOffset != offset) { 
-                                setExtraKeysVisibility(View.GONE, false);
                                 canvas.invalidate();
                             }
                         }
@@ -209,7 +207,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                         if (layoutKeys != null) {
                             layoutKeys.offsetTopAndBottom(offset);
                             if (prevBottomOffset != offset) { 
-                                setExtraKeysVisibility(View.VISIBLE, true);
                                 canvas.invalidate();
                             }
                         }
@@ -492,32 +489,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         }
     }
 
-    
-    /**
-     * Sets the visibility of the extra keys appropriately.
-     */
-    private void setExtraKeysVisibility (int visibility, boolean forceVisible) {
-        Configuration config = getResources().getConfiguration();
-        //android.util.Log.e(TAG, "Hardware kbd hidden: " + Integer.toString(config.hardKeyboardHidden));
-        //android.util.Log.e(TAG, "Any keyboard hidden: " + Integer.toString(config.keyboardHidden));
-        //android.util.Log.e(TAG, "Keyboard type: " + Integer.toString(config.keyboard));
-
-        boolean makeVisible = forceVisible;
-        if (config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
-            makeVisible = true;
-
-        if (!extraKeysHidden && makeVisible) {
-            layoutKeys.setVisibility(View.VISIBLE);
-            layoutKeys.invalidate();
-            return;
-        }
-        
-        if (visibility == View.GONE) {
-            layoutKeys.setVisibility(View.GONE);
-            layoutKeys.invalidate();
-        }
-    }
-    
     /**
      * Set up scaling and input modes
      */
@@ -586,8 +557,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         updateKeyboardMenuItem(newConfig);
 
         try {
-            setExtraKeysVisibility(View.GONE, false);
-            
             // Correct a few times just in case. There is no visual effect.
             handler.postDelayed(rotationCorrector, 300);
             handler.postDelayed(rotationCorrector, 600);
@@ -632,12 +601,11 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             break;
         case R.id.itemSoftKeys:
             if (layoutKeys.getVisibility() == View.VISIBLE) {
-                extraKeysHidden = true;
-                setExtraKeysVisibility(View.GONE, false);
+                layoutKeys.setVisibility(View.GONE);
             } else {
-                extraKeysHidden = false;
-                setExtraKeysVisibility(View.VISIBLE, true);
+                layoutKeys.setVisibility(View.VISIBLE);
             }
+            layoutKeys.invalidate();
             layoutKeys.offsetTopAndBottom(prevBottomOffset);
             break;
         case R.id.itemDisconnect:
