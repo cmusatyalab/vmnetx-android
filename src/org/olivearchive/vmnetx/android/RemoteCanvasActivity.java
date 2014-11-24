@@ -164,7 +164,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         
         canvas.setOnKeyListener(this);
         canvas.setFocusableInTouchMode(true);
-        canvas.setDrawingCacheEnabled(false);
         
         // This code detects when the soft keyboard is up and sets an appropriate visibleHeight in canvas.
         // When the keyboard is gone, it resets visibleHeight and pans zero distance to prevent us from being
