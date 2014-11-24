@@ -332,10 +332,13 @@ public class RemoteCanvas extends ImageView {
     /**
      * Cleans up resources after a disconnection.
      */
-    public void onDestroy() {
+    private void onDestroy() {
         Log.v(TAG, "Cleaning up resources");
         
-        removeCallbacksAndMessages();
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+
         setModes         = null;
         connection       = null;
         scaling          = null;
@@ -346,13 +349,6 @@ public class RemoteCanvas extends ImageView {
         controlConn      = null;
         
         disposeDrawable ();
-    }
-    
-    
-    public void removeCallbacksAndMessages() {
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-        }
     }
     
     /*
