@@ -68,6 +68,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     private Handler handler;
 
+    private MenuItem keyboardMenuItem;
+
     private RelativeLayout layoutKeys;
     private ImageButton keyCtrl;
     private boolean keyCtrlLocked;
@@ -572,6 +574,13 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         }
     }
 
+    private void updateKeyboardMenuItem(Configuration config) {
+        boolean softKeyboardEnabled = (config.hardKeyboardHidden !=
+                Configuration.HARDKEYBOARDHIDDEN_NO);
+        keyboardMenuItem.setEnabled(softKeyboardEnabled);
+        keyboardMenuItem.setVisible(softKeyboardEnabled);
+    }
+
     /**
      * This runnable fixes things up after a rotation.
      */
@@ -607,6 +616,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         
+        updateKeyboardMenuItem(newConfig);
+
         try {
             setExtraKeysVisibility(View.GONE, false);
             
@@ -638,6 +649,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         try {
             getMenuInflater().inflate(R.menu.canvas, menu);
+            keyboardMenuItem = menu.findItem(R.id.itemKeyboard);
+            updateKeyboardMenuItem(getResources().getConfiguration());
         } catch (NullPointerException e) { }
         return true;
     }
