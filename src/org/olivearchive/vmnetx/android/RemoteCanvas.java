@@ -666,6 +666,11 @@ public class RemoteCanvas extends ImageView {
             synchronized (this) {
                 this.notify();
             }
+            if (spice != null) {
+                // Ensure the view position is sane
+                scaling.updateForCanvas(this);
+                pan(0, 0);
+            }
         }
     }
     

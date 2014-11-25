@@ -59,8 +59,15 @@ public class Scaling {
         canvasXOffset = -canvas.getCenteredXOffset();
         canvasYOffset = -canvas.getCenteredYOffset();
         canvas.computeShiftFromFullToView ();
+
+        boolean zoomedOut = (scaling <= minimumScale);
         minimumScale = canvas.getMinimumScale();
-        scaling = minimumScale;
+        if (zoomedOut) {
+            // We were fully zoomed out; stay that way
+            scaling = minimumScale;
+        } else {
+            scaling = Math.max(scaling, minimumScale);
+        }
         resetMatrix();
         matrix.postScale(scaling, scaling);
         canvas.setImageMatrix(matrix);
