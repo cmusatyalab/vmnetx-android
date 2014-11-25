@@ -374,6 +374,11 @@ public class RemoteCanvas extends ImageView {
                 getImageWidth() - getVisibleWidth());
         absoluteYPosition = Math.min(absoluteYPosition,
                 getImageHeight() - getVisibleHeight());
+        // If image is smaller than the canvas, center the image
+        if (absoluteXPosition < 0)
+            absoluteXPosition /= 2;
+        if (absoluteYPosition < 0)
+            absoluteYPosition /= 2;
 
         if (force ||
                 absoluteXPosition != prevAbsoluteXPosition ||
