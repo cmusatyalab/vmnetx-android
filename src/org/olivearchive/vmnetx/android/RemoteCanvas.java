@@ -105,12 +105,6 @@ public class RemoteCanvas extends ImageView {
      */
     private float shiftX = 0, shiftY = 0;
 
-    /*
-     * This variable holds the height of the visible rectangle of the screen. It is used to keep track
-     * of how much of the screen is hidden by the soft keyboard if any.
-     */
-    private int visibleHeight = -1;
-
     float displayDensity = 0;
     
     boolean spiceUpdateReceived = false;
@@ -603,15 +597,8 @@ public class RemoteCanvas extends ImageView {
         return (int)((double)getWidth() / getScale() + 0.5);
     }
     
-    public void setVisibleHeight(int newHeight) {
-        visibleHeight = newHeight;
-    }
-    
     public int getVisibleHeight() {
-        if (visibleHeight > 0)
-            return (int)((double)visibleHeight / getScale() + 0.5);
-        else
-            return (int)((double)getHeight() / getScale() + 0.5);
+        return (int)((double)getHeight() / getScale() + 0.5);
     }
     
     public int getImageWidth() {

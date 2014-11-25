@@ -32,7 +32,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,9 +44,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.view.View.OnKeyListener;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.view.inputmethod.InputMethodManager;
@@ -164,57 +161,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         canvas.setOnKeyListener(this);
         canvas.setFocusableInTouchMode(true);
         
-        // This code detects when the soft keyboard is up and sets an appropriate visibleHeight in canvas.
-        // When the keyboard is gone, it resets visibleHeight and pans zero distance to prevent us from being
-        // below the desktop image (if we scrolled all the way down when the keyboard was up).
-        // TODO: Move this into a separate thread, and post the visibility changes to the handler.
-        //       to avoid occupying the UI thread with this.
-        final View rootView = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                    Rect r = new Rect();
-
-                    rootView.getWindowVisibleDisplayFrame(r);
-
-                    // To avoid setting the visible height to a wrong value after an screen unlock event
-                    // (when r.bottom holds the width of the screen rather than the height due to a rotation)
-                    // we make sure r.top is zero (i.e. there is no notification bar and we are in full-screen mode)
-                    // It's a bit of a hack.
-                    if (r.top == 0) {
-                        if (canvas.bitmapData != null) {
-                            canvas.setVisibleHeight(r.bottom);
-                            canvas.pan(0,0);
-                        }
-                    }
-                    
-                    // Enable/show the keyboard controls if the keyboard is gone, and disable/hide otherwise.
-                    // We detect the keyboard if more than 19% of the screen is covered.
-                    int offset = 0;
-                    int rootViewHeight = rootView.getHeight();
-                    if (r.bottom > rootViewHeight*0.81) {
-                        offset = rootViewHeight - r.bottom;
-                        // Soft Kbd gone, shift the meta keys and arrows down.
-                        if (layoutKeys != null) {
-                            layoutKeys.offsetTopAndBottom(offset);
-                            if (prevBottomOffset != offset) { 
-                                canvas.invalidate();
-                            }
-                        }
-                    } else {
-                        offset = r.bottom - rootViewHeight;
-                        //  Soft Kbd up, shift the meta keys and arrows up.
-                        if (layoutKeys != null) {
-                            layoutKeys.offsetTopAndBottom(offset);
-                            if (prevBottomOffset != offset) { 
-                                canvas.invalidate();
-                            }
-                        }
-                    }
-                    prevBottomOffset = offset;
-             }
-        });
-
         gestureHandler = new AbsoluteMouseHandler(this, canvas);
     }
 
