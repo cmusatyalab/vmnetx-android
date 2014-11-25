@@ -34,7 +34,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -60,8 +59,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private RemoteCanvas canvas;
 
     private ConnectionBean connection;
-
-    private Handler handler;
 
     private MenuItem keyboardMenuItem;
 
@@ -101,8 +98,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     void initialize () {
         android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
         android.os.StrictMode.setThreadPolicy(policy);
-        
-        handler = new Handler ();
         
         if (connection == null) {
             Intent i = getIntent();
@@ -465,49 +460,10 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         keyboardMenuItem.setVisible(softKeyboardEnabled);
     }
 
-    /**
-     * This runnable fixes things up after a rotation.
-     */
-    private Runnable rotationCorrector = new Runnable() {
-        public void run() {
-            try { correctAfterRotation (); } catch (NullPointerException e) { }
-        }
-    };
-
-    /**
-     * This function is called by the rotationCorrector runnable
-     * to fix things up after a rotation.
-     */
-    private void correctAfterRotation () {
-        // Its quite common to see NullPointerExceptions here when this function is called
-        // at the point of disconnection. Hence, we catch and ignore the error.
-        float oldScale = canvas.scaling.getScale();
-        int x = canvas.absoluteXPosition;
-        int y = canvas.absoluteYPosition;
-        canvas.scaling.updateForCanvas(canvas);
-        float newScale = canvas.scaling.getScale();
-        canvas.scaling.adjust(this, oldScale/newScale, 0, 0);
-        newScale = canvas.scaling.getScale();
-        if (newScale <= oldScale) {
-            canvas.absoluteXPosition = x;
-            canvas.absoluteYPosition = y;
-            canvas.scrollToAbsolute(true);
-        }
-    }
-
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        
         updateKeyboardMenuItem(newConfig);
-
-        try {
-            // Correct a few times just in case. There is no visual effect.
-            handler.postDelayed(rotationCorrector, 300);
-            handler.postDelayed(rotationCorrector, 600);
-            handler.postDelayed(rotationCorrector, 1200);
-        } catch (NullPointerException e) { }
     }
 
     @Override
