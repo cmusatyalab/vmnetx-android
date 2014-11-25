@@ -438,9 +438,8 @@ public class RemoteCanvas extends ImageView {
      * Pan by a number of pixels (relative pan)
      * @param dX
      * @param dY
-     * @return True if the pan changed the view (did not move view out of bounds); false otherwise
      */
-    public boolean pan(int dX, int dY) {
+    public void pan(int dX, int dY) {
         double scale = getScale();
         
         double sX = (double)dX / scale;
@@ -461,11 +460,8 @@ public class RemoteCanvas extends ImageView {
         absoluteXPosition += sX;
         absoluteYPosition += sY;
         if (sX != 0.0 || sY != 0.0) {
-            //scrollBy((int)sX, (int)sY);
             scrollToAbsolute();
-            return true;
         }
-        return false;
     }
 
     /**
