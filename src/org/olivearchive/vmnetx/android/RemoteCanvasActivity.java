@@ -491,7 +491,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         if (newScale <= oldScale) {
             canvas.absoluteXPosition = x;
             canvas.absoluteYPosition = y;
-            canvas.scrollToAbsolute();
+            canvas.scrollToAbsolute(true);
         }
     }
 

@@ -98,7 +98,10 @@ public class RemoteCanvas extends ImageView {
      * Position of the top left portion of the <i>visible</i> part of the screen, in
      * full-frame coordinates
      */
-    int absoluteXPosition = 0, absoluteYPosition = 0;
+    int absoluteXPosition = 0;
+    int absoluteYPosition = 0;
+    int prevAbsoluteXPosition = -1;
+    int prevAbsoluteYPosition = -1;
     
     /*
      * How much to shift coordinates over when converting from full to view coordinates.
@@ -363,10 +366,24 @@ public class RemoteCanvas extends ImageView {
     /**
      * Change to Canvas's scroll position to match the absoluteXPosition
      */
-    void scrollToAbsolute()    {
-        float scale = getScale();
-        scrollTo((int)((absoluteXPosition - shiftX) * scale),
-                 (int)((absoluteYPosition - shiftY) * scale));
+    void scrollToAbsolute(boolean force) {
+        // Clamp to bounds of desktop image
+        absoluteXPosition = Math.max(absoluteXPosition, 0);
+        absoluteYPosition = Math.max(absoluteYPosition, 0);
+        absoluteXPosition = Math.min(absoluteXPosition,
+                getImageWidth() - getVisibleWidth());
+        absoluteYPosition = Math.min(absoluteYPosition,
+                getImageHeight() - getVisibleHeight());
+
+        if (force ||
+                absoluteXPosition != prevAbsoluteXPosition ||
+                absoluteYPosition != prevAbsoluteYPosition) {
+            float scale = getScale();
+            scrollTo((int)((absoluteXPosition - shiftX) * scale),
+                     (int)((absoluteYPosition - shiftY) * scale));
+            prevAbsoluteXPosition = absoluteXPosition;
+            prevAbsoluteYPosition = absoluteYPosition;
+        }
     }
     
     
@@ -377,19 +394,8 @@ public class RemoteCanvas extends ImageView {
         if (spice == null)
             return;
         
-        boolean panX = true;
-        boolean panY = true;
-        
-        // Don't pan in a certain direction if dimension scaled is already less 
-        // than the dimension of the visible part of the screen.
-        if (spice.framebufferWidth()  <= getVisibleWidth())
-            panX = false;
-        if (spice.framebufferHeight() <= getVisibleHeight())
-            panY = false;
-        
         int x = pointer.getX();
         int y = pointer.getY();
-        boolean panned = false;
         int w = getVisibleWidth();
         int h = getVisibleHeight();
         int iw = getImageWidth();
@@ -397,41 +403,32 @@ public class RemoteCanvas extends ImageView {
         int wthresh = 30;
         int hthresh = 30;
         
-        int newX = absoluteXPosition;
-        int newY = absoluteYPosition;
-        
-        if (x - absoluteXPosition >= w - wthresh) {
-            newX = x - (w - wthresh);
-            if (newX + w > iw)
-                newX = iw - w;
-        } else if (x < absoluteXPosition + wthresh) {
-            newX = x - wthresh;
-            if (newX < 0)
-                newX = 0;
+        // Don't pan in a certain direction if dimension scaled is already less
+        // than the dimension of the visible part of the screen.
+        if (spice.framebufferWidth() > getVisibleWidth()) {
+            if (x - absoluteXPosition >= w - wthresh) {
+                absoluteXPosition = x - (w - wthresh);
+                if (absoluteXPosition + w > iw)
+                    absoluteXPosition = iw - w;
+            } else if (x < absoluteXPosition + wthresh) {
+                absoluteXPosition = x - wthresh;
+                if (absoluteXPosition < 0)
+                    absoluteXPosition = 0;
+            }
         }
-        if ( panX && newX != absoluteXPosition ) {
-            absoluteXPosition = newX;
-            panned = true;
-        }
-        
-        if (y - absoluteYPosition >= h - hthresh) {
-            newY = y - (h - hthresh);
-            if (newY + h > ih)
-                newY = ih - h;
-        } else if (y < absoluteYPosition + hthresh) {
-            newY = y - hthresh;
-            if (newY < 0)
-                newY = 0;
-        }
-        if ( panY && newY != absoluteYPosition ) {
-            absoluteYPosition = newY;
-            panned = true;
+        if (spice.framebufferHeight() > getVisibleHeight()) {
+            if (y - absoluteYPosition >= h - hthresh) {
+                absoluteYPosition = y - (h - hthresh);
+                if (absoluteYPosition + h > ih)
+                    absoluteYPosition = ih - h;
+            } else if (y < absoluteYPosition + hthresh) {
+                absoluteYPosition = y - hthresh;
+                if (absoluteYPosition < 0)
+                    absoluteYPosition = 0;
+            }
         }
         
-        if (panned) {
-            //scrollBy(newX - absoluteXPosition, newY - absoluteYPosition);
-            scrollToAbsolute();
-        }
+        scrollToAbsolute(false);
     }
     
     /**
@@ -441,27 +438,9 @@ public class RemoteCanvas extends ImageView {
      */
     public void pan(int dX, int dY) {
         double scale = getScale();
-        
-        double sX = (double)dX / scale;
-        double sY = (double)dY / scale;
-        
-        if (absoluteXPosition + sX < 0)
-            // dX = diff to 0
-            sX = -absoluteXPosition;
-        if (absoluteYPosition + sY < 0)
-            sY = -absoluteYPosition;
-        
-        // Prevent panning right or below desktop image
-        if (absoluteXPosition + getVisibleWidth() + sX > getImageWidth())
-            sX = getImageWidth() - getVisibleWidth() - absoluteXPosition;
-        if (absoluteYPosition + getVisibleHeight() + sY > getImageHeight())
-            sY = getImageHeight() - getVisibleHeight() - absoluteYPosition;
-        
-        absoluteXPosition += sX;
-        absoluteYPosition += sY;
-        if (sX != 0.0 || sY != 0.0) {
-            scrollToAbsolute();
-        }
+        absoluteXPosition += (double) dX / scale;
+        absoluteYPosition += (double) dY / scale;
+        scrollToAbsolute(false);
     }
 
     /**
@@ -665,7 +644,6 @@ public class RemoteCanvas extends ImageView {
             if (spice != null) {
                 // Ensure the view position is sane
                 scaling.updateForCanvas(this);
-                pan(0, 0);
             }
         }
     }

@@ -136,7 +136,7 @@ public class Scaling {
      */
     private void resolveZoom(RemoteCanvas canvas)
     {
-        canvas.scrollToAbsolute();
+        canvas.scrollToAbsolute(true);
     }
 
     private void resetMatrix()
