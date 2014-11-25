@@ -101,10 +101,10 @@ public class Scaling {
 
         RemoteCanvas canvas = activity.getCanvas();
         // ax is the absolute x of the focus
-        int xPan = canvas.absoluteXPosition;
+        int xPan = canvas.getAbsoluteX();
         float ax = (fx / scaling) + xPan;
         float newXPan = (scaling * xPan - scaling * ax + newScale * ax)/newScale;
-        int yPan = canvas.absoluteYPosition;
+        int yPan = canvas.getAbsoluteY();
         float ay = (fy / scaling) + yPan;
         float newYPan = (scaling * yPan - scaling * ay + newScale * ay)/newScale;
 

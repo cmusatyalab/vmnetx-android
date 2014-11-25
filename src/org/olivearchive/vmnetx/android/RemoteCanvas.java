@@ -98,19 +98,19 @@ public class RemoteCanvas extends ImageView {
      * Position of the top left portion of the <i>visible</i> part of the screen, in
      * full-frame coordinates
      */
-    int absoluteXPosition = 0;
-    int absoluteYPosition = 0;
-    int prevAbsoluteXPosition = -1;
-    int prevAbsoluteYPosition = -1;
+    private int absoluteXPosition = 0;
+    private int absoluteYPosition = 0;
+    private int prevAbsoluteXPosition = -1;
+    private int prevAbsoluteYPosition = -1;
     
     /*
      * How much to shift coordinates over when converting from full to view coordinates.
      */
     private float shiftX = 0, shiftY = 0;
 
-    float displayDensity = 0;
+    private float displayDensity = 0;
     
-    boolean spiceUpdateReceived = false;
+    private boolean spiceUpdateReceived = false;
     
     /**
      * Constructor used by the inflation apparatus
