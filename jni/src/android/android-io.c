@@ -80,30 +80,6 @@ static int win32key2spice (int keycode)
     return newKeyCode;
 }
 
-static inline bool attachThreadToJvm (JNIEnv** env) {
-    bool attached = false;
-    int rs2 = 0;
-    int rs1 = (*jvm)->GetEnv(jvm, (void**)env, JNI_VERSION_1_6);
-    switch (rs1) {
-    case JNI_OK:
-        break;
-    case JNI_EDETACHED:
-        rs2 = (*jvm)->AttachCurrentThread(jvm, env, NULL);
-        if (rs2 != JNI_OK) {
-            __android_log_write(ANDROID_LOG_ERROR, TAG, "Could not attach current thread to jvm.");
-        } else {
-            attached = true;
-        }
-        break;
-    }
-
-    return attached;
-}
-
-static inline void detachThreadFromJvm () {
-    (*jvm)->DetachCurrentThread(jvm);
-}
-
 static int update_mask (SpiceDisplayPrivate *d, int button, gboolean down) {
     int update = 0;
     if (button == SPICE_MOUSE_BUTTON_LEFT)
@@ -214,48 +190,20 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv *
  * or to request a new bitmap. */
 
 void uiCallbackGetFd (SpiceChannel *channel) {
-    JNIEnv* env;
-    bool attached = attachThreadToJvm (&env);
-
     // Ask the UI to connect a file descriptor for us.
-    (*env)->CallVoidMethod(env, jni_connector, jni_get_fd, (jlong) channel);
-
-    if (attached) {
-        detachThreadFromJvm ();
-    }
+    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_get_fd, (jlong) channel);
 }
 
 void uiCallbackInvalidate (SpiceDisplayPrivate *d, gint x, gint y, gint w, gint h) {
-    JNIEnv* env;
-    bool attached = attachThreadToJvm (&env);
-
     // Tell the UI that it needs to send in the bitmap to be updated and to redraw.
-    (*env)->CallVoidMethod(env, jni_connector, jni_graphics_update, 0, x, y, w, h);
-
-    if (attached) {
-        detachThreadFromJvm ();
-    }
+    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_graphics_update, 0, x, y, w, h);
 }
 
 void uiCallbackSettingsChanged (gint instance, gint width, gint height, gint bpp) {
-    JNIEnv* env;
-    bool attached = attachThreadToJvm (&env);
-
     // Ask for a new bitmap from the UI.
-    (*env)->CallVoidMethod(env, jni_connector, jni_settings_changed, instance, width, height, bpp);
-
-    if (attached) {
-        detachThreadFromJvm ();
-    }
+    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_settings_changed, instance, width, height, bpp);
 }
 
 void uiCallbackCursorConfig (bool absolute_mouse) {
-    JNIEnv* env;
-    bool attached = attachThreadToJvm (&env);
-
-    (*env)->CallVoidMethod(env, jni_connector, jni_cursor_config, absolute_mouse);
-
-    if (attached) {
-        detachThreadFromJvm ();
-    }
+    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_cursor_config, absolute_mouse);
 }

@@ -58,12 +58,8 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     int result = 0;
     maintainConnection = TRUE;
 
-    // Get a reference to the JVM to get JNIEnv from in (other) threads.
-    jint rs = (*env)->GetJavaVM(env, &jvm);
-    if (rs != JNI_OK) {
-        __android_log_write(ANDROID_LOG_ERROR, TAG, "Could not obtain jvm reference.");
-        return 255;
-    }
+    // Store JNIEnv for use in callbacks.
+    jenv = env;
 
     // Get a global reference on the object for use in other threads.
     jni_connector = (*env)->NewGlobalRef(env, obj);
@@ -106,7 +102,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     jni_cursor_config    = NULL;
     (*env)->DeleteGlobalRef(env, jni_connector);
     jni_connector        = NULL;
-    jvm                  = NULL;
+    jenv                 = NULL;
     return result;
 }
 
