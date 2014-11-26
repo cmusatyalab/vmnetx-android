@@ -2,4 +2,6 @@
 
 2. Install gstreamer-sdk (0.10.x, not 1.x) into /opt/gstreamer
 
-3. ndk-build GSTREAMER_SDK_ROOT_ANDROID=/opt/gstreamer -j 4
+3. Install a version of the Android NDK older than 10c.
+
+4. ndk-build GSTREAMER_SDK_ROOT_ANDROID=/opt/gstreamer -j 4
