@@ -104,8 +104,7 @@ static inline void detachThreadFromJvm () {
     (*jvm)->DetachCurrentThread(jvm);
 }
 
-static int update_mask (int button, gboolean down) {
-    static int mask;
+static int update_mask (SpiceDisplayPrivate *d, int button, gboolean down) {
     int update = 0;
     if (button == SPICE_MOUSE_BUTTON_LEFT)
         update = SPICE_MOUSE_BUTTON_MASK_LEFT;
@@ -114,11 +113,11 @@ static int update_mask (int button, gboolean down) {
     else if (button == SPICE_MOUSE_BUTTON_RIGHT)
         update = SPICE_MOUSE_BUTTON_MASK_RIGHT;
     if (down) {
-        mask |= update;
+        d->mouse_button_mask |= update;
     } else {
-        mask &= ~update;
+        d->mouse_button_mask &= ~update;
     }
-    return mask;
+    return d->mouse_button_mask;
 }
 
 
@@ -174,7 +173,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv *
 
         gboolean down = (type & PTRFLAGS_DOWN) != 0;
         int mouseButton = type &~ PTRFLAGS_DOWN;
-        int newMask = update_mask (mouseButton, down);
+        int newMask = update_mask(d, mouseButton, down);
 
         gint dx;
         gint dy;
