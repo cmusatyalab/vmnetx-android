@@ -28,11 +28,15 @@ import org.olivearchive.vmnetx.android.input.GestureHandler;
 import org.olivearchive.vmnetx.android.input.RelativeMouseHandler;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -44,10 +48,9 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.view.inputmethod.InputMethodManager;
-import android.content.Context;
 
 
 public class RemoteCanvasActivity extends Activity implements OnKeyListener {
@@ -436,10 +439,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     void setModes() {
         // Update VM name first, since the later methods may throw
         // NullPointerException which the caller will swallow
-        String vmName = canvas.getVMName();
-        if (vmName != null) {
-            setTitle(vmName);
-        }
+        updateTitle();
 
         canvas.scaling.updateForCanvas(canvas);
 
@@ -450,6 +450,18 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         } else if (!absoluteMouse &&
                 !(gestureHandler instanceof RelativeMouseHandler)) {
             gestureHandler = new RelativeMouseHandler(this, canvas);
+        }
+    }
+
+    @TargetApi(21)
+    private void updateTitle() {
+        String vmName = canvas.getVMName();
+        if (vmName != null) {
+            setTitle(vmName);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                setTaskDescription(
+                        new ActivityManager.TaskDescription(vmName));
+            }
         }
     }
 
