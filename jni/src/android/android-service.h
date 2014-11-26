@@ -26,7 +26,6 @@
 
 #ifdef ANDROID_SERVICE_C
     SpiceDisplay* global_display   = NULL;
-    gboolean  maintainConnection   = TRUE;
     JNIEnv   *jenv                 = NULL;
     jobject   jni_connector        = NULL;
     jmethodID jni_get_fd           = NULL;
@@ -37,7 +36,6 @@
     int                connections = 0;
 #else
     extern SpiceDisplay* global_display;
-    extern gboolean  maintainConnection;
     extern JNIEnv   *jenv;
     extern jobject   jni_connector;
     extern jmethodID jni_get_fd;

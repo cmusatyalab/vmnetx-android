@@ -45,8 +45,6 @@ static void signal_handler(int signal, siginfo_t *info, void *reserved) {
 
 JNIEXPORT void JNICALL
 Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientDisconnect (JNIEnv * env, jobject  obj) {
-    maintainConnection = FALSE;
-
     if (g_main_loop_is_running (mainloop))
         g_main_loop_quit (mainloop);
 }
@@ -56,7 +54,6 @@ JNIEXPORT jint JNICALL
 Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jstring pw)
 {
     int result = 0;
-    maintainConnection = TRUE;
 
     // Store JNIEnv and object for use in callbacks.
     jenv = env;
