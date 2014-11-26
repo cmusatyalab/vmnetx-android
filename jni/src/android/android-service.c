@@ -58,18 +58,16 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     int result = 0;
     maintainConnection = TRUE;
 
-    // Store JNIEnv for use in callbacks.
+    // Store JNIEnv and object for use in callbacks.
     jenv = env;
+    jni_connector = obj;
 
-    // Get a global reference on the object for use in other threads.
-    jni_connector = (*env)->NewGlobalRef(env, obj);
-
-    // Get global method IDs for callback methods.
-    jclass local_class   = (*env)->GetObjectClass(env, obj);
-    jni_get_fd           = (*env)->GetMethodID(env, local_class, "OnGetFd", "(J)V");
-    jni_settings_changed = (*env)->GetMethodID(env, local_class, "OnSettingsChanged", "(IIII)V");
-    jni_graphics_update  = (*env)->GetMethodID(env, local_class, "OnGraphicsUpdate", "(IIIII)V");
-    jni_cursor_config    = (*env)->GetMethodID(env, local_class, "OnCursorConfig", "(Z)V");
+    // Get method IDs for callback methods.
+    jclass cls           = (*env)->GetObjectClass(env, obj);
+    jni_get_fd           = (*env)->GetMethodID(env, cls, "OnGetFd", "(J)V");
+    jni_settings_changed = (*env)->GetMethodID(env, cls, "OnSettingsChanged", "(IIII)V");
+    jni_graphics_update  = (*env)->GetMethodID(env, cls, "OnGraphicsUpdate", "(IIIII)V");
+    jni_cursor_config    = (*env)->GetMethodID(env, cls, "OnCursorConfig", "(Z)V");
 
     g_thread_init(NULL);
     bindtextdomain(GETTEXT_PACKAGE, SPICE_GTK_LOCALEDIR);
@@ -100,7 +98,6 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     jni_settings_changed = NULL;
     jni_graphics_update  = NULL;
     jni_cursor_config    = NULL;
-    (*env)->DeleteGlobalRef(env, jni_connector);
     jni_connector        = NULL;
     jenv                 = NULL;
     return result;
