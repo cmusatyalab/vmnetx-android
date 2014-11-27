@@ -1,11 +1,9 @@
 package org.olivearchive.vmnetx.android.input;
 
-import android.content.Context;
 import android.os.Handler;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
-import org.olivearchive.vmnetx.android.RemoteCanvas;
 
 public class RemoteKeyboard {
     public final static int SCAN_ESC = 1;
@@ -32,7 +30,6 @@ public class RemoteKeyboard {
     public final static int META_MASK  = 0;
     
     private SpiceCommunicator spice;
-    private Context context;
     private KeyboardMapper keyboardMapper;
     private KeyRepeater keyRepeater;
 
@@ -45,14 +42,11 @@ public class RemoteKeyboard {
     // Variable holding the state of the last metaState resulting from a button press.
     private int lastDownMetaState = 0;
     
-    public RemoteKeyboard (SpiceCommunicator s, RemoteCanvas c, Handler h) {
+    public RemoteKeyboard (SpiceCommunicator s, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
         
-        context = c.getContext();
-
         keyboardMapper = new KeyboardMapper();
-        keyboardMapper.init(context);
         keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener) s);
     }
 

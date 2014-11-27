@@ -187,7 +187,7 @@ public class RemoteCanvas extends ImageView {
                 try {
                     spice = new SpiceCommunicator (getContext(), RemoteCanvas.this, handler, connection);
                     pointer = new RemotePointer (spice, RemoteCanvas.this);
-                    keyboard = new RemoteKeyboard (spice, RemoteCanvas.this, handler);
+                    keyboard = new RemoteKeyboard (spice, handler);
                     spice.connect();
                 } catch (Throwable e) {
                     if (maintainConnection) {
