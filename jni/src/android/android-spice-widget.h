@@ -51,17 +51,8 @@ struct _SpiceDisplayClass {
     /*< private >*/
 };
 
-typedef enum
-{
-	SPICE_DISPLAY_KEY_EVENT_PRESS = 1,
-	SPICE_DISPLAY_KEY_EVENT_RELEASE = 2,
-	SPICE_DISPLAY_KEY_EVENT_CLICK = 3,
-} SpiceDisplayKeyEvent;
-
 GType spice_display_get_type(void);
 SpiceDisplay* spice_display_new(SpiceSession *session, int id);
-void spice_display_send_keys(SpiceDisplay *display, const guint *keyvals,
-int nkeyvals, SpiceDisplayKeyEvent kind);
 void send_key(SpiceDisplay *display, int scancode, int down);
 gint get_display_id(SpiceDisplay *display);
 
