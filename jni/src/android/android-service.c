@@ -21,7 +21,6 @@
 #include <android/bitmap.h>
 #include <android/log.h>
 
-#define ANDROID_SERVICE_C
 #include "android-service.h"
 
 #include "android-spice-widget.h"
@@ -44,27 +43,30 @@ static void signal_handler(int signal, siginfo_t *info, void *reserved) {
 
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientDisconnect (JNIEnv * env, jobject  obj) {
-    if (g_main_loop_is_running (mainloop))
-        g_main_loop_quit (mainloop);
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientDisconnect (JNIEnv * env, jobject  obj, jlong context) {
+    struct spice_context *ctx = (struct spice_context *) context;
+
+    if (g_main_loop_is_running(ctx->mainloop))
+        g_main_loop_quit(ctx->mainloop);
 }
 
 
 JNIEXPORT jint JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jstring pw)
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jlong context, jstring pw)
 {
+    struct spice_context *ctx = (struct spice_context *) context;
     int result = 0;
 
     // Store JNIEnv and object for use in callbacks.
-    jenv = env;
-    jni_connector = obj;
+    ctx->jenv = env;
+    ctx->jni_connector = obj;
 
     // Get method IDs for callback methods.
-    jclass cls           = (*env)->GetObjectClass(env, obj);
-    jni_get_fd           = (*env)->GetMethodID(env, cls, "OnGetFd", "(J)V");
-    jni_settings_changed = (*env)->GetMethodID(env, cls, "OnSettingsChanged", "(IIII)V");
-    jni_graphics_update  = (*env)->GetMethodID(env, cls, "OnGraphicsUpdate", "(IIIII)V");
-    jni_cursor_config    = (*env)->GetMethodID(env, cls, "OnCursorConfig", "(Z)V");
+    jclass cls                = (*env)->GetObjectClass(env, obj);
+    ctx->jni_get_fd           = (*env)->GetMethodID(env, cls, "OnGetFd", "(J)V");
+    ctx->jni_settings_changed = (*env)->GetMethodID(env, cls, "OnSettingsChanged", "(IIII)V");
+    ctx->jni_graphics_update  = (*env)->GetMethodID(env, cls, "OnGraphicsUpdate", "(IIIII)V");
+    ctx->jni_cursor_config    = (*env)->GetMethodID(env, cls, "OnCursorConfig", "(Z)V");
 
     g_thread_init(NULL);
     bindtextdomain(GETTEXT_PACKAGE, SPICE_GTK_LOCALEDIR);
@@ -72,34 +74,46 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     textdomain(GETTEXT_PACKAGE);
 
     g_type_init();
-    mainloop = g_main_loop_new(NULL, false);
+    ctx->mainloop = g_main_loop_new(NULL, false);
 
-    spice_connection *conn;
-    conn = connection_new();
+    spice_connection *conn = connection_new(ctx);
     spice_session_setup(env, conn->session, pw);
 
     //watch_stdin();
 
     connection_connect(conn);
-    if (connections > 0) {
-        g_main_loop_run(mainloop);
+    if (ctx->connections > 0) {
+        g_main_loop_run(ctx->mainloop);
         connection_disconnect(conn);
-        g_object_unref(mainloop);
+        g_object_unref(ctx->mainloop);
         __android_log_write(ANDROID_LOG_INFO, TAG, "Exiting main loop.");
     } else {
         __android_log_write(ANDROID_LOG_ERROR, TAG, "Wrong hostname, port, or password.");
         result = 2;
     }
 
-    jni_get_fd           = NULL;
-    jni_settings_changed = NULL;
-    jni_graphics_update  = NULL;
-    jni_cursor_config    = NULL;
-    jni_connector        = NULL;
-    jenv                 = NULL;
+    ctx->jni_get_fd           = NULL;
+    ctx->jni_settings_changed = NULL;
+    ctx->jni_graphics_update  = NULL;
+    ctx->jni_cursor_config    = NULL;
+    ctx->jni_connector        = NULL;
+    ctx->jenv                 = NULL;
     return result;
 }
 
+JNIEXPORT jlong JNICALL
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientNewContext (JNIEnv *env, jobject obj)
+{
+    struct spice_context *ctx = g_slice_new0(struct spice_context);
+    return (jlong) ctx;
+}
+
+JNIEXPORT void JNICALL
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientFreeContext (JNIEnv *env, jobject obj, jlong context)
+{
+    struct spice_context *ctx = (struct spice_context *) context;
+    g_slice_free(struct spice_context, ctx);
+}
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM* vm, void* reserved) {

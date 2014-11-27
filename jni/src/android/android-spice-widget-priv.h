@@ -25,6 +25,7 @@ G_BEGIN_DECLS
 #include "config.h"
 #endif
 
+#include "android-service.h"
 #include "android-spice-widget.h"
 #include "spice-common.h"
 #include "spice-gtk-session.h"
@@ -49,6 +50,7 @@ struct _SpiceDisplayPrivate {
 
     bool                    convert;
 
+    struct spice_context    *ctx;
     SpiceSession            *session;
     SpiceMainChannel        *main;
     SpiceChannel            *display;

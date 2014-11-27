@@ -17,31 +17,25 @@
  * USA.
  */
 
+#ifndef ANDROID_SERVICE_H
+#define ANDROID_SERVICE_H
+
 #include <jni.h>
 #include <android/bitmap.h>
-
-#include "android-spice-widget.h"
+#include <glib.h>
 
 #define PTRFLAGS_DOWN 0x8000
 
-#ifdef ANDROID_SERVICE_C
-    SpiceDisplay* global_display   = NULL;
-    JNIEnv   *jenv                 = NULL;
-    jobject   jni_connector        = NULL;
-    jmethodID jni_get_fd           = NULL;
-    jmethodID jni_settings_changed = NULL;
-    jmethodID jni_graphics_update  = NULL;
-    jmethodID jni_cursor_config    = NULL;
-    GMainLoop            *mainloop = NULL;
-    int                connections = 0;
-#else
-    extern SpiceDisplay* global_display;
-    extern JNIEnv   *jenv;
-    extern jobject   jni_connector;
-    extern jmethodID jni_get_fd;
-    extern jmethodID jni_settings_changed;
-    extern jmethodID jni_graphics_update;
-    extern jmethodID jni_cursor_config;
-    extern GMainLoop *mainloop;
-    extern int       connections;
+struct spice_context {
+    struct _SpiceDisplay *display;
+    JNIEnv               *jenv;
+    jobject               jni_connector;
+    jmethodID             jni_get_fd;
+    jmethodID             jni_settings_changed;
+    jmethodID             jni_graphics_update;
+    jmethodID             jni_cursor_config;
+    GMainLoop            *mainloop;
+    int                   connections;
+};
+
 #endif

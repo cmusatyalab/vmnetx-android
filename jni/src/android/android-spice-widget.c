@@ -85,7 +85,6 @@ static void spice_display_class_init(SpiceDisplayClass *klass)
 
 static void spice_display_init(SpiceDisplay *display)
 {
-    global_display = display;
     SpiceDisplayPrivate *d;
 
     d = display->priv = SPICE_DISPLAY_GET_PRIVATE(display);
@@ -112,7 +111,7 @@ gint get_display_id(SpiceDisplay *display)
 
 static void notify_cursor_config(SpiceDisplayPrivate *d)
 {
-    uiCallbackCursorConfig(d->mouse_mode == SPICE_MOUSE_MODE_CLIENT);
+    uiCallbackCursorConfig(d->ctx, d->mouse_mode == SPICE_MOUSE_MODE_CLIENT);
 }
 
 static void update_mouse_mode(SpiceChannel *channel, gpointer data)
@@ -245,7 +244,7 @@ static void primary_create(SpiceChannel *channel, gint format, gint width, gint 
     d->height = height;
     d->data_origin = d->data = imgdata;
 
-    uiCallbackSettingsChanged (0, width, height, 4);
+    uiCallbackSettingsChanged(d->ctx, 0, width, height, 4);
 }
 
 static void primary_destroy(SpiceChannel *channel, gpointer data) {
@@ -274,7 +273,7 @@ static void invalidate(SpiceChannel *channel,
 	if (x + w > d->width || y + h > d->height) {
             //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Not drawing.");
 	} else {
-	    uiCallbackInvalidate (d, x, y, w, h);
+	    uiCallbackInvalidate(d->ctx, x, y, w, h);
 	}
 }
 
@@ -418,7 +417,7 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
  *
  * Returns: a new #SpiceDisplay widget.
  **/
-SpiceDisplay *spice_display_new(SpiceSession *session, int id)
+SpiceDisplay *spice_display_new(struct spice_context *ctx, SpiceSession *session, int id)
 {
     SpiceDisplay *display;
     SpiceDisplayPrivate *d;
@@ -427,6 +426,7 @@ SpiceDisplay *spice_display_new(SpiceSession *session, int id)
 
     display = g_object_new(SPICE_TYPE_DISPLAY, NULL);
     d = SPICE_DISPLAY_GET_PRIVATE(display);
+    d->ctx = ctx;
     d->session = g_object_ref(session);
     d->channel_id = id;
     SPICE_DEBUG("channel_id:%d",d->channel_id);

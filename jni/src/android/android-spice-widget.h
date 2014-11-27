@@ -23,6 +23,7 @@
 
 #include "spice-util.h"
 #include "spice-gtk-session.h"
+#include "android-service.h"
 
 G_BEGIN_DECLS
 
@@ -52,7 +53,7 @@ struct _SpiceDisplayClass {
 };
 
 GType spice_display_get_type(void);
-SpiceDisplay* spice_display_new(SpiceSession *session, int id);
+SpiceDisplay* spice_display_new(struct spice_context *ctx, SpiceSession *session, int id);
 void send_key(SpiceDisplay *display, int scancode, int down);
 gint get_display_id(SpiceDisplay *display);
 

@@ -28,6 +28,7 @@
 #include "spice-audio.h"
 #include "spice-common.h"
 #include "spice-cmdline.h"
+#include "android-service.h"
 #include "android-spice-widget.h"
 
 typedef struct spice_connection spice_connection;
@@ -54,6 +55,7 @@ struct _SpiceWindowClass
 // FIXME: turn this into an object, get rid of fixed wins array, use
 // signals to replace the various callback that iterate over wins array
 struct spice_connection {
+    struct spice_context *ctx;
     SpiceSession     *session;
     SpiceMainChannel *main;
     SpiceWindow     *wins[CHANNELID_MAX * MONITORID_MAX];
@@ -62,7 +64,7 @@ struct spice_connection {
     int              disconnecting;
 };
 
-spice_connection *connection_new(void);
+spice_connection *connection_new(struct spice_context *ctx);
 void connection_connect(spice_connection *conn);
 void connection_disconnect(spice_connection *conn);
 

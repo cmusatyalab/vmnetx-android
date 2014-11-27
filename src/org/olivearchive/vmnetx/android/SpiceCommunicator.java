@@ -14,12 +14,14 @@ import com.gstreamer.*;
 public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private final static String TAG = "SpiceCommunicator";
 
-    private native int  SpiceClientConnect (String password);
-    private native void SpiceClientDisconnect ();
-    private native void SpiceButtonEvent (int x, int y, int metaState, int pointerMask);
-    private native void SpiceKeyEvent (boolean keyDown, int virtualKeyCode);
-    private native void SpiceUpdateBitmap (Bitmap bitmap, int x, int y, int w, int h);
-    private native void SpiceRequestResolution (int x, int y);
+    private native long SpiceClientNewContext ();
+    private native void SpiceClientFreeContext (long context);
+    private native int  SpiceClientConnect (long context, String password);
+    private native void SpiceClientDisconnect (long context);
+    private native void SpiceButtonEvent (long context, int x, int y, int metaState, int pointerMask);
+    private native void SpiceKeyEvent (long context, boolean keyDown, int virtualKeyCode);
+    private native void SpiceUpdateBitmap (long context, Bitmap bitmap, int x, int y, int w, int h);
+    private native void SpiceRequestResolution (long context, int x, int y);
     private native void SpiceSetFd (long cookie, int fd);
     
     static {
@@ -52,11 +54,13 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private boolean isInNormalProtocol = false;
     
     private SpiceThread spicethread = null;
+    private long context;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionBean connection) {
         this.canvas = canvas;
         this.handler = handler;
         this.connection = connection;
+        this.context = SpiceClientNewContext();
         try {
             GStreamer.init(context);
         } catch (Exception e) {
@@ -71,13 +75,17 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
     
     public void disconnect() {
-        SpiceClientDisconnect();
+        SpiceClientDisconnect(context);
         try {spicethread.join(3000);} catch (InterruptedException e) {}
+    }
+
+    protected void finalize() {
+        SpiceClientFreeContext(context);
     }
 
     private class SpiceThread extends Thread {
         public void run() {
-            SpiceClientConnect (connection.getToken());
+            SpiceClientConnect(context, connection.getToken());
             android.util.Log.e(TAG, "SpiceClientConnect returned.");
 
             // If we've exited SpiceClientConnect, the connection was
@@ -107,15 +115,15 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
 
     private void sendMouseEvent (int x, int y, int metaState, int pointerMask) {
-        SpiceButtonEvent(x, y, metaState, pointerMask);
+        SpiceButtonEvent(context, x, y, metaState, pointerMask);
     }
 
     private void sendKeyEvent (boolean keyDown, int virtualKeyCode) {
-        SpiceKeyEvent(keyDown, virtualKeyCode);
+        SpiceKeyEvent(context, keyDown, virtualKeyCode);
     }
     
     public void updateBitmap (Bitmap bitmap, int x, int y, int w, int h) {
-        SpiceUpdateBitmap(bitmap, x, y, w, h);
+        SpiceUpdateBitmap(context, bitmap, x, y, w, h);
     }
     
     /* Callbacks from jni */
@@ -245,6 +253,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
 
     public void requestResolution(int x, int y) {
-        SpiceRequestResolution (x, y);        
+        SpiceRequestResolution(context, x, y);
     }
 }

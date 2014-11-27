@@ -17,8 +17,10 @@
  * USA.
  */
 
+#include "android-service.h"
+
 /* These can only be called from the thread running the glib main loop. */
-void uiCallbackGetFd (SpiceChannel *channel);
-void uiCallbackInvalidate (SpiceDisplayPrivate *d, gint x, gint y, gint w, gint h);
-void uiCallbackSettingsChanged (gint instance, gint width, gint height, gint bpp);
-void uiCallbackCursorConfig (bool absolute_mouse);
+void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel);
+void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gint h);
+void uiCallbackSettingsChanged (struct spice_context *ctx, gint instance, gint width, gint height, gint bpp);
+void uiCallbackCursorConfig (struct spice_context *ctx, bool absolute_mouse);

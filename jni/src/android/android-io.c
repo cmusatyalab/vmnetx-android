@@ -59,9 +59,10 @@ static void updatePixels (uint32_t *dest, uint32_t *source, int x, int y, int wi
 }
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv* env, jobject obj, jobject bitmap, gint x, gint y, gint width, gint height) {
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv* env, jobject obj, jlong context, jobject bitmap, gint x, gint y, gint width, gint height) {
+    struct spice_context *ctx = (struct spice_context *) context;
     void* pixels;
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(global_display);
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
 
     if (AndroidBitmap_lockPixels(env, bitmap, &pixels) < 0) {
         __android_log_write(ANDROID_LOG_ERROR, TAG, "AndroidBitmap_lockPixels() failed!");
@@ -102,11 +103,11 @@ static int update_mask (SpiceDisplayPrivate *d, int button, gboolean down) {
 
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, jobject obj, jint x, jint y) {
-    SpiceDisplay* display = global_display;
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, jobject obj, jlong context, jint x, jint y) {
+    struct spice_context *ctx = (struct spice_context *) context;
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
 
-    spice_main_update_display(d->main, get_display_id(display), 0, 0, x, y, TRUE);
+    spice_main_update_display(d->main, get_display_id(ctx->display), 0, 0, x, y, TRUE);
     spice_main_set_display_enabled(d->main, -1, TRUE);
     // TODO: Sending the monitor config right away may be causing guest OS to shut down.
     /*
@@ -119,9 +120,9 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceRequestResolution(JN
 
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceKeyEvent(JNIEnv * env, jobject  obj, jboolean down, jint hardware_keycode) {
-    SpiceDisplay* display = global_display;
-    SpiceDisplayPrivate* d = SPICE_DISPLAY_GET_PRIVATE(display);
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceKeyEvent(JNIEnv * env, jobject  obj, jlong context, jboolean down, jint hardware_keycode) {
+    struct spice_context *ctx = (struct spice_context *) context;
+    SpiceDisplayPrivate* d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
     int scancode;
 
     SPICE_DEBUG("%s %s: keycode: %d", __FUNCTION__, "Key", hardware_keycode);
@@ -132,17 +133,17 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceKeyEvent(JNIEnv * en
     scancode = win32key2spice(hardware_keycode);
     //scancode = hardware_keycode;
     if (down) {
-        send_key(display, scancode, 1);
+        send_key(ctx->display, scancode, 1);
     } else {
-        send_key(display, scancode, 0);
+        send_key(ctx->display, scancode, 0);
     }
 }
 
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject  obj, jint x, jint y, jint metaState, jint type) {
-    SpiceDisplay* display = global_display;
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject  obj, jlong context, jint x, jint y, jint metaState, jint type) {
+    struct spice_context *ctx = (struct spice_context *) context;
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Pointer event: %d at x: %d, y: %d", type, x, y);
 
     if (!d->inputs || (x >= 0 && x < d->width && y >= 0 && y < d->height)) {
@@ -189,21 +190,21 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv *
 /* Callbacks to the UI layer to draw screen updates and invalidate part of the screen,
  * or to request a new bitmap. */
 
-void uiCallbackGetFd (SpiceChannel *channel) {
+void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel) {
     // Ask the UI to connect a file descriptor for us.
-    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_get_fd, (jlong) channel);
+    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_get_fd, (jlong) channel);
 }
 
-void uiCallbackInvalidate (SpiceDisplayPrivate *d, gint x, gint y, gint w, gint h) {
+void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gint h) {
     // Tell the UI that it needs to send in the bitmap to be updated and to redraw.
-    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_graphics_update, 0, x, y, w, h);
+    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_graphics_update, 0, x, y, w, h);
 }
 
-void uiCallbackSettingsChanged (gint instance, gint width, gint height, gint bpp) {
+void uiCallbackSettingsChanged (struct spice_context *ctx, gint instance, gint width, gint height, gint bpp) {
     // Ask for a new bitmap from the UI.
-    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_settings_changed, instance, width, height, bpp);
+    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_settings_changed, instance, width, height, bpp);
 }
 
-void uiCallbackCursorConfig (bool absolute_mouse) {
-    (*jenv)->CallVoidMethod(jenv, jni_connector, jni_cursor_config, absolute_mouse);
+void uiCallbackCursorConfig (struct spice_context *ctx, bool absolute_mouse) {
+    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_cursor_config, absolute_mouse);
 }

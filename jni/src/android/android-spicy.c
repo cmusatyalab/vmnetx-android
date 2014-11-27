@@ -54,7 +54,8 @@ static SpiceWindow *create_spice_window(spice_connection *conn, SpiceChannel *ch
     //win->monitor_id = monitor_id;
     win->conn = conn;
 
-    win->spice = (spice_display_new(conn->session, id));
+    win->spice = spice_display_new(conn->ctx, conn->session, id);
+    conn->ctx->display = win->spice;
     return win;
 }
 
@@ -75,7 +76,8 @@ static void destroy_spice_window(SpiceWindow *win)
 static void channel_open_fd(SpiceChannel *channel, gint with_tls,
                             gpointer data)
 {
-    uiCallbackGetFd (channel);
+    spice_connection *conn = data;
+    uiCallbackGetFd(conn->ctx, channel);
 }
 
 static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
@@ -249,12 +251,13 @@ static void migration_state(GObject *session,
         g_message("migrating session");
 }
 
-spice_connection *connection_new(void)
+spice_connection *connection_new(struct spice_context *ctx)
 {
     spice_connection *conn;
     //SpiceUsbDeviceManager *manager;
 
     conn = g_new0(spice_connection, 1);
+    conn->ctx = ctx;
     conn->session = spice_session_new();
     //conn->gtk_session = spice_gtk_session_get(conn->session);
     g_signal_connect(conn->session, "channel-new",
@@ -272,8 +275,8 @@ spice_connection *connection_new(void)
     //                     G_CALLBACK(usb_connect_failed), NULL);
     //}
 
-    connections++;
-    SPICE_DEBUG("%s (%d)", __FUNCTION__, connections);
+    ctx->connections++;
+    SPICE_DEBUG("%s (%d)", __FUNCTION__, ctx->connections);
     return conn;
 }
 
@@ -293,18 +296,17 @@ void connection_disconnect(spice_connection *conn)
 
 static void connection_destroy(spice_connection *conn)
 {
+    struct spice_context *ctx = conn->ctx;
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "connection_destroy called");
     g_object_unref(conn->session);
     free(conn);
 
-    connections--;
-    SPICE_DEBUG("%s (%d)", __FUNCTION__, connections);
-    if (connections > 0) {
-        return;
+    ctx->connections--;
+    SPICE_DEBUG("%s (%d)", __FUNCTION__, ctx->connections);
+    if (!ctx->connections) {
+        //__android_log_write(ANDROID_LOG_DEBUG, TAG, "quitting main loop");
+        g_main_loop_quit(ctx->mainloop);
     }
-
-    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "quitting main loop");
-    g_main_loop_quit(mainloop);
 }
 
 /* ------------------------------------------------------------------ */
