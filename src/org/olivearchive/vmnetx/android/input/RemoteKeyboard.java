@@ -6,21 +6,8 @@ import android.view.KeyEvent;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
 
 public class RemoteKeyboard {
-    public final static int SCAN_ESC = 1;
     public final static int SCAN_LEFTCTRL = 29;
     public final static int SCAN_RIGHTCTRL = 97;
-    public final static int SCAN_F1 = 59;
-    public final static int SCAN_F2 = 60;
-    public final static int SCAN_F3 = 61;
-    public final static int SCAN_F4 = 62;
-    public final static int SCAN_F5 = 63;
-    public final static int SCAN_F6 = 64;
-    public final static int SCAN_F7 = 65;
-    public final static int SCAN_F8 = 66;
-    public final static int SCAN_F9 = 67;
-    public final static int SCAN_F10 = 68;
-    //public final static int SCAN_HOME = 102;
-    //public final static int SCAN_END = 107;
     
     // Useful shortcuts for modifier masks.
     public final static int CTRL_MASK  = KeyEvent.META_SYM_ON;
