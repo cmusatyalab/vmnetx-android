@@ -146,8 +146,8 @@ public class RemoteKeyboard {
         int savedMetaState = onScreenMetaState|hardwareMetaState;
         // Update the metastate
         spice.writeKeyEvent(0, CTRL_MASK | ALT_MASK, false);
-        keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, 112));
-        keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, 112));
+        keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL));
+        keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_FORWARD_DEL));
         spice.writeKeyEvent(0, savedMetaState, false);
     }
     
