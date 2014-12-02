@@ -158,8 +158,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         return wantAbsoluteMouse;
     }
 
-    public void writePointerEvent(int x, int y, int metaState, int pointerMask) {
-        this.metaState = metaState; 
+    public void writePointerEvent(int x, int y, int pointerMask) {
         if ((pointerMask & RemotePointer.PTRFLAGS_DOWN) != 0)
             sendModifierKeys(true);
         sendMouseEvent(x, y, pointerMask);

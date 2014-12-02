@@ -26,9 +26,6 @@ public class RemoteKeyboard {
     // Variable holding the state of the on-screen buttons for meta keys (Ctrl, Alt...)
     private int onScreenMetaState = 0;
     
-    // Variable holding the state of the last metaState resulting from a button press.
-    private int lastDownMetaState = 0;
-    
     public RemoteKeyboard (SpiceCommunicator s, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
@@ -101,11 +98,6 @@ public class RemoteKeyboard {
             // Update the meta-state with writeKeyEvent.
             int metaState = onScreenMetaState|hardwareMetaState|additionalMetaState|convertEventMetaState(evt);
             spice.writeKeyEvent(keyCode, metaState, down);
-            if (down) {
-                lastDownMetaState = metaState;
-            } else {
-                lastDownMetaState = 0;
-            }
             
             if (keyCode == 0 /*KEYCODE_UNKNOWN*/) {
                 String s = evt.getCharacters();
@@ -230,10 +222,6 @@ public class RemoteKeyboard {
         onScreenMetaState = onScreenMetaState & ~SHIFT_MASK;
     }
 
-    public int getMetaState () {
-        return onScreenMetaState|lastDownMetaState;
-    }
-    
     public void clearMetaState () {
         onScreenMetaState = 0;
     }

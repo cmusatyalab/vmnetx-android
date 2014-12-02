@@ -60,11 +60,11 @@ public class RemotePointer {
      * @param useRightButton If true, event is interpreted as happening with right mouse button
      * @return true if event was actually sent
      */
-    public boolean processPointerEvent(int x, int y, int action, int modifiers, boolean mouseIsDown, boolean useRightButton) {
-        return processPointerEvent(x, y, action, modifiers, mouseIsDown, useRightButton, false, false, -1);
+    public boolean processPointerEvent(int x, int y, int action, boolean mouseIsDown, boolean useRightButton) {
+        return processPointerEvent(x, y, action, mouseIsDown, useRightButton, false, false, -1);
     }
     
-    public boolean processPointerEvent(int x, int y, int action, int modifiers, boolean mouseIsDown, boolean useRightButton,
+    public boolean processPointerEvent(int x, int y, int action, boolean mouseIsDown, boolean useRightButton,
                                         boolean useMiddleButton, boolean useScrollButton, int direction) {
         
         if (spice != null && spice.isInNormalProtocol()) {
@@ -100,7 +100,7 @@ public class RemotePointer {
             if (pointerMask != MOUSE_BUTTON_MOVE) {
                 // If this is a new mouse down event, release previous button pressed to avoid confusing the remote OS.
                 if (prevPointerMask != 0 && prevPointerMask != pointerMask) {
-                    spice.writePointerEvent(mouseX, mouseY, modifiers|canvas.getKeyboard().getMetaState(), prevPointerMask & ~PTRFLAGS_DOWN);
+                    spice.writePointerEvent(mouseX, mouseY, prevPointerMask & ~PTRFLAGS_DOWN);
                 }
                 prevPointerMask = pointerMask;
             }
@@ -122,7 +122,7 @@ public class RemotePointer {
             else if ( mouseY >= spice.framebufferHeight()) mouseY = spice.framebufferHeight() - 1;
             canvas.invalidateMousePosition();
             
-            spice.writePointerEvent(mouseX, mouseY, modifiers|canvas.getKeyboard().getMetaState(), pointerMask);
+            spice.writePointerEvent(mouseX, mouseY, pointerMask);
             return true;
         }
         return false;
