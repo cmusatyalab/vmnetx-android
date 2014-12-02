@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.olivearchive.vmnetx.android.input.KeyboardMapper;
-import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
 import org.olivearchive.vmnetx.android.protocol.ProtocolException;
 import org.olivearchive.vmnetx.android.protocol.ViewerConnectionProcessor;
@@ -167,19 +166,19 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
 
     private void sendModifierKeys (boolean keyDown) {        
-        if ((metaState & RemoteKeyboard.CTRL_MASK) != 0) {
+        if ((metaState & KeyEvent.META_CTRL_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending CTRL: " + KeyEvent.KEYCODE_CTRL_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_LEFT);
         }
-        if ((metaState & RemoteKeyboard.ALT_MASK) != 0) {
+        if ((metaState & KeyEvent.META_ALT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending ALT: " + KeyEvent.KEYCODE_ALT_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_LEFT);
         }
-        if ((metaState & RemoteKeyboard.SUPER_MASK) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending SUPER: " + KeyEvent.KEYCODE_META_LEFT);
+        if ((metaState & KeyEvent.META_META_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending META: " + KeyEvent.KEYCODE_META_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_LEFT);
         }
-        if ((metaState & RemoteKeyboard.SHIFT_MASK) != 0) {
+        if ((metaState & KeyEvent.META_SHIFT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending SHIFT: " + KeyEvent.KEYCODE_SHIFT_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_LEFT);
         }
@@ -232,7 +231,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         if (keyToSend != -1) {
             tempMeta = metaState;
             if (addShift) {
-                metaState = metaState |  RemoteKeyboard.SHIFT_MASK;
+                metaState = metaState |  KeyEvent.META_SHIFT_ON;
             }
             processVirtualKey(keyToSend, true);
             processVirtualKey(keyToSend, false);

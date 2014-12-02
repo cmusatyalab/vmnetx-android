@@ -6,13 +6,6 @@ import android.view.KeyEvent;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
 
 public class RemoteKeyboard {
-    // Useful shortcuts for modifier masks.
-    public final static int CTRL_MASK  = KeyEvent.META_SYM_ON;
-    public final static int SHIFT_MASK = KeyEvent.META_SHIFT_ON;
-    public final static int ALT_MASK   = KeyEvent.META_ALT_ON;
-    public final static int SUPER_MASK = 8;
-    public final static int META_MASK  = 0;
-    
     private SpiceCommunicator spice;
     private KeyboardMapper keyboardMapper;
     private KeyRepeater keyRepeater;
@@ -42,35 +35,12 @@ public class RemoteKeyboard {
         if (spice != null && spice.isInNormalProtocol()) {
             boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
                            (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
-            
-            if (!down) {
-                switch(keyCode) {
-                case KeyEvent.KEYCODE_CTRL_LEFT:
-                case KeyEvent.KEYCODE_CTRL_RIGHT:
-                    hardwareMetaState &= ~CTRL_MASK;
-                    break;
-                case KeyEvent.KEYCODE_DPAD_CENTER:
-                    hardwareMetaState &= ~CTRL_MASK;
-                    break;
-                case KeyEvent.KEYCODE_ALT_LEFT:
-                case KeyEvent.KEYCODE_ALT_RIGHT:
-                    hardwareMetaState &= ~ALT_MASK;
-                    break;
-                }
-            } else {
-                switch(keyCode) {
-                case KeyEvent.KEYCODE_CTRL_LEFT:
-                case KeyEvent.KEYCODE_CTRL_RIGHT:
-                    hardwareMetaState |= CTRL_MASK;
-                    break;
-                case KeyEvent.KEYCODE_DPAD_CENTER:
-                    hardwareMetaState |= CTRL_MASK;
-                    break;
-                case KeyEvent.KEYCODE_ALT_LEFT:
-                case KeyEvent.KEYCODE_ALT_RIGHT:
-                    hardwareMetaState |= ALT_MASK;
-                    break;
-                }
+            int modifier = keyCodeToModifierMask(keyCode);
+            if (modifier != 0) {
+                if (down)
+                    hardwareMetaState |= modifier;
+                else
+                    hardwareMetaState &= ~modifier;
             }
 
             // Update the meta-state with writeKeyEvent.
@@ -106,7 +76,7 @@ public class RemoteKeyboard {
     public void sendCtrlAltDel() {
         int savedMetaState = onScreenMetaState|hardwareMetaState;
         // Update the metastate
-        spice.writeKeyEvent(0, CTRL_MASK | ALT_MASK, false);
+        spice.writeKeyEvent(0, KeyEvent.META_CTRL_ON | KeyEvent.META_ALT_ON, false);
         keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL));
         keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_FORWARD_DEL));
         spice.writeKeyEvent(0, savedMetaState, false);
@@ -118,12 +88,12 @@ public class RemoteKeyboard {
      */
     public boolean onScreenCtrlToggle()    {
         // If we find Ctrl on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | CTRL_MASK)) {
+        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_CTRL_ON)) {
             onScreenCtrlOff();
             return false;
         }
         else {
-            onScreenMetaState = onScreenMetaState | CTRL_MASK;
+            onScreenMetaState = onScreenMetaState | KeyEvent.META_CTRL_ON;
             return true;
         }
     }
@@ -132,7 +102,7 @@ public class RemoteKeyboard {
      * Turns off on-screen Ctrl.
      */
     public void onScreenCtrlOff()    {
-        onScreenMetaState = onScreenMetaState & ~CTRL_MASK;
+        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_CTRL_ON;
     }
     
     /**
@@ -141,12 +111,12 @@ public class RemoteKeyboard {
      */
     public boolean onScreenAltToggle() {
         // If we find Alt on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | ALT_MASK)) {
+        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_ALT_ON)) {
             onScreenAltOff();
             return false;
         }
         else {
-            onScreenMetaState = onScreenMetaState | ALT_MASK;
+            onScreenMetaState = onScreenMetaState | KeyEvent.META_ALT_ON;
             return true;
         }
     }
@@ -155,7 +125,7 @@ public class RemoteKeyboard {
      * Turns off on-screen Alt.
      */
     public void onScreenAltOff()    {
-        onScreenMetaState = onScreenMetaState & ~ALT_MASK;
+        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_ALT_ON;
     }
 
     /**
@@ -164,12 +134,12 @@ public class RemoteKeyboard {
      */
     public boolean onScreenSuperToggle() {
         // If we find Super on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | SUPER_MASK)) {
+        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_META_ON)) {
             onScreenSuperOff();
             return false;
         }
         else {
-            onScreenMetaState = onScreenMetaState | SUPER_MASK;
+            onScreenMetaState = onScreenMetaState | KeyEvent.META_META_ON;
             return true;
         }
     }
@@ -178,7 +148,7 @@ public class RemoteKeyboard {
      * Turns off on-screen Super.
      */
     public void onScreenSuperOff() {
-        onScreenMetaState = onScreenMetaState & ~SUPER_MASK;        
+        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_META_ON;
     }
     
     /**
@@ -187,12 +157,12 @@ public class RemoteKeyboard {
      */
     public boolean onScreenShiftToggle() {
         // If we find Super on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | SHIFT_MASK)) {
+        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_SHIFT_ON)) {
             onScreenShiftOff();
             return false;
         }
         else {
-            onScreenMetaState = onScreenMetaState | SHIFT_MASK;
+            onScreenMetaState = onScreenMetaState | KeyEvent.META_SHIFT_ON;
             return true;
         }
     }
@@ -201,7 +171,7 @@ public class RemoteKeyboard {
      * Turns off on-screen Shift.
      */
     public void onScreenShiftOff() {
-        onScreenMetaState = onScreenMetaState & ~SHIFT_MASK;
+        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_SHIFT_ON;
     }
 
     public void clearMetaState () {
@@ -246,13 +216,32 @@ public class RemoteKeyboard {
         
         // Add shift, ctrl, alt, and super to metaState if necessary.
         if ((eventMetaState & 0x000000c1 /*KeyEvent.META_SHIFT_MASK*/) != 0)
-            metaState |= SHIFT_MASK;
+            metaState |= KeyEvent.META_SHIFT_ON;
         if ((eventMetaState & 0x00007000 /*KeyEvent.META_CTRL_MASK*/) != 0)
-            metaState |= CTRL_MASK;
+            metaState |= KeyEvent.META_CTRL_ON;
         if ((eventMetaState & KeyEvent.META_ALT_MASK) !=0)
-            metaState |= ALT_MASK;
+            metaState |= KeyEvent.META_ALT_ON;
         if ((eventMetaState & 0x00070000 /*KeyEvent.META_META_MASK*/) != 0)
-            metaState |= SUPER_MASK;
+            metaState |= KeyEvent.META_META_ON;
         return metaState;
+    }
+
+    private int keyCodeToModifierMask(int keyCode) {
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_ALT_LEFT:
+        case KeyEvent.KEYCODE_ALT_RIGHT:
+            return KeyEvent.META_ALT_ON;
+        case KeyEvent.KEYCODE_CTRL_LEFT:
+        case KeyEvent.KEYCODE_CTRL_RIGHT:
+            return KeyEvent.META_CTRL_ON;
+        case KeyEvent.KEYCODE_META_LEFT:
+        case KeyEvent.KEYCODE_META_RIGHT:
+            return KeyEvent.META_META_ON;
+        case KeyEvent.KEYCODE_SHIFT_LEFT:
+        case KeyEvent.KEYCODE_SHIFT_RIGHT:
+            return KeyEvent.META_SHIFT_ON;
+        default:
+            return 0;
+        }
     }
 }
