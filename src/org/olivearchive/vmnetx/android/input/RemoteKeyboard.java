@@ -42,9 +42,6 @@ public class RemoteKeyboard {
             boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
                            (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
             
-            if (keyCode == KeyEvent.KEYCODE_MENU)
-                return true;                           // Ignore menu key
-
             if (!down) {
                 switch(keyCode) {
                 case KeyEvent.KEYCODE_CTRL_LEFT:
