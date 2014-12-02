@@ -6,9 +6,6 @@ import android.view.KeyEvent;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
 
 public class RemoteKeyboard {
-    public final static int SCAN_LEFTCTRL = 29;
-    public final static int SCAN_RIGHTCTRL = 97;
-    
     // Useful shortcuts for modifier masks.
     public final static int CTRL_MASK  = KeyEvent.META_SYM_ON;
     public final static int SHIFT_MASK = KeyEvent.META_SHIFT_ON;
@@ -49,14 +46,11 @@ public class RemoteKeyboard {
                 return true;                           // Ignore menu key
 
             if (!down) {
-                switch (evt.getScanCode()) {
-                case SCAN_LEFTCTRL:
-                case SCAN_RIGHTCTRL:
+                switch(keyCode) {
+                case KeyEvent.KEYCODE_CTRL_LEFT:
+                case KeyEvent.KEYCODE_CTRL_RIGHT:
                     hardwareMetaState &= ~CTRL_MASK;
                     break;
-                }
-                
-                switch(keyCode) {
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                     hardwareMetaState &= ~CTRL_MASK;
                     break;
@@ -66,15 +60,11 @@ public class RemoteKeyboard {
                     break;
                 }
             } else {
-                // Look for standard scan-codes from hardware keyboards
-                switch (evt.getScanCode()) {
-                case SCAN_LEFTCTRL:
-                case SCAN_RIGHTCTRL:
+                switch(keyCode) {
+                case KeyEvent.KEYCODE_CTRL_LEFT:
+                case KeyEvent.KEYCODE_CTRL_RIGHT:
                     hardwareMetaState |= CTRL_MASK;
                     break;
-                }
-                
-                switch(keyCode) {
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                     hardwareMetaState |= CTRL_MASK;
                     break;
