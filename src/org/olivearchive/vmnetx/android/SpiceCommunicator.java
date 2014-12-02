@@ -19,7 +19,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     private native void SpiceClientFreeContext (long context);
     private native int  SpiceClientConnect (long context, String password);
     private native void SpiceClientDisconnect (long context);
-    private native void SpiceButtonEvent (long context, int x, int y, int metaState, int pointerMask);
+    private native void SpiceButtonEvent (long context, int x, int y, int pointerMask);
     private native void SpiceKeyEvent (long context, boolean keyDown, int virtualKeyCode);
     private native void SpiceUpdateBitmap (long context, Bitmap bitmap, int x, int y, int w, int h);
     private native void SpiceRequestResolution (long context, int x, int y);
@@ -104,8 +104,8 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         }
     }
 
-    private void sendMouseEvent (int x, int y, int metaState, int pointerMask) {
-        SpiceButtonEvent(context, x, y, metaState, pointerMask);
+    private void sendMouseEvent (int x, int y, int pointerMask) {
+        SpiceButtonEvent(context, x, y, pointerMask);
     }
 
     private void sendKeyEvent (boolean keyDown, int virtualKeyCode) {
@@ -162,7 +162,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         this.metaState = metaState; 
         if ((pointerMask & RemotePointer.PTRFLAGS_DOWN) != 0)
             sendModifierKeys(true);
-        sendMouseEvent(x, y, metaState, pointerMask);
+        sendMouseEvent(x, y, pointerMask);
         if ((pointerMask & RemotePointer.PTRFLAGS_DOWN) == 0)
             sendModifierKeys(false);
     }

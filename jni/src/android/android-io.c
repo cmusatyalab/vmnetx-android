@@ -162,7 +162,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceKeyEvent(JNIEnv * en
 
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject  obj, jlong context, jint x, jint y, jint metaState, jint type) {
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject  obj, jlong context, jint x, jint y, jint type) {
     struct spice_context *ctx = (struct spice_context *) context;
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Pointer event: %d at x: %d, y: %d", type, x, y);
