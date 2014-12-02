@@ -179,7 +179,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
                     keyTab.setImageResource(R.drawable.tabon);
-                    k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
+                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
                     return true;
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
                     keyTab.setImageResource(R.drawable.taboff);
@@ -200,7 +200,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
                     keyEsc.setImageResource(R.drawable.escon);
-                    k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
+                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
                     return true;
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
                     keyEsc.setImageResource(R.drawable.escoff);
@@ -330,7 +330,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
                     keyUp.setImageResource(R.drawable.upon);
-                    k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
+                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
                     return true;
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
                     keyUp.setImageResource(R.drawable.upoff);
@@ -351,7 +351,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
                     keyDown.setImageResource(R.drawable.downon);
-                    k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
+                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
                     return true;
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
                     keyDown.setImageResource(R.drawable.downoff);
@@ -372,7 +372,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
                     keyLeft.setImageResource(R.drawable.lefton);
-                    k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
+                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
                     return true;
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
                     keyLeft.setImageResource(R.drawable.leftoff);
@@ -393,7 +393,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
                     keyRight.setImageResource(R.drawable.righton);
-                    k.repeatKeyEvent(key, new KeyEvent(e.getAction(), key));
+                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
                     return true;    
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
                     keyRight.setImageResource(R.drawable.rightoff);
@@ -571,7 +571,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             case KeyEvent.ACTION_MULTIPLE:
             case KeyEvent.ACTION_UP:
                 RemoteKeyboard keyboard = canvas.getKeyboard();
-                consumed = keyboard.processLocalKeyEvent(keyCode, evt);
+                consumed = keyboard.processLocalKeyEvent(evt);
                 break;
             }
             resetOnScreenKeys (keyCode);

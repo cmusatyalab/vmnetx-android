@@ -31,11 +31,12 @@ public class RemoteKeyboard {
         keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener) s);
     }
 
-    public boolean processLocalKeyEvent(int keyCode, KeyEvent evt) {
-        return processLocalKeyEvent (keyCode, evt, 0);
+    public boolean processLocalKeyEvent(KeyEvent evt) {
+        return processLocalKeyEvent(evt, 0);
     }
     
-    private boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState) {
+    private boolean processLocalKeyEvent(KeyEvent evt, int additionalMetaState) {
+        int keyCode = evt.getKeyCode();
         //android.util.Log.e(TAG, evt.toString() + " " + keyCode);
 
         if (spice != null && spice.isInNormalProtocol()) {
@@ -94,9 +95,13 @@ public class RemoteKeyboard {
         }
     }
 
-    public void repeatKeyEvent(int keyCode, KeyEvent event) { keyRepeater.start(keyCode, event); }
+    public void repeatKeyEvent(KeyEvent event) {
+        keyRepeater.start(event);
+    }
 
-    public void stopRepeatingKeyEvent() { keyRepeater.stop(); }
+    public void stopRepeatingKeyEvent() {
+        keyRepeater.stop();
+    }
 
     public void sendCtrlAltDel() {
         int savedMetaState = onScreenMetaState|hardwareMetaState;
@@ -223,7 +228,7 @@ public class RemoteKeyboard {
         if (events != null) {
             for (int i = 0; i < events.length; i++) {
                 KeyEvent evt = events[i];
-                processLocalKeyEvent(evt.getKeyCode(), evt, additionalMetaState);
+                processLocalKeyEvent(evt, additionalMetaState);
             }
         } else {
             android.util.Log.e("RemoteKeyboard", "Could not use any keymap to generate KeyEvent for unicode: " + unicodeChar);
