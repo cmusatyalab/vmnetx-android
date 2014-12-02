@@ -41,7 +41,7 @@ public class RemoteKeyboard {
         return processLocalKeyEvent (keyCode, evt, 0);
     }
     
-    public boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState) {
+    private boolean processLocalKeyEvent(int keyCode, KeyEvent evt, int additionalMetaState) {
         //android.util.Log.e(TAG, evt.toString() + " " + keyCode);
 
         if (spice != null && spice.isInNormalProtocol()) {
