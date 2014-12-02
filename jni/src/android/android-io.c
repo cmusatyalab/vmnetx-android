@@ -20,13 +20,14 @@
 #include <endian.h>
 #include <jni.h>
 #include <android/bitmap.h>
+#include <android/keycodes.h>
 #include <android/log.h>
 
 #include "android-spice-widget.h"
 #include "android-spice-widget-priv.h"
-#include "win32keymap.h"
 #include "android-io.h"
 #include "android-service.h"
+#include "keymap.h"
 
 #define TAG "vmnetx-io"
 
@@ -73,14 +74,6 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
-
-static int win32key2spice (int keycode)
-{
-    int newKeyCode = keymap_win322xtkbd[keycode];
-    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Converted win32 key: %d to linux key: %d", keycode, newKeyCode);
-    return newKeyCode;
-}
-
 static int update_mask (SpiceDisplayPrivate *d, int button, gboolean down) {
     int update = 0;
     if (button == SPICE_MOUSE_BUTTON_LEFT)
@@ -123,19 +116,47 @@ JNIEXPORT void JNICALL
 Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceKeyEvent(JNIEnv * env, jobject  obj, jlong context, jboolean down, jint hardware_keycode) {
     struct spice_context *ctx = (struct spice_context *) context;
     SpiceDisplayPrivate* d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
-    int scancode;
 
     SPICE_DEBUG("%s %s: keycode: %d", __FUNCTION__, "Key", hardware_keycode);
 
     if (!d->inputs)
         return;
 
-    scancode = win32key2spice(hardware_keycode);
-    //scancode = hardware_keycode;
+    // The lookup table doesn't include mappings that require multiple
+    // keypresses, so translate them here
+    int shift = keymap_android2xtkbd[AKEYCODE_SHIFT_LEFT];
+    switch (hardware_keycode) {
+    case AKEYCODE_AT:
+        hardware_keycode = AKEYCODE_2;
+        break;
+    case AKEYCODE_POUND:
+        hardware_keycode = AKEYCODE_3;
+        break;
+    case AKEYCODE_STAR:
+        hardware_keycode = AKEYCODE_8;
+        break;
+    default:
+        shift = 0;
+        break;
+    }
+
+    int scancode = 0;
+    if (hardware_keycode > 0 &&
+            hardware_keycode < G_N_ELEMENTS(keymap_android2xtkbd)) {
+        scancode = keymap_android2xtkbd[hardware_keycode];
+    }
+    if (!scancode)
+        return;
+    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Converted Android key %d to scancode %d", hardware_keycode, scancode);
+
     if (down) {
+        if (shift)
+            send_key(ctx->display, shift, 1);
         send_key(ctx->display, scancode, 1);
     } else {
         send_key(ctx->display, scancode, 0);
+        if (shift)
+            send_key(ctx->display, shift, 0);
     }
 }
 

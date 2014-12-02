@@ -3,6 +3,7 @@ package org.olivearchive.vmnetx.android;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.view.KeyEvent;
 
 import org.olivearchive.vmnetx.android.input.KeyboardMapper;
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
@@ -29,17 +30,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         System.loadLibrary("spice");
     }
     
-    final static int VK_CONTROL = 0x11;
-    final static int VK_LCONTROL = 0xA2;
-    final static int VK_RCONTROL = 0xA3;
-    final static int VK_LMENU = 0xA4;
-    final static int VK_RMENU = 0xA5;
-    final static int VK_LSHIFT = 0xA0;
-    final static int VK_RSHIFT = 0xA1;
-    final static int VK_LWIN = 0x5B;
-    final static int VK_RWIN = 0x5C;
-    final static int VK_EXT_KEY = 0x00000100;
-
     private int metaState = 0;
     
     private RemoteCanvas canvas;
@@ -179,20 +169,20 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
 
     private void sendModifierKeys (boolean keyDown) {        
         if ((metaState & RemoteKeyboard.CTRL_MASK) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending CTRL: " + VK_LCONTROL);
-            sendKeyEvent(keyDown, VK_LCONTROL);
+            //android.util.Log.e("SpiceCommunicator", "Sending CTRL: " + KeyEvent.KEYCODE_CTRL_LEFT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_LEFT);
         }
         if ((metaState & RemoteKeyboard.ALT_MASK) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending ALT: " + VK_LMENU);
-            sendKeyEvent(keyDown, VK_LMENU);
+            //android.util.Log.e("SpiceCommunicator", "Sending ALT: " + KeyEvent.KEYCODE_ALT_LEFT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_LEFT);
         }
         if ((metaState & RemoteKeyboard.SUPER_MASK) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending SUPER: " + VK_LWIN);
-            sendKeyEvent(keyDown, VK_LWIN);
+            //android.util.Log.e("SpiceCommunicator", "Sending SUPER: " + KeyEvent.KEYCODE_META_LEFT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_LEFT);
         }
         if ((metaState & RemoteKeyboard.SHIFT_MASK) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending SHIFT: " + VK_LSHIFT);
-            sendKeyEvent(keyDown, VK_LSHIFT);
+            //android.util.Log.e("SpiceCommunicator", "Sending SHIFT: " + KeyEvent.KEYCODE_SHIFT_LEFT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_LEFT);
         }
     }
     
