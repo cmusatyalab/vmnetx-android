@@ -83,98 +83,22 @@ public class RemoteKeyboard {
     }
     
     /**
-     * Toggles on-screen Ctrl mask. Returns true if result is Ctrl enabled, false otherwise.
-     * @return true if on false otherwise.
+     * Toggles on-screen modifier key.
+     * @return true if key enabled, false otherwise.
      */
-    public boolean onScreenCtrlToggle()    {
-        // If we find Ctrl on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_CTRL_ON)) {
-            onScreenCtrlOff();
-            return false;
-        }
-        else {
-            onScreenMetaState = onScreenMetaState | KeyEvent.META_CTRL_ON;
-            return true;
-        }
+    public boolean onScreenModifierToggle(int modifier) {
+        onScreenMetaState ^= modifier;
+        return (onScreenMetaState | modifier) != 0;
     }
     
     /**
-     * Turns off on-screen Ctrl.
+     * Turns off on-screen modifier key.
      */
-    public void onScreenCtrlOff()    {
-        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_CTRL_ON;
-    }
-    
-    /**
-     * Toggles on-screen Alt mask.  Returns true if result is Alt enabled, false otherwise.
-     * @return true if on false otherwise.
-     */
-    public boolean onScreenAltToggle() {
-        // If we find Alt on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_ALT_ON)) {
-            onScreenAltOff();
-            return false;
-        }
-        else {
-            onScreenMetaState = onScreenMetaState | KeyEvent.META_ALT_ON;
-            return true;
-        }
+    public void onScreenModifierOff(int modifier) {
+        onScreenMetaState = onScreenMetaState & ~modifier;
     }
 
-    /**
-     * Turns off on-screen Alt.
-     */
-    public void onScreenAltOff()    {
-        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_ALT_ON;
-    }
-
-    /**
-     * Toggles on-screen Super mask.  Returns true if result is Super enabled, false otherwise.
-     * @return true if on false otherwise.
-     */
-    public boolean onScreenSuperToggle() {
-        // If we find Super on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_META_ON)) {
-            onScreenSuperOff();
-            return false;
-        }
-        else {
-            onScreenMetaState = onScreenMetaState | KeyEvent.META_META_ON;
-            return true;
-        }
-    }
-    
-    /**
-     * Turns off on-screen Super.
-     */
-    public void onScreenSuperOff() {
-        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_META_ON;
-    }
-    
-    /**
-     * Toggles on-screen Shift mask.  Returns true if result is Shift enabled, false otherwise.
-     * @return true if on false otherwise.
-     */
-    public boolean onScreenShiftToggle() {
-        // If we find Super on, turn it off. Otherwise, turn it on.
-        if (onScreenMetaState == (onScreenMetaState | KeyEvent.META_SHIFT_ON)) {
-            onScreenShiftOff();
-            return false;
-        }
-        else {
-            onScreenMetaState = onScreenMetaState | KeyEvent.META_SHIFT_ON;
-            return true;
-        }
-    }
-
-    /**
-     * Turns off on-screen Shift.
-     */
-    public void onScreenShiftOff() {
-        onScreenMetaState = onScreenMetaState & ~KeyEvent.META_SHIFT_ON;
-    }
-
-    public void clearMetaState () {
+    public void clearOnScreenModifiers() {
         onScreenMetaState = 0;
     }
     

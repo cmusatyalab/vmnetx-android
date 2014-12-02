@@ -295,7 +295,7 @@ public class RemoteCanvas extends ImageView {
         
         if (keyboard != null) {
             // Tell the server to release any meta keys.
-            keyboard.clearMetaState();
+            keyboard.clearOnScreenModifiers();
             keyboard.processLocalKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, 0));
         }
         // Close the SPICE connection.
