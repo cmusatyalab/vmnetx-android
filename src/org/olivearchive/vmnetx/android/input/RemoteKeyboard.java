@@ -48,8 +48,6 @@ public class RemoteKeyboard {
             if (keyCode == KeyEvent.KEYCODE_MENU)
                 return true;                           // Ignore menu key
 
-            // Detect whether this event is coming from a default hardware keyboard.
-            boolean defaultHardwareKbd = (evt.getDeviceId() == 0);
             if (!down) {
                 switch (evt.getScanCode()) {
                 case SCAN_LEFTCTRL:
@@ -63,10 +61,6 @@ public class RemoteKeyboard {
                     hardwareMetaState &= ~CTRL_MASK;
                     break;
                 case KeyEvent.KEYCODE_ALT_LEFT:
-                    // Leaving KeyEvent.KEYCODE_ALT_LEFT for symbol input on hardware keyboards.
-                    if (!defaultHardwareKbd)
-                        hardwareMetaState &= ~ALT_MASK;
-                    break;
                 case KeyEvent.KEYCODE_ALT_RIGHT:
                     hardwareMetaState &= ~ALT_MASK;
                     break;
@@ -85,10 +79,6 @@ public class RemoteKeyboard {
                     hardwareMetaState |= CTRL_MASK;
                     break;
                 case KeyEvent.KEYCODE_ALT_LEFT:
-                    // Leaving KeyEvent.KEYCODE_ALT_LEFT for symbol input on hardware keyboards.
-                    if (!defaultHardwareKbd)
-                        hardwareMetaState |= ALT_MASK;
-                    break;
                 case KeyEvent.KEYCODE_ALT_RIGHT:
                     hardwareMetaState |= ALT_MASK;
                     break;
@@ -261,20 +251,13 @@ public class RemoteKeyboard {
     private int convertEventMetaState (KeyEvent event) {
         int metaState = 0;
         int eventMetaState = event.getMetaState();
-        int altMask = KeyEvent.META_ALT_RIGHT_ON;
-        // Detect whether this event is coming from a default hardware keyboard.
-        // We have to leave KeyEvent.KEYCODE_ALT_LEFT for symbol input on a default hardware keyboard.
-        boolean defaultHardwareKbd = (event.getDeviceId() == 0);
-        if (!defaultHardwareKbd) {
-            altMask = KeyEvent.META_ALT_MASK;
-        }
         
         // Add shift, ctrl, alt, and super to metaState if necessary.
         if ((eventMetaState & 0x000000c1 /*KeyEvent.META_SHIFT_MASK*/) != 0)
             metaState |= SHIFT_MASK;
         if ((eventMetaState & 0x00007000 /*KeyEvent.META_CTRL_MASK*/) != 0)
             metaState |= CTRL_MASK;
-        if ((eventMetaState & altMask) !=0)
+        if ((eventMetaState & KeyEvent.META_ALT_MASK) !=0)
             metaState |= ALT_MASK;
         if ((eventMetaState & 0x00070000 /*KeyEvent.META_META_MASK*/) != 0)
             metaState |= SUPER_MASK;
