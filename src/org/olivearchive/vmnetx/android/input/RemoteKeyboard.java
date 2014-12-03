@@ -9,19 +9,18 @@ public class RemoteKeyboard {
     private SpiceCommunicator spice;
     private KeyboardMapper keyboardMapper;
     private KeyRepeater keyRepeater;
+    private ModifierKeyState modifiers;
+    // State of the on-screen modifier key buttons
+    private ModifierKeyState.DeviceState onScreenButtons;
 
-    // Variable holding the state of any pressed hardware meta keys (Ctrl, Alt...)
-    private int hardwareMetaState = 0;
-    
-    // Variable holding the state of the on-screen buttons for meta keys (Ctrl, Alt...)
-    private int onScreenMetaState = 0;
-    
     public RemoteKeyboard (SpiceCommunicator s, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
         
         keyboardMapper = new KeyboardMapper();
         keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener) s);
+        modifiers = new ModifierKeyState();
+        onScreenButtons = modifiers.getDeviceState(ModifierKeyState.DEVICE_ON_SCREEN_BUTTONS);
     }
 
     public boolean processLocalKeyEvent(KeyEvent evt) {
@@ -37,14 +36,16 @@ public class RemoteKeyboard {
                            (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
             int modifier = keyCodeToModifierMask(keyCode);
             if (modifier != 0) {
+                ModifierKeyState.DeviceState state =
+                        modifiers.getDeviceState(evt.getDeviceId());
                 if (down)
-                    hardwareMetaState |= modifier;
+                    state.press(modifier);
                 else
-                    hardwareMetaState &= ~modifier;
+                    state.release(modifier);
             }
 
             // Update the meta-state with writeKeyEvent.
-            int metaState = onScreenMetaState|hardwareMetaState|additionalMetaState|convertEventMetaState(evt);
+            int metaState = modifiers.getModifiers()|additionalMetaState|convertEventMetaState(evt);
             spice.writeKeyEvent(keyCode, metaState, down);
             
             if (keyCode == 0 /*KEYCODE_UNKNOWN*/) {
@@ -74,7 +75,7 @@ public class RemoteKeyboard {
     }
 
     public void sendCtrlAltDel() {
-        int savedMetaState = onScreenMetaState|hardwareMetaState;
+        int savedMetaState = modifiers.getModifiers();
         // Update the metastate
         spice.writeKeyEvent(0, KeyEvent.META_CTRL_ON | KeyEvent.META_ALT_ON, false);
         keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL));
@@ -87,19 +88,18 @@ public class RemoteKeyboard {
      * @return true if key enabled, false otherwise.
      */
     public boolean onScreenModifierToggle(int modifier) {
-        onScreenMetaState ^= modifier;
-        return (onScreenMetaState | modifier) != 0;
+        return onScreenButtons.toggle(modifier);
     }
     
     /**
      * Turns off on-screen modifier key.
      */
     public void onScreenModifierOff(int modifier) {
-        onScreenMetaState = onScreenMetaState & ~modifier;
+        onScreenButtons.release(modifier);
     }
 
     public void clearOnScreenModifiers() {
-        onScreenMetaState = 0;
+        onScreenButtons.clear();
     }
     
     /**
