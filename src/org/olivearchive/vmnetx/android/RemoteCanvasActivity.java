@@ -44,8 +44,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.View.OnKeyListener;
 import android.view.inputmethod.InputMethodManager;
@@ -66,14 +64,10 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private MenuItem keyboardMenuItem;
 
     private RelativeLayout layoutKeys;
-    private ImageButton keyCtrl;
-    private boolean keyCtrlLocked;
-    private ImageButton keySuper;
-    private boolean keySuperLocked;
-    private ImageButton keyAlt;
-    private boolean keyAltLocked;
-    private ImageButton keyShift;
-    private boolean keyShiftLocked;
+    private OnScreenModifierKey keyCtrl;
+    private OnScreenModifierKey keySuper;
+    private OnScreenModifierKey keyAlt;
+    private OnScreenModifierKey keyShift;
     
     @Override
     public void onCreate(Bundle icicle) {
@@ -171,113 +165,22 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 KeyEvent.KEYCODE_ESCAPE);
 
         // Define action of modifier keys.
-        keyCtrl = (ImageButton) findViewById(R.id.keyCtrl);
-        keyCtrl.setOnClickListener(new OnClickListener () {
-            @Override
-            public void onClick(View arg0) {
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_CTRL_ON);
-                keyCtrlLocked = false;
-                if (on)
-                    keyCtrl.setImageResource(R.drawable.ctrlon);
-                else
-                    keyCtrl.setImageResource(R.drawable.ctrloff);
-            }
-        });
-        
-        keyCtrl.setOnLongClickListener(new OnLongClickListener () {
-            @Override
-            public boolean onLongClick(View arg0) {
-                Utils.performLongPressHaptic(canvas);
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_CTRL_ON);
-                keyCtrlLocked = true;
-                if (on)
-                    keyCtrl.setImageResource(R.drawable.ctrlon);
-                else
-                    keyCtrl.setImageResource(R.drawable.ctrloff);
-                return true;
-            }
-        });
-
-        keySuper = (ImageButton) findViewById(R.id.keySuper);
-        keySuper.setOnClickListener(new OnClickListener () {
-            @Override
-            public void onClick(View arg0) {
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_META_ON);
-                keySuperLocked = false;
-                if (on)
-                    keySuper.setImageResource(R.drawable.superon);
-                else
-                    keySuper.setImageResource(R.drawable.superoff);
-            }
-        });
-
-        keySuper.setOnLongClickListener(new OnLongClickListener () {
-            @Override
-            public boolean onLongClick(View arg0) {
-                Utils.performLongPressHaptic(canvas);
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_META_ON);
-                keySuperLocked = true;
-                if (on)
-                    keySuper.setImageResource(R.drawable.superon);
-                else
-                    keySuper.setImageResource(R.drawable.superoff);
-                return true;
-            }
-        });
-
-        keyAlt = (ImageButton) findViewById(R.id.keyAlt);
-        keyAlt.setOnClickListener(new OnClickListener () {
-            @Override
-            public void onClick(View arg0) {
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_ALT_ON);
-                keyAltLocked = false;
-                if (on)
-                    keyAlt.setImageResource(R.drawable.alton);
-                else
-                    keyAlt.setImageResource(R.drawable.altoff);
-            }
-        });
-        
-        keyAlt.setOnLongClickListener(new OnLongClickListener () {
-            @Override
-            public boolean onLongClick(View arg0) {
-                Utils.performLongPressHaptic(canvas);
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_ALT_ON);
-                keyAltLocked = true;
-                if (on)
-                    keyAlt.setImageResource(R.drawable.alton);
-                else
-                    keyAlt.setImageResource(R.drawable.altoff);
-                return true;
-            }
-        });
-        
-        keyShift = (ImageButton) findViewById(R.id.keyShift);
-        keyShift.setOnClickListener(new OnClickListener () {
-            @Override
-            public void onClick(View arg0) {
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_SHIFT_ON);
-                keyShiftLocked = false;
-                if (on)
-                    keyShift.setImageResource(R.drawable.shifton);
-                else
-                    keyShift.setImageResource(R.drawable.shiftoff);
-            }
-        });
-        
-        keyShift.setOnLongClickListener(new OnLongClickListener () {
-            @Override
-            public boolean onLongClick(View arg0) {
-                Utils.performLongPressHaptic(canvas);
-                boolean on = canvas.getKeyboard().onScreenModifierToggle(KeyEvent.META_SHIFT_ON);
-                keyShiftLocked = true;
-                if (on)
-                    keyShift.setImageResource(R.drawable.shifton);
-                else
-                    keyShift.setImageResource(R.drawable.shiftoff);
-                return true;
-            }
-        });
+        keyCtrl = new OnScreenModifierKey(canvas,
+                (ImageButton) findViewById(R.id.keyCtrl),
+                R.drawable.ctrlon, R.drawable.ctrloff,
+                KeyEvent.META_CTRL_ON);
+        keySuper = new OnScreenModifierKey(canvas,
+                (ImageButton) findViewById(R.id.keySuper),
+                R.drawable.superon, R.drawable.superoff,
+                KeyEvent.META_META_ON);
+        keyAlt = new OnScreenModifierKey(canvas,
+                (ImageButton) findViewById(R.id.keyAlt),
+                R.drawable.alton, R.drawable.altoff,
+                KeyEvent.META_ALT_ON);
+        keyShift = new OnScreenModifierKey(canvas,
+                (ImageButton) findViewById(R.id.keyShift),
+                R.drawable.shifton, R.drawable.shiftoff,
+                KeyEvent.META_SHIFT_ON);
         
         // Define action of arrow keys.
         initializeOnScreenRegularKey(R.id.keyUpArrow,
@@ -324,24 +227,13 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         // Do not reset on-screen keys if keycode is SHIFT.
         switch (keyCode) {
         case KeyEvent.KEYCODE_SHIFT_LEFT:
-        case KeyEvent.KEYCODE_SHIFT_RIGHT: return;
+        case KeyEvent.KEYCODE_SHIFT_RIGHT:
+            return;
         }
-        if (!keyCtrlLocked) {
-            keyCtrl.setImageResource(R.drawable.ctrloff);
-            canvas.getKeyboard().onScreenModifierOff(KeyEvent.META_CTRL_ON);
-        }
-        if (!keyAltLocked) {
-            keyAlt.setImageResource(R.drawable.altoff);
-            canvas.getKeyboard().onScreenModifierOff(KeyEvent.META_ALT_ON);
-        }
-        if (!keySuperLocked) {
-            keySuper.setImageResource(R.drawable.superoff);
-            canvas.getKeyboard().onScreenModifierOff(KeyEvent.META_META_ON);
-        }
-        if (!keyShiftLocked) {
-            keyShift.setImageResource(R.drawable.shiftoff);
-            canvas.getKeyboard().onScreenModifierOff(KeyEvent.META_SHIFT_ON);
-        }
+        keyCtrl.reset();
+        keyAlt.reset();
+        keySuper.reset();
+        keyShift.reset();
     }
 
     /**
