@@ -74,7 +74,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private boolean keyAltLocked;
     private ImageButton keyShift;
     private boolean keyShiftLocked;
-    private int prevBottomOffset = 0;
     
     @Override
     public void onCreate(Bundle icicle) {
@@ -432,7 +431,6 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 layoutKeys.setVisibility(View.VISIBLE);
             }
             layoutKeys.invalidate();
-            layoutKeys.offsetTopAndBottom(prevBottomOffset);
             break;
         case R.id.itemDisconnect:
             Utils.showYesNoPrompt(this, getString(R.string.disconnect_prompt_title), getString(R.string.disconnect_prompt), new DialogInterface.OnClickListener() {
