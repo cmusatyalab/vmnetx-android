@@ -72,14 +72,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
     private boolean keySuperLocked;
     private ImageButton keyAlt;
     private boolean keyAltLocked;
-    private ImageButton keyTab;
-    private ImageButton keyEsc;
     private ImageButton keyShift;
     private boolean keyShiftLocked;
-    private ImageButton keyUp;
-    private ImageButton keyDown;
-    private ImageButton keyLeft;
-    private ImageButton keyRight;
     private int prevBottomOffset = 0;
     
     @Override
@@ -169,49 +163,15 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         
         layoutKeys = (RelativeLayout) findViewById(R.id.layoutKeys);
 
-        // Define action of tab key and meta keys.
-        keyTab = (ImageButton) findViewById(R.id.keyTab);
-        keyTab.setOnTouchListener(new OnTouchListener () {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent e) {
-                RemoteKeyboard k = canvas.getKeyboard();
-                int key = KeyEvent.KEYCODE_TAB;
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Utils.performLongPressHaptic(canvas);
-                    keyTab.setImageResource(R.drawable.tabon);
-                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
-                    return true;
-                } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    keyTab.setImageResource(R.drawable.taboff);
-                    resetOnScreenKeys (0);
-                    k.stopRepeatingKeyEvent();
-                    return true;
-                }
-                return false;
-            }
-        });
+        // Define action of tab and escape keys.
+        initializeOnScreenRegularKey(R.id.keyTab,
+                R.drawable.tabon, R.drawable.taboff,
+                KeyEvent.KEYCODE_TAB);
+        initializeOnScreenRegularKey(R.id.keyEsc,
+                R.drawable.escon, R.drawable.escoff,
+                KeyEvent.KEYCODE_ESCAPE);
 
-        keyEsc = (ImageButton) findViewById(R.id.keyEsc);
-        keyEsc.setOnTouchListener(new OnTouchListener () {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent e) {
-                RemoteKeyboard k = canvas.getKeyboard();
-                int key = KeyEvent.KEYCODE_ESCAPE;
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Utils.performLongPressHaptic(canvas);
-                    keyEsc.setImageResource(R.drawable.escon);
-                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
-                    return true;
-                } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    keyEsc.setImageResource(R.drawable.escoff);
-                    resetOnScreenKeys (0);
-                    k.stopRepeatingKeyEvent();
-                    return true;
-                }
-                return false;
-            }
-        });
-
+        // Define action of modifier keys.
         keyCtrl = (ImageButton) findViewById(R.id.keyCtrl);
         keyCtrl.setOnClickListener(new OnClickListener () {
             @Override
@@ -321,83 +281,35 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         });
         
         // Define action of arrow keys.
-        keyUp = (ImageButton) findViewById(R.id.keyUpArrow);
-        keyUp.setOnTouchListener(new OnTouchListener () {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent e) {
-                RemoteKeyboard k = canvas.getKeyboard();
-                int key = KeyEvent.KEYCODE_DPAD_UP;
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Utils.performLongPressHaptic(canvas);
-                    keyUp.setImageResource(R.drawable.upon);
-                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
-                    return true;
-                } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    keyUp.setImageResource(R.drawable.upoff);
-                    resetOnScreenKeys (0);
-                    k.stopRepeatingKeyEvent();
-                    return true;
-                }
-                return false;
-            }
-        });
+        initializeOnScreenRegularKey(R.id.keyUpArrow,
+                R.drawable.upon, R.drawable.upoff,
+                KeyEvent.KEYCODE_DPAD_UP);
+        initializeOnScreenRegularKey(R.id.keyDownArrow,
+                R.drawable.downon, R.drawable.downoff,
+                KeyEvent.KEYCODE_DPAD_DOWN);
+        initializeOnScreenRegularKey(R.id.keyLeftArrow,
+                R.drawable.lefton, R.drawable.leftoff,
+                KeyEvent.KEYCODE_DPAD_LEFT);
+        initializeOnScreenRegularKey(R.id.keyRightArrow,
+                R.drawable.righton, R.drawable.rightoff,
+                KeyEvent.KEYCODE_DPAD_RIGHT);
+    }
 
-        keyDown = (ImageButton) findViewById(R.id.keyDownArrow);
-        keyDown.setOnTouchListener(new OnTouchListener () {
+    private void initializeOnScreenRegularKey(int viewId,
+            final int onImage, final int offImage, final int keyCode) {
+        final ImageButton button = (ImageButton) findViewById(viewId);
+        button.setOnTouchListener(new OnTouchListener () {
             @Override
             public boolean onTouch(View arg0, MotionEvent e) {
                 RemoteKeyboard k = canvas.getKeyboard();
-                int key = KeyEvent.KEYCODE_DPAD_DOWN;
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     Utils.performLongPressHaptic(canvas);
-                    keyDown.setImageResource(R.drawable.downon);
-                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
-                    return true;
-                } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    keyDown.setImageResource(R.drawable.downoff);
-                    resetOnScreenKeys (0);
-                    k.stopRepeatingKeyEvent();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        keyLeft = (ImageButton) findViewById(R.id.keyLeftArrow);
-        keyLeft.setOnTouchListener(new OnTouchListener () {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent e) {
-                RemoteKeyboard k = canvas.getKeyboard();
-                int key = KeyEvent.KEYCODE_DPAD_LEFT;
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Utils.performLongPressHaptic(canvas);
-                    keyLeft.setImageResource(R.drawable.lefton);
-                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
-                    return true;
-                } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    keyLeft.setImageResource(R.drawable.leftoff);
-                    resetOnScreenKeys (0);
-                    k.stopRepeatingKeyEvent();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        keyRight = (ImageButton) findViewById(R.id.keyRightArrow);
-        keyRight.setOnTouchListener(new OnTouchListener () {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent e) {
-                RemoteKeyboard k = canvas.getKeyboard();
-                int key = KeyEvent.KEYCODE_DPAD_RIGHT;
-                if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                    Utils.performLongPressHaptic(canvas);
-                    keyRight.setImageResource(R.drawable.righton);
-                    k.repeatKeyEvent(new KeyEvent(e.getAction(), key));
+                    button.setImageResource(onImage);
+                    k.repeatKeyEvent(new KeyEvent(e.getAction(), keyCode));
                     return true;    
                 } else if (e.getAction() == MotionEvent.ACTION_UP) {
-                    keyRight.setImageResource(R.drawable.rightoff);
-                    resetOnScreenKeys (0);
+                    button.setImageResource(offImage);
+                    resetOnScreenKeys(0);
                     k.stopRepeatingKeyEvent();
                     return true;
                 }
