@@ -73,7 +73,7 @@ public class RemoteKeyboard {
     public void sendCtrlAltDel() {
         int savedMetaState = modifiers.getModifiers();
         // Update the metastate
-        spice.writeKeyEvent(0, KeyEvent.META_CTRL_ON | KeyEvent.META_ALT_ON, false);
+        spice.writeKeyEvent(0, KeyEvent.META_CTRL_LEFT_ON | KeyEvent.META_ALT_LEFT_ON, false);
         keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL));
         keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_FORWARD_DEL));
         spice.writeKeyEvent(0, savedMetaState, false);
@@ -128,17 +128,21 @@ public class RemoteKeyboard {
     private int keyCodeToModifierMask(int keyCode) {
         switch (keyCode) {
         case KeyEvent.KEYCODE_ALT_LEFT:
+            return KeyEvent.META_ALT_LEFT_ON;
         case KeyEvent.KEYCODE_ALT_RIGHT:
-            return KeyEvent.META_ALT_ON;
+            return KeyEvent.META_ALT_RIGHT_ON;
         case KeyEvent.KEYCODE_CTRL_LEFT:
+            return KeyEvent.META_CTRL_LEFT_ON;
         case KeyEvent.KEYCODE_CTRL_RIGHT:
-            return KeyEvent.META_CTRL_ON;
+            return KeyEvent.META_CTRL_RIGHT_ON;
         case KeyEvent.KEYCODE_META_LEFT:
+            return KeyEvent.META_META_LEFT_ON;
         case KeyEvent.KEYCODE_META_RIGHT:
-            return KeyEvent.META_META_ON;
+            return KeyEvent.META_META_RIGHT_ON;
         case KeyEvent.KEYCODE_SHIFT_LEFT:
+            return KeyEvent.META_SHIFT_LEFT_ON;
         case KeyEvent.KEYCODE_SHIFT_RIGHT:
-            return KeyEvent.META_SHIFT_ON;
+            return KeyEvent.META_SHIFT_RIGHT_ON;
         default:
             return 0;
         }

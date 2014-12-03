@@ -166,21 +166,37 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
     }
 
     private void sendModifierKeys (boolean keyDown) {        
-        if ((metaState & KeyEvent.META_CTRL_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending CTRL: " + KeyEvent.KEYCODE_CTRL_LEFT);
+        if ((metaState & KeyEvent.META_CTRL_LEFT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending L-CTRL: " + KeyEvent.KEYCODE_CTRL_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_LEFT);
         }
-        if ((metaState & KeyEvent.META_ALT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending ALT: " + KeyEvent.KEYCODE_ALT_LEFT);
+        if ((metaState & KeyEvent.META_CTRL_RIGHT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending R-CTRL: " + KeyEvent.KEYCODE_CTRL_RIGHT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_RIGHT);
+        }
+        if ((metaState & KeyEvent.META_ALT_LEFT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending L-ALT: " + KeyEvent.KEYCODE_ALT_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_LEFT);
         }
-        if ((metaState & KeyEvent.META_META_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending META: " + KeyEvent.KEYCODE_META_LEFT);
+        if ((metaState & KeyEvent.META_ALT_RIGHT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending R-ALT: " + KeyEvent.KEYCODE_ALT_RIGHT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_RIGHT);
+        }
+        if ((metaState & KeyEvent.META_META_LEFT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending L-META: " + KeyEvent.KEYCODE_META_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_LEFT);
         }
-        if ((metaState & KeyEvent.META_SHIFT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending SHIFT: " + KeyEvent.KEYCODE_SHIFT_LEFT);
+        if ((metaState & KeyEvent.META_META_RIGHT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending R-META: " + KeyEvent.KEYCODE_META_RIGHT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_RIGHT);
+        }
+        if ((metaState & KeyEvent.META_SHIFT_LEFT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending L-SHIFT: " + KeyEvent.KEYCODE_SHIFT_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_LEFT);
+        }
+        if ((metaState & KeyEvent.META_SHIFT_RIGHT_ON) != 0) {
+            //android.util.Log.e("SpiceCommunicator", "Sending R-SHIFT: " + KeyEvent.KEYCODE_SHIFT_RIGHT);
+            sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_RIGHT);
         }
     }
     
@@ -231,7 +247,7 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         if (keyToSend != -1) {
             tempMeta = metaState;
             if (addShift) {
-                metaState = metaState |  KeyEvent.META_SHIFT_ON;
+                metaState = metaState |  KeyEvent.META_SHIFT_LEFT_ON;
             }
             processVirtualKey(keyToSend, true);
             processVirtualKey(keyToSend, false);

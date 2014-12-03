@@ -168,19 +168,19 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         keyCtrl = new OnScreenModifierKey(canvas,
                 (ImageButton) findViewById(R.id.keyCtrl),
                 R.drawable.ctrlon, R.drawable.ctrloff,
-                KeyEvent.META_CTRL_ON);
+                KeyEvent.META_CTRL_LEFT_ON);
         keySuper = new OnScreenModifierKey(canvas,
                 (ImageButton) findViewById(R.id.keySuper),
                 R.drawable.superon, R.drawable.superoff,
-                KeyEvent.META_META_ON);
+                KeyEvent.META_META_LEFT_ON);
         keyAlt = new OnScreenModifierKey(canvas,
                 (ImageButton) findViewById(R.id.keyAlt),
                 R.drawable.alton, R.drawable.altoff,
-                KeyEvent.META_ALT_ON);
+                KeyEvent.META_ALT_LEFT_ON);
         keyShift = new OnScreenModifierKey(canvas,
                 (ImageButton) findViewById(R.id.keyShift),
                 R.drawable.shifton, R.drawable.shiftoff,
-                KeyEvent.META_SHIFT_ON);
+                KeyEvent.META_SHIFT_LEFT_ON);
         
         // Define action of arrow keys.
         initializeOnScreenRegularKey(R.id.keyUpArrow,
