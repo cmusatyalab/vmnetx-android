@@ -16,9 +16,7 @@ public class RemoteKeyboard {
     public RemoteKeyboard (SpiceCommunicator s, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
-        
-        keyboardMapper = new KeyboardMapper();
-        keyboardMapper.setKeyProcessingListener((KeyboardMapper.KeyProcessingListener) s);
+        keyboardMapper = new KeyboardMapper(s);
         modifiers = new ModifierKeyState();
         onScreenButtons = modifiers.getDeviceState(ModifierKeyState.DEVICE_ON_SCREEN_BUTTONS);
     }

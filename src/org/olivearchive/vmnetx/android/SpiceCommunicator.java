@@ -5,13 +5,12 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.KeyEvent;
 
-import org.olivearchive.vmnetx.android.input.KeyboardMapper;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
 import org.olivearchive.vmnetx.android.protocol.ProtocolException;
 import org.olivearchive.vmnetx.android.protocol.ViewerConnectionProcessor;
 import com.gstreamer.*;
 
-public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
+public class SpiceCommunicator {
     private final static String TAG = "SpiceCommunicator";
 
     private native long SpiceClientNewContext ();
@@ -208,9 +207,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         this.metaState = metaState;
     }
 
-    // ****************************************************************************
-    // KeyboardMapper.KeyProcessingListener implementation
-    @Override
     public void processVirtualKey(int virtualKeyCode, boolean keyDown) {
 
         if (keyDown)
@@ -224,7 +220,6 @@ public class SpiceCommunicator implements KeyboardMapper.KeyProcessingListener {
         
     }
 
-    @Override
     public void processUnicodeKey(int unicodeKey) {
         boolean addShift = false;
         int keyToSend = -1;

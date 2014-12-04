@@ -12,18 +12,14 @@ package org.olivearchive.vmnetx.android.input;
 
 import android.view.KeyEvent;
 
-public class KeyboardMapper
-{
-    // interface that gets called for input handling
-    public interface KeyProcessingListener {
-        abstract void processVirtualKey(int virtualKeyCode, boolean down);
-        abstract void processUnicodeKey(int unicodeKey);
-    }
+import org.olivearchive.vmnetx.android.SpiceCommunicator;
 
-    private KeyProcessingListener listener = null;
+class KeyboardMapper {
 
-    public void setKeyProcessingListener(KeyProcessingListener listener)  {
-        this.listener = listener;
+    private SpiceCommunicator spice;
+
+    KeyboardMapper(SpiceCommunicator spice) {
+        this.spice = spice;
     }
 
     public boolean processAndroidKeyEvent(KeyEvent event) {
@@ -39,19 +35,19 @@ public class KeyboardMapper
             {    
                 // if a modifier is pressed we will send a key event (if possible) so that key combinations will be
                 // recognized correctly. Otherwise we will send the unicode key. At the end we will reset all modifiers
-                // and notifiy our listener.
+                // and notify SpiceCommunicator.
                 int keycode = event.getKeyCode();
                 // if we got a valid keycode send it - except for letters/numbers if a modifier is active
                 if (keycode > 0 && (event.getMetaState() & (KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON | KeyEvent.META_SYM_ON)) == 0) {
-                    listener.processVirtualKey(keycode, true);
-                    listener.processVirtualKey(keycode, false);
+                    spice.processVirtualKey(keycode, true);
+                    spice.processVirtualKey(keycode, false);
                 } else if (event.isShiftPressed() && keycode != 0) {
-                    listener.processVirtualKey(KeyEvent.KEYCODE_SHIFT_LEFT, true);
-                    listener.processVirtualKey(keycode, true);
-                    listener.processVirtualKey(keycode, false);
-                    listener.processVirtualKey(KeyEvent.KEYCODE_SHIFT_LEFT, false);
+                    spice.processVirtualKey(KeyEvent.KEYCODE_SHIFT_LEFT, true);
+                    spice.processVirtualKey(keycode, true);
+                    spice.processVirtualKey(keycode, false);
+                    spice.processVirtualKey(KeyEvent.KEYCODE_SHIFT_LEFT, false);
                 } else if (event.getUnicodeChar() != 0)
-                    listener.processUnicodeKey(event.getUnicodeChar());
+                    spice.processUnicodeKey(event.getUnicodeChar());
                 else
                     return false;
                              
@@ -62,7 +58,7 @@ public class KeyboardMapper
             {
                 String str = event.getCharacters();
                 for(int i = 0; i < str.length(); i++)
-                    listener.processUnicodeKey(str.charAt(i));
+                    spice.processUnicodeKey(str.charAt(i));
                 return true;
             }
             
