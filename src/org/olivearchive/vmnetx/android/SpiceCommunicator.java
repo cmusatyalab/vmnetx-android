@@ -28,7 +28,7 @@ public class SpiceCommunicator {
         System.loadLibrary("spice");
     }
     
-    private int metaState = 0;
+    private int modifiers = 0;
     
     private RemoteCanvas canvas;
     private Handler handler;
@@ -165,46 +165,42 @@ public class SpiceCommunicator {
     }
 
     private void sendModifierKeys (boolean keyDown) {        
-        if ((metaState & KeyEvent.META_CTRL_LEFT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_CTRL_LEFT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending L-CTRL: " + KeyEvent.KEYCODE_CTRL_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_LEFT);
         }
-        if ((metaState & KeyEvent.META_CTRL_RIGHT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_CTRL_RIGHT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending R-CTRL: " + KeyEvent.KEYCODE_CTRL_RIGHT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_RIGHT);
         }
-        if ((metaState & KeyEvent.META_ALT_LEFT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_ALT_LEFT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending L-ALT: " + KeyEvent.KEYCODE_ALT_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_LEFT);
         }
-        if ((metaState & KeyEvent.META_ALT_RIGHT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_ALT_RIGHT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending R-ALT: " + KeyEvent.KEYCODE_ALT_RIGHT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_RIGHT);
         }
-        if ((metaState & KeyEvent.META_META_LEFT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_META_LEFT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending L-META: " + KeyEvent.KEYCODE_META_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_LEFT);
         }
-        if ((metaState & KeyEvent.META_META_RIGHT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_META_RIGHT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending R-META: " + KeyEvent.KEYCODE_META_RIGHT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_RIGHT);
         }
-        if ((metaState & KeyEvent.META_SHIFT_LEFT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_SHIFT_LEFT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending L-SHIFT: " + KeyEvent.KEYCODE_SHIFT_LEFT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_LEFT);
         }
-        if ((metaState & KeyEvent.META_SHIFT_RIGHT_ON) != 0) {
+        if ((modifiers & KeyEvent.META_SHIFT_RIGHT_ON) != 0) {
             //android.util.Log.e("SpiceCommunicator", "Sending R-SHIFT: " + KeyEvent.KEYCODE_SHIFT_RIGHT);
             sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_RIGHT);
         }
     }
     
-    public void writeKeyEvent(int key, int metaState, boolean down) {
-        // Not used for actually sending keyboard events, but rather to record the current metastate.
-        // The key event is sent to the KeyboardMapper from RemoteKeyboard, and
-        // when processed through the keyboard mapper, it ends up in one of the KeyProcessingListener
-        // methods defined here.
-        this.metaState = metaState;
+    public void updateModifierKeys(int modifiers) {
+        this.modifiers = modifiers;
     }
 
     public void processVirtualKey(int virtualKeyCode, boolean keyDown) {
@@ -223,7 +219,6 @@ public class SpiceCommunicator {
     public void processUnicodeKey(int unicodeKey) {
         boolean addShift = false;
         int keyToSend = -1;
-        int tempMeta = 0;
         
         // Workarounds for some pesky keys.
         if (unicodeKey == 64) {
@@ -240,13 +235,13 @@ public class SpiceCommunicator {
         }
         
         if (keyToSend != -1) {
-            tempMeta = metaState;
+            int tempModifiers = modifiers;
             if (addShift) {
-                metaState = metaState |  KeyEvent.META_SHIFT_LEFT_ON;
+                modifiers = modifiers | KeyEvent.META_SHIFT_LEFT_ON;
             }
             processVirtualKey(keyToSend, true);
             processVirtualKey(keyToSend, false);
-            metaState = tempMeta;
+            modifiers = tempModifiers;
         } else
             android.util.Log.e("SpiceCommunicator", "Unsupported unicode key that needs to be mapped: " + unicodeKey);
     }
