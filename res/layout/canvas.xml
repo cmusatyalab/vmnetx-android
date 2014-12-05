@@ -40,17 +40,20 @@
 			android:padding="0sp"
 			>
 			<ImageButton android:id="@+id/keyTab"
-	    	    android:background="@drawable/taboff"
+		    android:background="@null"
+		    android:src="@drawable/taboff"
 	    	    android:layout_width="wrap_content"
 	    	    android:layout_height="wrap_content"
 	    	    />
 			<ImageButton android:id="@+id/keyEsc"
-	    	    android:background="@drawable/escoff"
+		    android:background="@null"
+		    android:src="@drawable/escoff"
 	    	    android:layout_width="wrap_content"
 	    	    android:layout_height="wrap_content"
 	    	    />
 			<ImageButton android:id="@+id/keyShift"
-	    	    android:background="@drawable/shiftoff"
+		    android:background="@null"
+		    android:src="@drawable/shiftoff"
 	    	    android:layout_width="wrap_content"
 	    	    android:layout_height="wrap_content"
 	    	    />
@@ -63,17 +66,20 @@
 			android:padding="0sp"
 			>
 			<ImageButton android:id="@+id/keyCtrl"
-		        android:background="@drawable/ctrloff"
+		        android:background="@null"
+		        android:src="@drawable/ctrloff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        />
 			<ImageButton android:id="@+id/keySuper"
-		        android:background="@drawable/superoff"
+		        android:background="@null"
+		        android:src="@drawable/superoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        />
 			<ImageButton android:id="@+id/keyAlt"
-		        android:background="@drawable/altoff"
+		        android:background="@null"
+		        android:src="@drawable/altoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        />
@@ -90,7 +96,8 @@
 		android:padding="0sp"
 		>
 		<ImageButton android:id="@+id/keyUpArrow"
-	        android:background="@drawable/upoff"
+	        android:background="@null"
+	        android:src="@drawable/upoff"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="top|center"
@@ -103,17 +110,20 @@
 			android:padding="0sp"
 			>
 			<ImageButton android:id="@+id/keyLeftArrow"
-		        android:background="@drawable/leftoff"
+		        android:background="@null"
+		        android:src="@drawable/leftoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        />
 			<ImageButton android:id="@+id/keyDownArrow"
-		        android:background="@drawable/downoff"
+		        android:background="@null"
+		        android:src="@drawable/downoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        />
 			<ImageButton android:id="@+id/keyRightArrow"
-		        android:background="@drawable/rightoff"
+		        android:background="@null"
+		        android:src="@drawable/rightoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        />
