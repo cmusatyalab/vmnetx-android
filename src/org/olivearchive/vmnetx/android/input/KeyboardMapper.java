@@ -38,19 +38,9 @@ class KeyboardMapper {
                 if (keycode > 0) {
                     spice.processVirtualKey(keycode, true);
                     spice.processVirtualKey(keycode, false);
-                } else if (event.getUnicodeChar() != 0)
-                    spice.processUnicodeKey(event.getUnicodeChar());
-                else
+                } else
                     return false;
                              
-                return true;
-            }
-
-            case KeyEvent.ACTION_MULTIPLE:
-            {
-                String str = event.getCharacters();
-                for(int i = 0; i < str.length(); i++)
-                    spice.processUnicodeKey(str.charAt(i));
                 return true;
             }
             

@@ -201,36 +201,6 @@ public class SpiceCommunicator {
         sendKeyEvent(keyDown, virtualKeyCode);
     }
 
-    public void processUnicodeKey(int unicodeKey) {
-        boolean addShift = false;
-        int keyToSend = -1;
-        
-        // Workarounds for some pesky keys.
-        if (unicodeKey == 64) {
-            addShift = true;
-            keyToSend = 0x32;
-        } else if (unicodeKey == 42) {
-                addShift = true;
-                keyToSend = 0x38;
-        } else if (unicodeKey == 47) {
-            keyToSend = 0xBF;
-        } else if (unicodeKey == 63) {
-            addShift = true;            
-            keyToSend = 0xBF;
-        }
-        
-        if (keyToSend != -1) {
-            int tempModifiers = modifiers;
-            if (addShift) {
-                updateModifierKeys(modifiers | KeyEvent.META_SHIFT_LEFT_ON);
-            }
-            processVirtualKey(keyToSend, true);
-            processVirtualKey(keyToSend, false);
-            updateModifierKeys(tempModifiers);
-        } else
-            android.util.Log.e("SpiceCommunicator", "Unsupported unicode key that needs to be mapped: " + unicodeKey);
-    }
-
     public void requestResolution(int x, int y) {
         SpiceRequestResolution(context, x, y);
     }
