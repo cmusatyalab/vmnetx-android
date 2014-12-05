@@ -196,9 +196,10 @@ public class SpiceCommunicator {
         sendKeyEvent(keyDown, keyCode);
     }
 
-    public void processVirtualKey(int virtualKeyCode, boolean keyDown) {
-        //android.util.Log.e("SpiceCommunicator", "Sending VK key: " + virtualKeyCode + ". Is it down: " + down);
-        sendKeyEvent(keyDown, virtualKeyCode);
+    public void pressAndReleaseKey(int keyCode) {
+        //android.util.Log.d(TAG, "Press+release key: " + keyCode);
+        sendKeyEvent(true, keyCode);
+        sendKeyEvent(false, keyCode);
     }
 
     public void requestResolution(int x, int y) {

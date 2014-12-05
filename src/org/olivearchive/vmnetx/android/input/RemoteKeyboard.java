@@ -48,8 +48,7 @@ public class RemoteKeyboard {
                 }
                 return true;
             } else if (evt.getAction() == KeyEvent.ACTION_DOWN) {
-                spice.processVirtualKey(keyCode, true);
-                spice.processVirtualKey(keyCode, false);
+                spice.pressAndReleaseKey(keyCode);
                 return true;
             }
         }
@@ -66,8 +65,7 @@ public class RemoteKeyboard {
 
     public void sendCtrlAltDel() {
         spice.updateModifierKeys(KeyEvent.META_CTRL_LEFT_ON | KeyEvent.META_ALT_LEFT_ON);
-        spice.processVirtualKey(KeyEvent.KEYCODE_FORWARD_DEL, true);
-        spice.processVirtualKey(KeyEvent.KEYCODE_FORWARD_DEL, false);
+        spice.pressAndReleaseKey(KeyEvent.KEYCODE_FORWARD_DEL);
         updateModifierKeys();
     }
     
