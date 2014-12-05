@@ -7,7 +7,6 @@ import org.olivearchive.vmnetx.android.SpiceCommunicator;
 
 public class RemoteKeyboard {
     private SpiceCommunicator spice;
-    private KeyboardMapper keyboardMapper;
     private KeyRepeater keyRepeater;
     private ModifierKeyState modifiers;
     // State of the on-screen modifier key buttons
@@ -16,7 +15,6 @@ public class RemoteKeyboard {
     public RemoteKeyboard (SpiceCommunicator s, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
-        keyboardMapper = new KeyboardMapper(s);
         modifiers = new ModifierKeyState();
         onScreenButtons = modifiers.getDeviceState(ModifierKeyState.DEVICE_ON_SCREEN_BUTTONS);
     }
@@ -49,13 +47,13 @@ public class RemoteKeyboard {
                     }
                 }
                 return true;
-            } else {
-                // Send the key to be processed through the KeyboardMapper.
-                return keyboardMapper.processAndroidKeyEvent(evt);
+            } else if (evt.getAction() == KeyEvent.ACTION_DOWN) {
+                spice.processVirtualKey(keyCode, true);
+                spice.processVirtualKey(keyCode, false);
+                return true;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     public void repeatKeyEvent(KeyEvent event) {
@@ -68,8 +66,8 @@ public class RemoteKeyboard {
 
     public void sendCtrlAltDel() {
         spice.updateModifierKeys(KeyEvent.META_CTRL_LEFT_ON | KeyEvent.META_ALT_LEFT_ON);
-        keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL));
-        keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_FORWARD_DEL));
+        spice.processVirtualKey(KeyEvent.KEYCODE_FORWARD_DEL, true);
+        spice.processVirtualKey(KeyEvent.KEYCODE_FORWARD_DEL, false);
         updateModifierKeys();
     }
     
