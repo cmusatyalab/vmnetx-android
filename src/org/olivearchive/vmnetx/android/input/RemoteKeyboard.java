@@ -39,7 +39,7 @@ public class RemoteKeyboard {
             }
 
             // Update the modifier key state.
-            spice.updateModifierKeys(modifiers.getModifiers());
+            updateModifierKeys();
             
             if (keyCode == 0 /*KEYCODE_UNKNOWN*/) {
                 String s = evt.getCharacters();
@@ -71,7 +71,7 @@ public class RemoteKeyboard {
         spice.updateModifierKeys(KeyEvent.META_CTRL_LEFT_ON | KeyEvent.META_ALT_LEFT_ON);
         keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL));
         keyboardMapper.processAndroidKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_FORWARD_DEL));
-        spice.updateModifierKeys(modifiers.getModifiers());
+        updateModifierKeys();
     }
     
     /**
@@ -93,6 +93,10 @@ public class RemoteKeyboard {
         onScreenButtons.clear();
     }
     
+    private void updateModifierKeys() {
+        spice.updateModifierKeys(modifiers.getModifiers());
+    }
+
     /**
      * Tries to convert a unicode character to a KeyEvent and if successful sends with keyEvent().
      * @param unicodeChar
