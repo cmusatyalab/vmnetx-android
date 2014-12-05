@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.KeyEvent;
 
-import org.olivearchive.vmnetx.android.input.RemotePointer;
 import org.olivearchive.vmnetx.android.protocol.ProtocolException;
 import org.olivearchive.vmnetx.android.protocol.ViewerConnectionProcessor;
 import com.gstreamer.*;
@@ -157,63 +156,49 @@ public class SpiceCommunicator {
     }
 
     public void writePointerEvent(int x, int y, int pointerMask) {
-        if ((pointerMask & RemotePointer.PTRFLAGS_DOWN) != 0)
-            sendModifierKeys(true);
         sendMouseEvent(x, y, pointerMask);
-        if ((pointerMask & RemotePointer.PTRFLAGS_DOWN) == 0)
-            sendModifierKeys(false);
     }
 
-    private void sendModifierKeys (boolean keyDown) {        
-        if ((modifiers & KeyEvent.META_CTRL_LEFT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending L-CTRL: " + KeyEvent.KEYCODE_CTRL_LEFT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_LEFT);
-        }
-        if ((modifiers & KeyEvent.META_CTRL_RIGHT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending R-CTRL: " + KeyEvent.KEYCODE_CTRL_RIGHT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_CTRL_RIGHT);
-        }
-        if ((modifiers & KeyEvent.META_ALT_LEFT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending L-ALT: " + KeyEvent.KEYCODE_ALT_LEFT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_LEFT);
-        }
-        if ((modifiers & KeyEvent.META_ALT_RIGHT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending R-ALT: " + KeyEvent.KEYCODE_ALT_RIGHT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_ALT_RIGHT);
-        }
-        if ((modifiers & KeyEvent.META_META_LEFT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending L-META: " + KeyEvent.KEYCODE_META_LEFT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_LEFT);
-        }
-        if ((modifiers & KeyEvent.META_META_RIGHT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending R-META: " + KeyEvent.KEYCODE_META_RIGHT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_META_RIGHT);
-        }
-        if ((modifiers & KeyEvent.META_SHIFT_LEFT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending L-SHIFT: " + KeyEvent.KEYCODE_SHIFT_LEFT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_LEFT);
-        }
-        if ((modifiers & KeyEvent.META_SHIFT_RIGHT_ON) != 0) {
-            //android.util.Log.e("SpiceCommunicator", "Sending R-SHIFT: " + KeyEvent.KEYCODE_SHIFT_RIGHT);
-            sendKeyEvent(keyDown, KeyEvent.KEYCODE_SHIFT_RIGHT);
-        }
-    }
-    
     public void updateModifierKeys(int modifiers) {
+        int changes = this.modifiers ^ modifiers;
+        int pressed = modifiers & changes;
+        int released = this.modifiers & changes;
         this.modifiers = modifiers;
+
+        updateModifierKey(pressed, released,
+                KeyEvent.META_CTRL_LEFT_ON, KeyEvent.KEYCODE_CTRL_LEFT);
+        updateModifierKey(pressed, released,
+                KeyEvent.META_CTRL_RIGHT_ON, KeyEvent.KEYCODE_CTRL_RIGHT);
+        updateModifierKey(pressed, released,
+                KeyEvent.META_ALT_LEFT_ON, KeyEvent.KEYCODE_ALT_LEFT);
+        updateModifierKey(pressed, released,
+                KeyEvent.META_ALT_RIGHT_ON, KeyEvent.KEYCODE_ALT_RIGHT);
+        updateModifierKey(pressed, released,
+                KeyEvent.META_META_LEFT_ON, KeyEvent.KEYCODE_META_LEFT);
+        updateModifierKey(pressed, released,
+                KeyEvent.META_META_RIGHT_ON, KeyEvent.KEYCODE_META_RIGHT);
+        updateModifierKey(pressed, released,
+                KeyEvent.META_SHIFT_LEFT_ON, KeyEvent.KEYCODE_SHIFT_LEFT);
+        updateModifierKey(pressed, released,
+                KeyEvent.META_SHIFT_RIGHT_ON, KeyEvent.KEYCODE_SHIFT_RIGHT);
+    }
+
+    private void updateModifierKey(int pressed, int released, int modifier,
+            int keyCode) {
+        boolean keyDown;
+        if ((pressed & modifier) != 0)
+            keyDown = true;
+        else if ((released & modifier) != 0)
+            keyDown = false;
+        else
+            return;
+        //android.util.Log.d(TAG, (keyDown ? "Pressing" : "Releasing") + " modifier: " + keyCode);
+        sendKeyEvent(keyDown, keyCode);
     }
 
     public void processVirtualKey(int virtualKeyCode, boolean keyDown) {
-
-        if (keyDown)
-            sendModifierKeys (true);
-        
         //android.util.Log.e("SpiceCommunicator", "Sending VK key: " + virtualKeyCode + ". Is it down: " + down);
         sendKeyEvent(keyDown, virtualKeyCode);
-        
-        if (!keyDown)
-            sendModifierKeys (false);
-        
     }
 
     public void processUnicodeKey(int unicodeKey) {
@@ -237,11 +222,11 @@ public class SpiceCommunicator {
         if (keyToSend != -1) {
             int tempModifiers = modifiers;
             if (addShift) {
-                modifiers = modifiers | KeyEvent.META_SHIFT_LEFT_ON;
+                updateModifierKeys(modifiers | KeyEvent.META_SHIFT_LEFT_ON);
             }
             processVirtualKey(keyToSend, true);
             processVirtualKey(keyToSend, false);
-            modifiers = tempModifiers;
+            updateModifierKeys(tempModifiers);
         } else
             android.util.Log.e("SpiceCommunicator", "Unsupported unicode key that needs to be mapped: " + unicodeKey);
     }

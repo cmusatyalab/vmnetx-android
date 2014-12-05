@@ -36,11 +36,10 @@ public class RemoteKeyboard {
                     state.press(modifier);
                 else
                     state.release(modifier);
+                updateModifierKeys();
+                return true;
             }
 
-            // Update the modifier key state.
-            updateModifierKeys();
-            
             if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
                 String s = evt.getCharacters();
                 if (s != null) {
@@ -79,7 +78,9 @@ public class RemoteKeyboard {
      * @return true if key enabled, false otherwise.
      */
     public boolean onScreenModifierToggle(int modifier) {
-        return onScreenButtons.toggle(modifier);
+        boolean keyDown = onScreenButtons.toggle(modifier);
+        updateModifierKeys();
+        return keyDown;
     }
     
     /**
@@ -87,10 +88,12 @@ public class RemoteKeyboard {
      */
     public void onScreenModifierOff(int modifier) {
         onScreenButtons.release(modifier);
+        updateModifierKeys();
     }
 
     public void clearOnScreenModifiers() {
         onScreenButtons.clear();
+        updateModifierKeys();
     }
     
     private void updateModifierKeys() {

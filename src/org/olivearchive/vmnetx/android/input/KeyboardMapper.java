@@ -33,19 +33,11 @@ class KeyboardMapper {
             
             case KeyEvent.ACTION_DOWN:
             {    
-                // if a modifier is pressed we will send a key event (if possible) so that key combinations will be
-                // recognized correctly. Otherwise we will send the unicode key. At the end we will reset all modifiers
-                // and notify SpiceCommunicator.
                 int keycode = event.getKeyCode();
-                // if we got a valid keycode send it - except for letters/numbers if a modifier is active
-                if (keycode > 0 && (event.getMetaState() & (KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON | KeyEvent.META_SYM_ON)) == 0) {
+                // if we got a valid keycode send it
+                if (keycode > 0) {
                     spice.processVirtualKey(keycode, true);
                     spice.processVirtualKey(keycode, false);
-                } else if (event.isShiftPressed() && keycode != 0) {
-                    spice.processVirtualKey(KeyEvent.KEYCODE_SHIFT_LEFT, true);
-                    spice.processVirtualKey(keycode, true);
-                    spice.processVirtualKey(keycode, false);
-                    spice.processVirtualKey(KeyEvent.KEYCODE_SHIFT_LEFT, false);
                 } else if (event.getUnicodeChar() != 0)
                     spice.processUnicodeKey(event.getUnicodeChar());
                 else
