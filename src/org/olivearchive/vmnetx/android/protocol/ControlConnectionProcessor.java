@@ -71,7 +71,15 @@ public class ControlConnectionProcessor extends ConnectionProcessor
 
     public void close() {
         exit = true;
-        selector.wakeup();
+        try {
+            selector.wakeup();
+        } catch (Exception e) {
+            // Should be impossible to get IOExceptions, but Lollipop
+            // throws them
+            // https://code.google.com/p/android/issues/detail?id=80785
+            if (!(e instanceof IOException))
+                throw new RuntimeException(e);
+        }
     }
 
     private void connect() throws IOException {
