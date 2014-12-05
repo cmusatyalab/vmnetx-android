@@ -41,7 +41,7 @@ public class RemoteKeyboard {
             // Update the modifier key state.
             updateModifierKeys();
             
-            if (keyCode == 0 /*KEYCODE_UNKNOWN*/) {
+            if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
                 String s = evt.getCharacters();
                 if (s != null) {
                     for (int i = 0; i < s.length(); i++) {
