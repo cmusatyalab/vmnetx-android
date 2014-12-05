@@ -73,7 +73,7 @@ public class SpiceCommunicator {
     private class SpiceThread extends Thread {
         public void run() {
             SpiceClientConnect(context, connection.getToken());
-            android.util.Log.e(TAG, "SpiceClientConnect returned.");
+            android.util.Log.d(TAG, "SpiceClientConnect returned.");
 
             // If we've exited SpiceClientConnect, the connection was
             // interrupted or was never established.

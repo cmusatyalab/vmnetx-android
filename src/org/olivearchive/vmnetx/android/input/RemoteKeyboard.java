@@ -6,6 +6,8 @@ import android.view.KeyEvent;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
 
 public class RemoteKeyboard {
+    private static final String TAG = "RemoteKeyboard";
+
     private SpiceCommunicator spice;
     private KeyRepeater keyRepeater;
     private ModifierKeyState modifiers;
@@ -21,7 +23,7 @@ public class RemoteKeyboard {
 
     public boolean processLocalKeyEvent(KeyEvent evt) {
         int keyCode = evt.getKeyCode();
-        //android.util.Log.e(TAG, evt.toString() + " " + keyCode);
+        //android.util.Log.d(TAG, evt.toString() + " " + keyCode);
 
         if (spice != null && spice.isInNormalProtocol()) {
             boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
@@ -42,7 +44,7 @@ public class RemoteKeyboard {
                 String s = evt.getCharacters();
                 if (s != null) {
                     for (int i = 0; i < s.length(); i++) {
-                        //android.util.Log.e(TAG, "Sending unicode: " + s.charAt(i));
+                        //android.util.Log.d(TAG, "Sending unicode: " + s.charAt(i));
                         sendUnicode(s.charAt(i));
                     }
                 }
@@ -118,7 +120,7 @@ public class RemoteKeyboard {
                 processLocalKeyEvent(evt);
             }
         } else {
-            android.util.Log.e("RemoteKeyboard", "Could not use any keymap to generate KeyEvent for unicode: " + unicodeChar);
+            android.util.Log.w(TAG, "Could not use any keymap to generate KeyEvent for unicode: " + unicodeChar);
         }
     }
 

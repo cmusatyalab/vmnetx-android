@@ -659,14 +659,14 @@ public class RemoteCanvas extends ImageView {
     //////////////////////////////////////////////////////////////////////////////////
     
     public void OnSettingsChanged(int width, int height, int bpp) {
-        android.util.Log.e(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
+        android.util.Log.d(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
         // We need to initialize the communicator and remote keyboard and mouse now.
         waitUntilInflated();
         int remoteWidth  = getRemoteWidth(getWidth(), getHeight());
         int remoteHeight = getRemoteHeight(getWidth(), getHeight());
         if (width != remoteWidth || height != remoteHeight) {
-            android.util.Log.e(TAG, "Requesting new res: " + remoteWidth + "x" + remoteHeight);
+            android.util.Log.d(TAG, "Requesting new res: " + remoteWidth + "x" + remoteHeight);
             spice.requestResolution(remoteWidth, remoteHeight);
         }
         
@@ -693,7 +693,7 @@ public class RemoteCanvas extends ImageView {
     }
 
     public void OnGraphicsUpdate(int x, int y, int width, int height) {
-        //android.util.Log.e(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
+        //android.util.Log.d(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
         synchronized (bitmapData.mbitmap) {
             spice.updateBitmap(bitmapData.mbitmap, x, y, width, height);
         }
