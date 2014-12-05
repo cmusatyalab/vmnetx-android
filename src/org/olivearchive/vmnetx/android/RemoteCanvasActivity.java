@@ -361,11 +361,23 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent evt) {
-
         boolean consumed = false;
 
-        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BACK)
+        // Ignore keys that should be handled by the platform
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_BACK:
+        case KeyEvent.KEYCODE_BRIGHTNESS_DOWN:
+        case KeyEvent.KEYCODE_BRIGHTNESS_UP:
+        case KeyEvent.KEYCODE_CAMERA:
+        case KeyEvent.KEYCODE_MENU:
+        case KeyEvent.KEYCODE_MUTE:
+        case KeyEvent.KEYCODE_NUM:
+        case KeyEvent.KEYCODE_SYM:
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+        case KeyEvent.KEYCODE_VOLUME_MUTE:
+        case KeyEvent.KEYCODE_VOLUME_UP:
             return false;
+        }
 
         try {
             switch (evt.getAction()) {
