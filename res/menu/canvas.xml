@@ -17,8 +17,10 @@
 
     <item
             android:id="@+id/itemCtrlAltDel"
-            android:title="@string/ctrl_alt_del"/>
+            android:title="@string/ctrl_alt_del"
+            android:icon="@drawable/ic_action_backspace"/>
     <item
             android:id="@+id/itemRestart"
-            android:title="@string/restart"/>
+            android:title="@string/restart"
+            android:icon="@drawable/ic_action_replay"/>
 </menu>
