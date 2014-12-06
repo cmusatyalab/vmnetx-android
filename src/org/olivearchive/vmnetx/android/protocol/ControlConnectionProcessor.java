@@ -66,20 +66,12 @@ public class ControlConnectionProcessor extends ConnectionProcessor
         buf.put(data);
         buf.rewind();
         sendQueue.add(buf);
-        selector.wakeup();
+        wakeup();
     }
 
     public void close() {
         exit = true;
-        try {
-            selector.wakeup();
-        } catch (Exception e) {
-            // Should be impossible to get IOExceptions, but Lollipop
-            // throws them
-            // https://code.google.com/p/android/issues/detail?id=80785
-            if (!(e instanceof IOException))
-                throw new RuntimeException(e);
-        }
+        wakeup();
     }
 
     private void connect() throws IOException {
@@ -145,6 +137,18 @@ public class ControlConnectionProcessor extends ConnectionProcessor
                 recvBuf.limit(HEADER_SIZE);
                 recvInLength = true;
             }
+        }
+    }
+
+    private void wakeup() {
+        try {
+            selector.wakeup();
+        } catch (Exception e) {
+            // Should be impossible to get IOExceptions, but Lollipop
+            // throws them
+            // https://code.google.com/p/android/issues/detail?id=80785
+            if (!(e instanceof IOException))
+                throw new RuntimeException(e);
         }
     }
 
