@@ -315,7 +315,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             InputMethodManager inputMgr = (InputMethodManager)
                     getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMgr.toggleSoftInput(0, 0);
-            break;
+            return true;
         case R.id.itemExtraKeys:
             if (layoutKeys.getVisibility() == View.VISIBLE) {
                 layoutKeys.setVisibility(View.GONE);
@@ -323,7 +323,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 layoutKeys.setVisibility(View.VISIBLE);
             }
             layoutKeys.invalidate();
-            break;
+            return true;
         case R.id.itemDisconnect:
             Utils.showYesNoPrompt(this, getString(R.string.disconnect_prompt_title), getString(R.string.disconnect_prompt), new DialogInterface.OnClickListener() {
                 @Override
