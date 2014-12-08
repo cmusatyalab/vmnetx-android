@@ -33,7 +33,7 @@ class ModifierKeyState {
         public int compareTo(Device o) {
             if (type != o.type)
                 return type.compareTo(o.type);
-            return Integer.compare(id, o.id);
+            return new Integer(id).compareTo(o.id);
         }
     }
 
