@@ -20,9 +20,6 @@
 
 package org.olivearchive.vmnetx.android.input;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -90,10 +87,6 @@ abstract public class GestureHandler
     // What the display density is.
     protected float displayDensity = 0;
     
-    // Queue which holds the last two MotionEvents which triggered onScroll
-    protected Queue<Float> distXQueue;
-    protected Queue<Float> distYQueue;
-    
     /**
      * In the drag modes, we process mouse events without sending them through
      * the gesture detector.
@@ -119,9 +112,6 @@ abstract public class GestureHandler
         gestures.setOnDoubleTapListener(this);
         scaleGestures = new ScaleGestureDetector(c, this);
         displayDensity = canvas.getDisplayDensity();
-        
-        distXQueue = new LinkedList<Float>();
-        distYQueue = new LinkedList<Float>();
     }
 
     protected int getCanvasTop() {

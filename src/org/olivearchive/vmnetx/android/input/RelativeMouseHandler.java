@@ -1,6 +1,8 @@
 package org.olivearchive.vmnetx.android.input;
 
 import android.view.MotionEvent;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
@@ -9,6 +11,10 @@ public class RelativeMouseHandler extends GestureHandler {
     static final String TAG = "RelativeMouseHandler";
     private float sensitivity = 0;
     private boolean acceleration = false;
+
+    // Queue which holds the last two MotionEvents which triggered onScroll
+    protected Queue<Float> distXQueue = new LinkedList<Float>();
+    protected Queue<Float> distYQueue = new LinkedList<Float>();
 
     /**
      * @param c
