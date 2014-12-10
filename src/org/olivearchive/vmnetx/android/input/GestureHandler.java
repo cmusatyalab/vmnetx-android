@@ -103,7 +103,6 @@ abstract public class GestureHandler
     protected boolean rightDragMode  = false;
     protected boolean middleDragMode = false;
     protected float   dragX, dragY;
-    protected boolean singleHandedGesture = false;
 
 
     /**
@@ -347,8 +346,7 @@ abstract public class GestureHandler
                 // Cancel any effect of scaling having "just finished" (e.g. ignoring scrolling).
                 scalingJustFinished = false;
                 // Cancel drag modes and scrolling.
-                if (!singleHandedGesture) 
-                    endDragModesAndScrolling();
+                endDragModesAndScrolling();
                 canvas.inScrolling = true;
                 // If we are manipulating the desktop, turn off bitmap filtering for faster response.
                 canvas.bitmapData.drawable._defaultPaint.setFilterBitmap(false);
@@ -356,7 +354,6 @@ abstract public class GestureHandler
                 dragY = e.getY();
                 break;
             case MotionEvent.ACTION_UP:
-                singleHandedGesture = false;
                 // If any drag modes were going on, end them and send a mouse up event.
                 if (endDragModesAndScrolling())
                     return p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
