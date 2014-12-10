@@ -97,12 +97,8 @@ abstract public class GestureHandler
     protected boolean middleDragMode = false;
     protected float   dragX, dragY;
 
-
-    /**
-     * These variables keep track of which pointers have seen ACTION_DOWN events.
-     */
-    protected boolean secondPointerWasDown = false;
-    protected boolean thirdPointerWasDown  = false;
+    // How many pointers have seen ACTION_DOWN events.
+    protected int numPointersSeen;
     
     GestureHandler(RemoteCanvasActivity c, RemoteCanvas v)
     {
@@ -274,7 +270,7 @@ abstract public class GestureHandler
         RemotePointer p = canvas.getPointer();
 
         // If we've performed a right/middle-click and the gesture is not over yet, do not start drag mode.
-        if (secondPointerWasDown || thirdPointerWasDown)
+        if (numPointersSeen > 1)
             return;
         
         Utils.performLongPressHaptic(canvas);
@@ -329,10 +325,9 @@ abstract public class GestureHandler
             switch (action) {
             case MotionEvent.ACTION_DOWN:
                 // We have put down first pointer on the screen, so we can reset the state of all click-state variables.
-                // Permit sending mouse-down event on long-tap again.
-                secondPointerWasDown = false;
-                // Permit right-clicking again.
-                thirdPointerWasDown = false;
+                // Permit right-clicking and sending mouse-down event on
+                // long-tap again.
+                numPointersSeen = 1;
                 // Cancel any effect of scaling having "just finished" (e.g. ignoring scrolling).
                 scalingJustFinished = false;
                 // Cancel drag modes and scrolling.
@@ -399,18 +394,17 @@ abstract public class GestureHandler
             case MotionEvent.ACTION_POINTER_DOWN:
                 // Here we only prepare for the second click, which we perform on ACTION_POINTER_UP for pointerID==1.
                 endDragModesAndScrolling();
-                // Permit sending mouse-down event on long-tap again.
-                secondPointerWasDown = true;
-                // Permit right-clicking again.
-                thirdPointerWasDown  = false;
+                // Prohibit sending mouse-down event on long-tap, and permit
+                // right-clicking.
+                numPointersSeen = 2;
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-                if (!inSwiping && !inScaling && !thirdPointerWasDown) {
+                if (!inSwiping && !inScaling && numPointersSeen <= 2) {
                     // If user taps with a second finger while first finger is down, then we treat this as
                     // a right mouse click, but we only effect the click when the second pointer goes up.
                     // If the user taps with a second and third finger while the first 
                     // finger is down, we treat it as a middle mouse click. We ignore the lifting of the
-                    // second index when the third index has gone down (using the thirdPointerWasDown variable)
+                    // second index when the third index has gone down
                     // to prevent inadvertent right-clicks when a middle click has been performed.
                     p.processPointerEvent(getX(e), getY(e), action, true, true, false, false, 0);
                     // Enter right-drag mode.
@@ -426,8 +420,8 @@ abstract public class GestureHandler
             switch (action) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (!inScaling) {
-                    // This boolean prevents the right-click from firing simultaneously as a middle button click.
-                    thirdPointerWasDown = true;
+                    // Prevent the right-click from firing simultaneously as a middle button click.
+                    numPointersSeen = 3;
                     p.processPointerEvent(getX(e), getY(e), action, true, false, true, false, 0);
                     // Enter middle-drag mode.
                     middleDragMode      = true;

@@ -31,7 +31,7 @@ public class AbsoluteMouseHandler extends GestureHandler {
     public void onLongPress(MotionEvent e) {
 
         // If we've performed a right/middle-click and the gesture is not over yet, do not start drag mode.
-        if (secondPointerWasDown || thirdPointerWasDown)
+        if (numPointersSeen > 1)
             return;
         
         Utils.performLongPressHaptic(canvas);
