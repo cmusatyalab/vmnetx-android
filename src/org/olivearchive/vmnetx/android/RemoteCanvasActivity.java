@@ -46,12 +46,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.View.OnKeyListener;
+import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 
-public class RemoteCanvasActivity extends Activity implements OnKeyListener {
+public class RemoteCanvasActivity extends Activity implements OnKeyListener,
+        OnSystemUiVisibilityChangeListener {
     //private final static String TAG = "RemoteCanvasActivity";
     private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
@@ -144,6 +146,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         });
         
         canvas.setOnKeyListener(this);
+        canvas.setOnSystemUiVisibilityChangeListener(this);
         canvas.setFocusableInTouchMode(true);
         
         gestureHandler = new AbsoluteMouseHandler(this, canvas);
@@ -275,6 +278,34 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
         keyboardMenuItem.setVisible(softKeyboardEnabled);
     }
 
+    public void setFullScreen(boolean fullScreen) {
+        if (canvas == null)
+            return;
+
+        int visibility;
+        if (fullScreen) {
+            // _LAYOUT_ flags reduce the number of redraws when entering
+            // fullscreen
+            visibility =
+                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                visibility |=
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE;
+            } else {
+                visibility |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+            }
+            getActionBar().hide();
+        } else {
+            visibility = 0;
+            getActionBar().show();
+        }
+        if (canvas.getSystemUiVisibility() != visibility)
+            canvas.setSystemUiVisibility(visibility);
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -323,6 +354,9 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
                 layoutKeys.setVisibility(View.VISIBLE);
             }
             layoutKeys.invalidate();
+            return true;
+        case R.id.itemFullScreen:
+            setFullScreen(true);
             return true;
         case R.id.itemDisconnect:
             Utils.showYesNoPrompt(this, getString(R.string.disconnect_prompt_title), getString(R.string.disconnect_prompt), new DialogInterface.OnClickListener() {
@@ -416,6 +450,14 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener {
             } catch (NullPointerException e) { }
         }
         return super.onGenericMotionEvent(event);
+    }
+
+    @Override
+    public void onSystemUiVisibilityChange(int visibility) {
+        if (visibility == 0) {
+            // Exiting full screen; ensure action bar is re-enabled
+            setFullScreen(false);
+        }
     }
 
     public float getSensitivity() {

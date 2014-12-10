@@ -10,6 +10,7 @@
 <string name="error_connection_interrupted">Connection interrupted.</string>
 <string name="error_connection_failed">Connection failed.</string>
 <string name="error_vm_terminated">Virtual machine terminated.</string>
+<string name="full_screen_enter">Full Screen</string>
 <string name="info_progress_dialog_title">Loading&#8230;</string>
 <string name="info_progress_dialog_message">Launching virtual machine.\nPlease wait&#8230;</string>
 <string name="info_progress_dialog_aborted">Connection aborted!</string>
