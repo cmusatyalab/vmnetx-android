@@ -51,11 +51,10 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientDisconnect (JN
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT void JNICALL
 Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEnv *env, jobject obj, jlong context, jstring pw)
 {
     struct spice_context *ctx = (struct spice_context *) context;
-    int result = 0;
 
     // Store JNIEnv and object for use in callbacks.
     ctx->jenv = env;
@@ -79,8 +78,6 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     spice_connection *conn = connection_new(ctx);
     spice_session_setup(env, conn->session, pw);
 
-    //watch_stdin();
-
     connection_connect(conn);
     if (ctx->connections > 0) {
         g_main_loop_run(ctx->mainloop);
@@ -89,7 +86,6 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
         __android_log_write(ANDROID_LOG_INFO, TAG, "Exiting main loop.");
     } else {
         __android_log_write(ANDROID_LOG_ERROR, TAG, "Wrong hostname, port, or password.");
-        result = 2;
     }
 
     ctx->jni_get_fd           = NULL;
@@ -98,7 +94,6 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientConnect (JNIEn
     ctx->jni_cursor_config    = NULL;
     ctx->jni_connector        = NULL;
     ctx->jenv                 = NULL;
-    return result;
 }
 
 JNIEXPORT jlong JNICALL

@@ -14,7 +14,7 @@ public class SpiceCommunicator {
 
     private native long SpiceClientNewContext ();
     private native void SpiceClientFreeContext (long context);
-    private native int  SpiceClientConnect (long context, String password);
+    private native void SpiceClientConnect (long context, String password);
     private native void SpiceClientDisconnect (long context);
     private native void SpiceButtonEvent (long context, int x, int y, int pointerMask);
     private native void SpiceKeyEvent (long context, boolean keyDown, int virtualKeyCode);
