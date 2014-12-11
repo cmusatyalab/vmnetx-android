@@ -122,6 +122,7 @@ public class SpiceCommunicator {
         this.width = width;
         this.height = height;
         canvas.OnSettingsChanged(width, height, bpp);
+        isInNormalProtocol = true;
     }
 
     private void OnGraphicsUpdate(int inst, int x, int y, int width, int height) {
@@ -143,10 +144,6 @@ public class SpiceCommunicator {
         return height;
     }
 
-    public void setIsInNormalProtocol(boolean state) {
-        isInNormalProtocol = state;        
-    }
-    
     public boolean isInNormalProtocol() {
         return isInNormalProtocol;
     }

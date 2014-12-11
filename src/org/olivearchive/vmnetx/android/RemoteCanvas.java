@@ -686,9 +686,8 @@ public class RemoteCanvas extends ImageView {
         handler.post(drawableSetter);
         handler.post(setModes);
         
-        // Set the new bitmap in the native layer.
+        // Notify that we have a connection.
         spiceUpdateReceived = true;
-        spice.setIsInNormalProtocol(true);
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 
