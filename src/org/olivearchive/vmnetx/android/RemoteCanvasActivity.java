@@ -284,15 +284,10 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
 
         int visibility;
         if (fullScreen) {
-            // _LAYOUT_ flags reduce the number of redraws when entering
-            // fullscreen
-            visibility =
-                    View.SYSTEM_UI_FLAG_FULLSCREEN |
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            visibility = View.SYSTEM_UI_FLAG_FULLSCREEN;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 visibility |=
                         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
                         View.SYSTEM_UI_FLAG_IMMERSIVE;
             } else {
                 visibility |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
