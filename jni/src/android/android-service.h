@@ -26,16 +26,20 @@
 
 #define PTRFLAGS_DOWN 0x8000
 
-struct spice_context {
-    struct _SpiceDisplay *display;
+struct spice_main_thread {
     JNIEnv               *jenv;
-    jobject               jni_connector;
     jmethodID             jni_get_fd;
     jmethodID             jni_settings_changed;
     jmethodID             jni_graphics_update;
     jmethodID             jni_cursor_config;
     GMainLoop            *mainloop;
-    int                   connections;
+};
+
+struct spice_context {
+    struct spice_main_thread *thr;
+    struct _SpiceDisplay     *display;
+    jobject                   jni_connector;
+    int                       connections;
 };
 
 #endif

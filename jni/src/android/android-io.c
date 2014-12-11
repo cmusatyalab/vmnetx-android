@@ -213,19 +213,19 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv *
 
 void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel) {
     // Ask the UI to connect a file descriptor for us.
-    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_get_fd, (jlong) channel);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_get_fd, (jlong) channel);
 }
 
 void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gint h) {
     // Tell the UI that it needs to send in the bitmap to be updated and to redraw.
-    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_graphics_update, 0, x, y, w, h);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_graphics_update, 0, x, y, w, h);
 }
 
 void uiCallbackSettingsChanged (struct spice_context *ctx, gint instance, gint width, gint height, gint bpp) {
     // Ask for a new bitmap from the UI.
-    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_settings_changed, instance, width, height, bpp);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_settings_changed, instance, width, height, bpp);
 }
 
 void uiCallbackCursorConfig (struct spice_context *ctx, bool absolute_mouse) {
-    (*ctx->jenv)->CallVoidMethod(ctx->jenv, ctx->jni_connector, ctx->jni_cursor_config, absolute_mouse);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_cursor_config, absolute_mouse);
 }
