@@ -419,12 +419,26 @@ abstract public class GestureHandler
         case 2:
             switch (action) {
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (!inScaling) {
-                    // Prevent the right-click from firing simultaneously as a middle button click.
-                    numPointersSeen = 3;
+                // Prevent the right-click from firing simultaneously as a middle button click.
+                numPointersSeen = 3;
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                if (!inSwiping && !inScaling && numPointersSeen <= 3) {
                     p.processPointerEvent(getX(e), getY(e), action, true, false, true, false, 0);
                     // Enter middle-drag mode.
                     middleDragMode      = true;
+                }
+                break;
+            }
+            break;
+
+        case 3:
+            switch (action) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                // Prevent the gesture from firing as a middle button click.
+                numPointersSeen = 4;
+                if (!inSwiping && !inScaling) {
+                    activity.setFullScreen(false);
                 }
             }
             break;

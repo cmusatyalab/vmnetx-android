@@ -296,6 +296,9 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
                         View.SYSTEM_UI_FLAG_IMMERSIVE;
             } else {
                 visibility |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+                // Platform doesn't support swipe from top/bottom to exit
+                // full screen, so tell the user about our exit gesture.
+                canvas.displayShortToastMessage(R.string.full_screen_exit_instructions);
             }
             getActionBar().hide();
         } else {
