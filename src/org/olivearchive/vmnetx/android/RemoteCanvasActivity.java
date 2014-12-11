@@ -72,7 +72,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
     private OnScreenModifierKey keyShift;
     
     @Override
-    public void onCreate(Bundle icicle) {
+    protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         if (icicle != null)
             connection = (ConnectionBean) icicle.getSerializable(CONNECTION_KEY);
@@ -87,7 +87,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         icicle.putSerializable(CONNECTION_KEY, connection);
     }
 
-    void initialize () {
+    private void initialize() {
         android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
         android.os.StrictMode.setThreadPolicy(policy);
         
@@ -132,7 +132,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         }
     }
 
-    void continueConnecting () {
+    private void continueConnecting() {
         setContentView(R.layout.canvas);
         canvas = (RemoteCanvas) findViewById(R.id.remoteCanvas);
 
