@@ -295,10 +295,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
                 // full screen, so tell the user about our exit gesture.
                 canvas.displayShortToastMessage(R.string.full_screen_exit_instructions);
             }
-            getActionBar().hide();
         } else {
             visibility = 0;
-            getActionBar().show();
         }
         if (canvas.getSystemUiVisibility() != visibility)
             canvas.setSystemUiVisibility(visibility);
@@ -452,9 +450,12 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
 
     @Override
     public void onSystemUiVisibilityChange(int visibility) {
-        if (visibility == 0) {
-            // Exiting full screen; ensure action bar is re-enabled
-            setFullScreen(false);
+        if (visibility != 0) {
+            // Entering full screen
+            getActionBar().hide();
+        } else {
+            // Exiting full screen
+            getActionBar().show();
         }
     }
 
