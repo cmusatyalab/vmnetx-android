@@ -25,7 +25,8 @@
                 android:name="RemoteCanvasActivity"
                 android:windowSoftInputMode="stateHidden|adjustResize"
                 android:theme="@android:style/Theme.DeviceDefault"
-                android:documentLaunchMode="intoExisting"
+                android:launchMode="singleTask"
+                android:documentLaunchMode="never"
                 android:autoRemoveFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

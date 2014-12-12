@@ -15,6 +15,9 @@
 <string name="info_progress_dialog_title">Loading&#8230;</string>
 <string name="info_progress_dialog_message">Launching virtual machine.\nPlease wait&#8230;</string>
 <string name="info_progress_dialog_aborted">Connection aborted!</string>
+<string name="replace_prompt">All changes to \"%1$s\" will be lost.</string>
+<string name="replace_prompt_anonymous">All changes will be lost.</string>
+<string name="replace_prompt_title">Really launch new VM?</string>
 <string name="restart">Restart</string>
 <string name="restart_prompt">Unsaved data will be lost.</string>
 <string name="restart_prompt_title">Really reboot the guest?</string>

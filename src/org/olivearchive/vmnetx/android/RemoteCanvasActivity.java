@@ -80,6 +80,26 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         initialize();
         continueConnecting();
     }
+
+    @Override
+    protected void onNewIntent(final Intent intent) {
+        super.onNewIntent(intent);
+
+        String promptBody = getString(R.string.replace_prompt_anonymous);
+        String vmName = (canvas != null) ? canvas.getVMName() : null;
+        if (vmName != null)
+            promptBody = String.format(getString(R.string.replace_prompt), vmName);
+
+        Utils.showYesNoPrompt(this, getString(R.string.replace_prompt_title), promptBody, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                teardown();
+                setIntent(intent);
+                initialize();
+                continueConnecting();
+            }
+        }, null, null);
+    }
     
     @Override
     protected void onSaveInstanceState(Bundle icicle) {
@@ -302,6 +322,15 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
             canvas.setSystemUiVisibility(visibility);
     }
 
+    private void teardown() {
+        if (canvas != null)
+            canvas.closeConnection();
+        canvas = null;
+        connection = null;
+        gestureHandler = null;
+        System.gc();
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -381,12 +410,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (canvas != null)
-            canvas.closeConnection();
-        canvas = null;
-        connection = null;
-        gestureHandler = null;
-        System.gc();
+        teardown();
     }
 
     @Override
