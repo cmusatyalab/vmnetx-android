@@ -19,6 +19,9 @@
 
 #include "android-service.h"
 
+void _assert_on_main_loop_thread(const char *caller);
+#define assert_on_main_loop_thread() _assert_on_main_loop_thread(__func__)
+
 /* These can only be called from the thread running the glib main loop. */
 void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel);
 void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gint h);
