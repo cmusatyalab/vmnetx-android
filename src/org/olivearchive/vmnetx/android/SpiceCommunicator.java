@@ -40,7 +40,6 @@ public class SpiceCommunicator {
 
     private boolean isInNormalProtocol = false;
     
-    private SpiceThread spicethread = null;
     private long context;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionBean connection) {
@@ -57,30 +56,17 @@ public class SpiceCommunicator {
     }
 
     public void connect() {
-        spicethread = new SpiceThread();
-        spicethread.start();
+        SpiceClientConnect(context, connection.getToken());
     }
     
     public void disconnect() {
         SpiceClientDisconnect(context);
-        try {spicethread.join(3000);} catch (InterruptedException e) {}
     }
 
     protected void finalize() {
         SpiceClientFreeContext(context);
     }
 
-    private class SpiceThread extends Thread {
-        public void run() {
-            SpiceClientConnect(context, connection.getToken());
-            android.util.Log.d(TAG, "SpiceClientConnect returned.");
-
-            // If we've exited SpiceClientConnect, the connection was
-            // interrupted or was never established.
-            handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
-        }
-    }
-    
     private class ConnectThread extends Thread {
         private long cookie;
 
@@ -134,6 +120,10 @@ public class SpiceCommunicator {
             wantAbsoluteMouse = absoluteMouse;
         }
         canvas.OnCursorConfig();
+    }
+
+    private void OnDisconnect() {
+        handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
     }
 
     public int framebufferWidth() {

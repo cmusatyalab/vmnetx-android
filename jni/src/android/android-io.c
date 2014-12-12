@@ -273,7 +273,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv *
 
 void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel) {
     // Ask the UI to connect a file descriptor for us.
-    //assert_on_main_loop_thread();
+    assert_on_main_loop_thread();
     (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_get_fd, (jlong) channel);
 }
 
@@ -292,4 +292,9 @@ void uiCallbackSettingsChanged (struct spice_context *ctx, gint instance, gint w
 void uiCallbackCursorConfig (struct spice_context *ctx, bool absolute_mouse) {
     assert_on_main_loop_thread();
     (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_cursor_config, absolute_mouse);
+}
+
+void uiCallbackDisconnect (struct spice_context *ctx) {
+    assert_on_main_loop_thread();
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_disconnect);
 }

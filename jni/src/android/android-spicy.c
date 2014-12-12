@@ -304,8 +304,7 @@ static void connection_destroy(spice_connection *conn)
     ctx->connections--;
     SPICE_DEBUG("%s (%d)", __FUNCTION__, ctx->connections);
     if (!ctx->connections) {
-        //__android_log_write(ANDROID_LOG_DEBUG, TAG, "quitting main loop");
-        g_main_loop_quit(ctx->thr->mainloop);
+        uiCallbackDisconnect(ctx);
     }
 }
 
