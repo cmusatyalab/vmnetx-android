@@ -9,3 +9,4 @@ obj/
 libs/armeabi/
 libs/armeabi-v7a
 gst-build
+src/com/gstreamer/GStreamer.java
