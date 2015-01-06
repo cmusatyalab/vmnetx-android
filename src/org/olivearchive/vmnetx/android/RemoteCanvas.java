@@ -326,7 +326,6 @@ public class RemoteCanvas extends ImageView {
         setModes         = null;
         connection       = null;
         scaling          = null;
-        drawableSetter   = null;
         screenMessage    = null;
         spice            = null;
         endpoint         = null;
@@ -451,7 +450,7 @@ public class RemoteCanvas extends ImageView {
     /**
      * This runnable sets the drawable (contained in bitmapData) for the RemoteCanvas (ImageView).
      */
-    private Runnable drawableSetter = new Runnable() {
+    private final Runnable drawableSetter = new Runnable() {
         public void run() {
             if (bitmapData != null)
                 bitmapData.setImageDrawable(RemoteCanvas.this);
