@@ -110,6 +110,8 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
     private void initialize() {
         android.os.StrictMode.ThreadPolicy policy = new android.os.StrictMode.ThreadPolicy.Builder().permitAll().build();
         android.os.StrictMode.setThreadPolicy(policy);
+
+        setVolumeControlStream(android.media.AudioManager.STREAM_MUSIC);
         
         if (connection == null) {
             Intent i = getIntent();
