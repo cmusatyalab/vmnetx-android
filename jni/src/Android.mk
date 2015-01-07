@@ -68,8 +68,7 @@ LOCAL_SRC_FILES := android/android-io.c \
                    spice-common/common/ssl_verify.c
 
 LOCAL_LDLIBS 	+= $(spice_objs) \
-                   -ljnigraphics -llog -ldl -lstdc++ -lz \
-                   -malign-double -malign-loops
+                   -ljnigraphics -llog -ldl -lstdc++ -lz
 
 LOCAL_CPPFLAGS 	+= -DG_LOG_DOMAIN=\"GSpice\" \
                    -DSPICE_GTK_LOCALEDIR=\"/usr/local/share/locale\" \
