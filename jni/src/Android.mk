@@ -15,22 +15,57 @@ spice_objs := \
 
 LOCAL_MODULE    := spice
 
-LOCAL_SRC_FILES := gtk/channel-record.c gtk/channel-playback.c gtk/channel-cursor.c \
-                   gtk/spice-cmdline.c gtk/coroutine_gthread.c gtk/spice-util.c \
-                   gtk/spice-session.c gtk/spice-channel.c gtk/spice-marshal.c gtk/spice-glib-enums.c \
-                   gtk/gio-coroutine.c gtk/channel-base.c gtk/channel-main.c gtk/bio-gio.c gtk/client_sw_canvas.c \
-                   gtk/glib-compat.c gtk/channel-display.c gtk/channel-display-mjpeg.c gtk/channel-inputs.c \
-                   gtk/decode-glz.c gtk/decode-jpeg.c gtk/decode-zlib.c gtk/wocky-http-proxy.c gtk/channel-port.c \
-                   gtk/spice-client.c gtk/spice-audio.c gtk/spice-gstaudio.c gtk/spice-uri.c gtk/usb-device-manager.c \
-                   spice-common/common/generated_client_demarshallers.c spice-common/common/generated_client_demarshallers1.c \
-                   spice-common/common/generated_client_marshallers.c spice-common/common/generated_client_marshallers1.c \
-                   spice-common/common/mem.c spice-common/common/marshaller.c spice-common/common/canvas_utils.c \
-                   spice-common/common/backtrace.c spice-common/common/pixman_utils.c \
-                   spice-common/common/lines.c spice-common/common/rop3.c spice-common/common/quic.c spice-common/common/lz.c \
-                   spice-common/common/region.c spice-common/common/ssl_verify.c spice-common/common/log.c \
+LOCAL_SRC_FILES := android/android-io.c \
+                   android/android-service.c \
+                   android/android-socket.c \
+                   android/android-spice-widget.c \
+                   android/android-spicy.c \
+                   gtk/bio-gio.c \
+                   gtk/channel-base.c \
+                   gtk/channel-cursor.c \
+                   gtk/channel-display.c \
+                   gtk/channel-display-mjpeg.c \
+                   gtk/channel-inputs.c \
+                   gtk/channel-main.c \
+                   gtk/channel-playback.c \
+                   gtk/channel-port.c \
+                   gtk/channel-record.c \
+                   gtk/client_sw_canvas.c \
+                   gtk/coroutine_gthread.c \
+                   gtk/decode-glz.c \
+                   gtk/decode-jpeg.c \
+                   gtk/decode-zlib.c \
+                   gtk/gio-coroutine.c \
+                   gtk/glib-compat.c \
+                   gtk/spice-audio.c \
+                   gtk/spice-channel.c \
+                   gtk/spice-client.c \
+                   gtk/spice-cmdline.c \
+                   gtk/spice-glib-enums.c \
+                   gtk/spice-gstaudio.c \
+                   gtk/spice-marshal.c \
+                   gtk/spice-session.c \
+                   gtk/spice-uri.c \
+                   gtk/spice-util.c \
+                   gtk/usb-device-manager.c \
+                   gtk/wocky-http-proxy.c \
+                   spice-common/common/backtrace.c \
+                   spice-common/common/canvas_utils.c \
+                   spice-common/common/generated_client_demarshallers1.c \
+                   spice-common/common/generated_client_demarshallers.c \
+                   spice-common/common/generated_client_marshallers1.c \
+                   spice-common/common/generated_client_marshallers.c \
+                   spice-common/common/lines.c \
+                   spice-common/common/log.c \
+                   spice-common/common/lz.c \
+                   spice-common/common/marshaller.c \
+                   spice-common/common/mem.c \
+                   spice-common/common/pixman_utils.c \
+                   spice-common/common/quic.c \
+                   spice-common/common/region.c \
+                   spice-common/common/rop3.c \
                    spice-common/common/snd_codec.c \
-                   android/android-service.c android/android-spicy.c android/android-spice-widget.c \
-                   android/android-io.c android/android-socket.c
+                   spice-common/common/ssl_verify.c
 
 LOCAL_LDLIBS 	+= $(spice_objs) \
                    -ljnigraphics -llog -ldl -lstdc++ -lz \
