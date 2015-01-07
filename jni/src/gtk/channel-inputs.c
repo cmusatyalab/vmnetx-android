@@ -15,6 +15,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
+#include "config.h"
+
 #include "spice-client.h"
 #include "spice-common.h"
 #include "spice-channel-priv.h"
@@ -145,24 +147,6 @@ static void spice_inputs_channel_class_init(SpiceInputsChannelClass *klass)
     channel_set_handlers(SPICE_CHANNEL_CLASS(klass));
 }
 
-/* signal trampoline---------------------------------------------------------- */
-
-struct SPICE_INPUTS_MODIFIERS {
-};
-
-/* main context */
-static void do_emit_main_context(GObject *object, int signum, gpointer params)
-{
-    switch (signum) {
-    case SPICE_INPUTS_MODIFIERS: {
-        g_signal_emit(object, signals[signum], 0);
-        break;
-    }
-    default:
-        g_warn_if_reached();
-    }
-}
-
 /* ------------------------------------------------------------------ */
 
 static SpiceMsgOut* mouse_motion(SpiceInputsChannel *channel)
@@ -249,7 +233,7 @@ static void inputs_handle_init(SpiceChannel *channel, SpiceMsgIn *in)
     SpiceMsgInputsInit *init = spice_msg_in_parsed(in);
 
     c->modifiers = init->keyboard_modifiers;
-    emit_main_context(channel, SPICE_INPUTS_MODIFIERS);
+    g_coroutine_signal_emit(channel, signals[SPICE_INPUTS_MODIFIERS], 0);
 }
 
 /* coroutine context */
@@ -259,7 +243,7 @@ static void inputs_handle_modifiers(SpiceChannel *channel, SpiceMsgIn *in)
     SpiceMsgInputsKeyModifiers *modifiers = spice_msg_in_parsed(in);
 
     c->modifiers = modifiers->modifiers;
-    emit_main_context(channel, SPICE_INPUTS_MODIFIERS);
+    g_coroutine_signal_emit(channel, signals[SPICE_INPUTS_MODIFIERS], 0);
 }
 
 /* coroutine context */

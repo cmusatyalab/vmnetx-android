@@ -15,6 +15,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
+#include "config.h"
+
 #include "spice-client.h"
 #include "spice-common.h"
 #include "spice-channel-priv.h"
@@ -249,36 +251,6 @@ static void spice_record_channel_class_init(SpiceRecordChannelClass *klass)
     channel_set_handlers(SPICE_CHANNEL_CLASS(klass));
 }
 
-/* signal trampoline---------------------------------------------------------- */
-
-struct SPICE_RECORD_START {
-    gint format;
-    gint channels;
-    gint frequency;
-};
-
-struct SPICE_RECORD_STOP {
-};
-
-/* main context */
-static void do_emit_main_context(GObject *object, int signum, gpointer params)
-{
-    switch (signum) {
-    case SPICE_RECORD_START: {
-        struct SPICE_RECORD_START *p = params;
-        g_signal_emit(object, signals[signum], 0,
-                      p->format, p->channels, p->frequency);
-        break;
-    }
-    case SPICE_RECORD_STOP: {
-        g_signal_emit(object, signals[signum], 0);
-        break;
-    }
-    default:
-        g_warn_if_reached();
-    }
-}
-
 /* main context */
 static void spice_record_mode(SpiceRecordChannel *channel, uint32_t time,
                               uint32_t mode, uint8_t *data, uint32_t data_size)
@@ -434,7 +406,7 @@ static void record_handle_start(SpiceChannel *channel, SpiceMsgIn *in)
 
     g_return_if_fail(start->format == SPICE_AUDIO_FMT_S16);
 
-    c->codec = NULL;
+    snd_codec_destroy(&c->codec);
 
     if (c->mode != SPICE_AUDIO_DATA_MODE_RAW) {
         if (snd_codec_create(&c->codec, c->mode, start->frequency, SND_CODEC_ENCODE) != SND_CODEC_OK) {
@@ -446,11 +418,11 @@ static void record_handle_start(SpiceChannel *channel, SpiceMsgIn *in)
 
     g_free(c->last_frame);
     c->frame_bytes = frame_size * 16 * start->channels / 8;
-    c->last_frame = g_malloc(c->frame_bytes);
+    c->last_frame = g_malloc0(c->frame_bytes);
     c->last_frame_current = 0;
 
-    emit_main_context(channel, SPICE_RECORD_START,
-                      start->format, start->channels, start->frequency);
+    g_coroutine_signal_emit(channel, signals[SPICE_RECORD_START], 0,
+                            start->format, start->channels, start->frequency);
 }
 
 /* coroutine context */
@@ -458,7 +430,7 @@ static void record_handle_stop(SpiceChannel *channel, SpiceMsgIn *in)
 {
     SpiceRecordChannelPrivate *rc = SPICE_RECORD_CHANNEL(channel)->priv;
 
-    emit_main_context(channel, SPICE_RECORD_STOP);
+    g_coroutine_signal_emit(channel, signals[SPICE_RECORD_STOP], 0);
     rc->started = FALSE;
 }
 
@@ -477,7 +449,7 @@ static void record_handle_set_volume(SpiceChannel *channel, SpiceMsgIn *in)
     c->nchannels = vol->nchannels;
     c->volume = g_new(guint16, c->nchannels);
     memcpy(c->volume, vol->volume, sizeof(guint16) * c->nchannels);
-    g_object_notify_main_context(G_OBJECT(channel), "volume");
+    g_coroutine_object_notify(G_OBJECT(channel), "volume");
 }
 
 /* coroutine context */
@@ -487,7 +459,7 @@ static void record_handle_set_mute(SpiceChannel *channel, SpiceMsgIn *in)
     SpiceMsgAudioMute *m = spice_msg_in_parsed(in);
 
     c->mute = m->mute;
-    g_object_notify_main_context(G_OBJECT(channel), "mute");
+    g_coroutine_object_notify(G_OBJECT(channel), "mute");
 }
 
 static void channel_set_handlers(SpiceChannelClass *klass)

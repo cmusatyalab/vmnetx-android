@@ -575,7 +575,7 @@ void *spice_marshaller_add_uint32(SpiceMarshaller *m, uint32_t v)
     return (void *)ptr;
 }
 
-void spice_marshaller_set_uint32(SpiceMarshaller *m, void *ref, uint32_t v)
+void spice_marshaller_set_uint32(SPICE_GNUC_UNUSED SpiceMarshaller *m, void *ref, uint32_t v)
 {
     write_uint32((uint8_t *)ref, v);
 }

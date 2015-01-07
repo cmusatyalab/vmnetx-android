@@ -77,6 +77,9 @@
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
+/* Define to 1 if you have the `strtok_r' function. */
+#define HAVE_STRTOK_R 1
+
 /* Define to 1 if you have the <sys/ipc.h> header file. */
 #define HAVE_SYS_IPC_H 1
 
@@ -111,9 +114,6 @@
    */
 #define LT_OBJDIR ".libs/"
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-/* #undef NO_MINUS_C_MINUS_O */
-
 /* Name of package */
 #define PACKAGE "spice-gtk"
 
@@ -124,7 +124,7 @@
 #define PACKAGE_NAME "spice-gtk"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "spice-gtk 0.22"
+#define PACKAGE_STRING "spice-gtk 0.27"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "spice-gtk"
@@ -133,19 +133,25 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.22"
+#define PACKAGE_VERSION "0.27"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
-/* Define if supporting dbus */
-/* #undef USE_DBUS */
+/* Define if supporting gdbus */
+/* #undef USE_GDBUS */
 
 /* Define if supporting gudev */
 /* #undef USE_GUDEV */
 
 /* Define if libusb has hotplug support */
 /* #undef USE_LIBUSB_HOTPLUG */
+
+/* Define to build with Lz4 support */
+/* #undef USE_LZ4 */
+
+/* Define if supporting phodav */
+/* #undef USE_PHODAV */
 
 /* Define if supporting polkit */
 /* #undef USE_POLKIT */
@@ -157,7 +163,10 @@
 /* #undef USE_USBREDIR */
 
 /* Version number of package */
-#define VERSION "0.22"
+#define VERSION "0.27"
+
+/* Have GStreamer 1.0? */
+/* #undef WITH_GST1AUDIO */
 
 /* Have GStreamer? */
 /* #undef WITH_GSTAUDIO */

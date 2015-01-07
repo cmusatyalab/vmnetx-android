@@ -32,7 +32,8 @@
 static int gdi_handlers = 0;
 #endif
 
-static void release_data(pixman_image_t *image, void *release_data)
+static void release_data(SPICE_GNUC_UNUSED pixman_image_t *image,
+                         void *release_data)
 {
     PixmanData *data = (PixmanData *)release_data;
 

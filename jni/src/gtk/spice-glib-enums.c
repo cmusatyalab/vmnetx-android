@@ -1,6 +1,8 @@
 
 
 
+#include "config.h"
+
 #include <glib-object.h>
 #include "spice-glib-enums.h"
 
@@ -95,6 +97,7 @@ static const GEnumValue _spice_session_migration_values[] = {
   { SPICE_SESSION_MIGRATION_NONE, "SPICE_SESSION_MIGRATION_NONE", "none" },
   { SPICE_SESSION_MIGRATION_SWITCHING, "SPICE_SESSION_MIGRATION_SWITCHING", "switching" },
   { SPICE_SESSION_MIGRATION_MIGRATING, "SPICE_SESSION_MIGRATION_MIGRATING", "migrating" },
+  { SPICE_SESSION_MIGRATION_CONNECTING, "SPICE_SESSION_MIGRATION_CONNECTING", "connecting" },
   { 0, NULL, NULL }
 };
 

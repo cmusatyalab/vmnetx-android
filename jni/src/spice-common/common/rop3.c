@@ -43,15 +43,19 @@ static rop3_test_handler_t rop3_test_handlers_32[ROP3_NUM_OPS];
 static rop3_test_handler_t rop3_test_handlers_16[ROP3_NUM_OPS];
 
 
-static void default_rop3_with_pattern_handler(pixman_image_t *d, pixman_image_t *s,
-                                              SpicePoint *src_pos, pixman_image_t *p,
-                                              SpicePoint *pat_pos)
+static void default_rop3_with_pattern_handler(SPICE_GNUC_UNUSED pixman_image_t *d,
+                                              SPICE_GNUC_UNUSED pixman_image_t *s,
+                                              SPICE_GNUC_UNUSED SpicePoint *src_pos,
+                                              SPICE_GNUC_UNUSED pixman_image_t *p,
+                                              SPICE_GNUC_UNUSED SpicePoint *pat_pos)
 {
     spice_critical("not implemented");
 }
 
-static void default_rop3_withe_color_handler(pixman_image_t *d, pixman_image_t *s, SpicePoint *src_pos,
-                                             uint32_t rgb)
+static void default_rop3_withe_color_handler(SPICE_GNUC_UNUSED pixman_image_t *d,
+                                             SPICE_GNUC_UNUSED pixman_image_t *s,
+                                             SPICE_GNUC_UNUSED SpicePoint *src_pos,
+                                             SPICE_GNUC_UNUSED uint32_t rgb)
 {
     spice_critical("not implemented");
 }

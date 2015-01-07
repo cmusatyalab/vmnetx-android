@@ -18,9 +18,7 @@
 #ifndef __SPICE_CLIENT_CHANNEL_PRIV_H__
 #define __SPICE_CLIENT_CHANNEL_PRIV_H__
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <openssl/ssl.h>
 #include <gio/gio.h>
@@ -82,6 +80,8 @@ struct _SpiceChannelPrivate {
     SpiceOpenSSLVerify          *sslverify;
     GSocket                     *sock;
     GSocketConnection           *conn;
+    GInputStream                *in;
+    GOutputStream               *out;
 
 #if HAVE_SASL
     sasl_conn_t                 *sasl_conn;
@@ -134,6 +134,8 @@ struct _SpiceChannelPrivate {
     GSList                      *flushing;
 
     gboolean                    disable_channel_msg;
+    gboolean                    auth_needs_username_and_password;
+    GError                      *error;
 };
 
 SpiceMsgIn *spice_msg_in_new(SpiceChannel *channel);
@@ -183,18 +185,15 @@ void spice_caps_set(GArray *caps, guint32 cap, const gchar *desc);
 #define spice_channel_set_capability(channel, cap)                      \
     spice_caps_set(SPICE_CHANNEL(channel)->priv->caps, cap, #cap)
 
-/* coroutine context */
-#define emit_main_context(object, event, args...)                                      \
-    G_STMT_START {                                                                     \
-        if (coroutine_self_is_main()) {                                 \
-            do_emit_main_context(G_OBJECT(object), event, &((struct event) { args })); \
-        } else {                                                                       \
-            g_signal_emit_main_context(G_OBJECT(object), do_emit_main_context,         \
-                                       event, &((struct event) { args }), G_STRLOC);   \
-        }                                                                              \
-    } G_STMT_END
-
 gchar *spice_channel_supported_string(void);
+
+void spice_vmc_write_async(SpiceChannel *self,
+                           const void *buffer, gsize count,
+                           GCancellable *cancellable,
+                           GAsyncReadyCallback callback,
+                           gpointer user_data);
+gssize spice_vmc_write_finish(SpiceChannel *self,
+                              GAsyncResult *result, GError **error);
 
 G_END_DECLS
 

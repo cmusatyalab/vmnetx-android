@@ -18,14 +18,14 @@ LOCAL_MODULE    := spice
 LOCAL_SRC_FILES := gtk/channel-record.c gtk/channel-playback.c gtk/channel-cursor.c \
                    gtk/spice-cmdline.c gtk/coroutine_gthread.c gtk/spice-util.c \
                    gtk/spice-session.c gtk/spice-channel.c gtk/spice-marshal.c gtk/spice-glib-enums.c \
-                   gtk/gio-coroutine.c gtk/channel-base.c gtk/channel-main.c gtk/spice-proxy.c gtk/bio-gsocket.c \
+                   gtk/gio-coroutine.c gtk/channel-base.c gtk/channel-main.c gtk/bio-gio.c gtk/client_sw_canvas.c \
                    gtk/glib-compat.c gtk/channel-display.c gtk/channel-display-mjpeg.c gtk/channel-inputs.c \
                    gtk/decode-glz.c gtk/decode-jpeg.c gtk/decode-zlib.c gtk/wocky-http-proxy.c gtk/channel-port.c \
-                   gtk/spice-client.c gtk/spice-audio.c gtk/spice-gstaudio.c \
+                   gtk/spice-client.c gtk/spice-audio.c gtk/spice-gstaudio.c gtk/spice-uri.c gtk/usb-device-manager.c \
                    spice-common/common/generated_client_demarshallers.c spice-common/common/generated_client_demarshallers1.c \
                    spice-common/common/generated_client_marshallers.c spice-common/common/generated_client_marshallers1.c \
                    spice-common/common/mem.c spice-common/common/marshaller.c spice-common/common/canvas_utils.c \
-                   spice-common/common/backtrace.c spice-common/common/sw_canvas.c spice-common/common/pixman_utils.c \
+                   spice-common/common/backtrace.c spice-common/common/pixman_utils.c \
                    spice-common/common/lines.c spice-common/common/rop3.c spice-common/common/quic.c spice-common/common/lz.c \
                    spice-common/common/region.c spice-common/common/ssl_verify.c spice-common/common/log.c \
                    spice-common/common/snd_codec.c \
@@ -37,14 +37,14 @@ LOCAL_LDLIBS 	+= $(spice_objs) \
                    -malign-double -malign-loops
 
 LOCAL_CPPFLAGS 	+= -DG_LOG_DOMAIN=\"GSpice\" \
-                   -DSW_CANVAS_CACHE \
                    -DSPICE_GTK_LOCALEDIR=\"/usr/local/share/locale\" \
-                   -DHAVE_CONFIG_H -UHAVE_SYS_SHM_H -DSW_CANVAS_CACHE  \
+                   -DHAVE_CONFIG_H -UHAVE_SYS_SHM_H \
                    -D_REENTRANT -DWITH_GSTAUDIO
 
 LOCAL_C_INCLUDES += \
                     $(LOCAL_PATH)/gtk \
                     $(LOCAL_PATH)/spice-common \
+                    $(LOCAL_PATH)/spice-common/common \
                     $(LOCAL_PATH)/spice-common/spice-protocol \
                     $(LOCAL_PATH)/virt-viewer \
                     $(SPICE_CLIENT_ANDROID_DEPS)/include \

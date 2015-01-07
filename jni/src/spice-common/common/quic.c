@@ -578,7 +578,7 @@ static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use en
     while (runlen >= encoder->rgb_state.melcorder) {
         hits++;
         runlen -= encoder->rgb_state.melcorder;
-        if (encoder->rgb_state.melcstate < MELCSTATES) {
+        if (encoder->rgb_state.melcstate < MELCSTATES - 1) {
             encoder->rgb_state.melclen = J[++encoder->rgb_state.melcstate];
             encoder->rgb_state.melcorder = (1L << encoder->rgb_state.melclen);
         }
@@ -610,7 +610,7 @@ static void encode_channel_run(Encoder *encoder, Channel *channel, unsigned int 
     while (runlen >= channel->state.melcorder) {
         hits++;
         runlen -= channel->state.melcorder;
-        if (channel->state.melcstate < MELCSTATES) {
+        if (channel->state.melcstate < MELCSTATES - 1) {
             channel->state.melclen = J[++channel->state.melcstate];
             channel->state.melcorder = (1L << channel->state.melclen);
         }
@@ -647,7 +647,7 @@ static int decode_run(Encoder *encoder)
         for (hits = 1; hits <= temp; hits++) {
             runlen += encoder->rgb_state.melcorder;
 
-            if (encoder->rgb_state.melcstate < MELCSTATES) {
+            if (encoder->rgb_state.melcstate < MELCSTATES - 1) {
                 encoder->rgb_state.melclen = J[++encoder->rgb_state.melcstate];
                 encoder->rgb_state.melcorder = (1U << encoder->rgb_state.melclen);
             }
@@ -688,7 +688,7 @@ static int decode_channel_run(Encoder *encoder, Channel *channel)
         for (hits = 1; hits <= temp; hits++) {
             runlen += channel->state.melcorder;
 
-            if (channel->state.melcstate < MELCSTATES) {
+            if (channel->state.melcstate < MELCSTATES - 1) {
                 channel->state.melclen = J[++channel->state.melcstate];
                 channel->state.melcorder = (1U << channel->state.melclen);
             }
@@ -840,7 +840,7 @@ typedef uint16_t rgb16_pixel_t;
 
 #endif
 
-static void fill_model_structures(Encoder *encoder, FamilyStat *family_stat,
+static void fill_model_structures(SPICE_GNUC_UNUSED Encoder *encoder, FamilyStat *family_stat,
                                   unsigned int rep_first, unsigned int first_size,
                                   unsigned int rep_next, unsigned int mul_size,
                                   unsigned int levels, unsigned int ncounters,
@@ -911,8 +911,11 @@ static void find_model_params(Encoder *encoder,
     unsigned int bstart, bend = 0;   /* bucket start and end, range : 0 to levels-1*/
     unsigned int repcntr;            /* helper */
 
+    /* The only valid values are 1, 3 and 5.
+       0, 2 and 4 are obsolete and the rest of the
+       values are considered out of the range. */
+    spice_static_assert (evol == 1 || evol == 3 || evol == 5);
     spice_assert(bpc <= 8 && bpc > 0);
-
 
     *ncounters = 8;
 
@@ -939,14 +942,9 @@ static void find_model_params(Encoder *encoder,
         *repnext = 1;
         *mulsize = 4;
         break;
-    case 0: /* obsolete */
-    case 2: /* obsolete */
-    case 4: /* obsolete */
-        encoder->usr->error(encoder->usr, "findmodelparams(): evol value obsolete!!!\n");
-        break;
     default:
         encoder->usr->error(encoder->usr, "findmodelparams(): evol out of range!!!\n");
-        break;
+        return;
     }
 
     *nbuckets = 0;

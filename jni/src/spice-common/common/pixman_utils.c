@@ -28,9 +28,19 @@
 #include <stdio.h>
 #include "mem.h"
 
+/*
+ * src is used for most OPs, hidden within _equation attribute. For some
+ * operations (such as "clear" and "noop") src is not used and then we have
+ * to add SPICE_GNUC_UNUSED, that's just a __attribute__((__unused__)), to
+ * make GCC happy.
+ * Also, according to GCC documentation [0], the unused attribute "(...) means
+ * that the variable is meant to be possibly unused. GCC does not produce a
+ * warning for this variable.". So, we are safe adding it, even if src is used
+ * for most OPs.
+ */
 #define SOLID_RASTER_OP(_name, _size, _type, _equation)  \
 static void                                        \
-solid_rop_ ## _name ## _ ## _size (_type *ptr, int len, _type src)  \
+solid_rop_ ## _name ## _ ## _size (_type *ptr, int len, SPICE_GNUC_UNUSED _type src)  \
 {                                                  \
     while (len--) {                                \
         _type dst = *ptr;                          \

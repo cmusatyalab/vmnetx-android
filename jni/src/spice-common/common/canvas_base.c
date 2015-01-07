@@ -26,6 +26,10 @@
 #include <stdio.h>
 #include <math.h>
 
+#ifdef USE_LZ4
+#include <arpa/inet.h>
+#include <lz4.h>
+#endif
 #include <spice/macros.h>
 #include "log.h"
 #include "quic.h"
@@ -542,6 +546,64 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image, in
 #endif
     return surface;
 }
+
+#ifdef USE_LZ4
+static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image, int invers)
+{
+    pixman_image_t *surface = NULL;
+    int dec_size, enc_size;
+    int stride;
+    int stride_abs;
+    uint8_t *dest, *data, *data_end;
+    int width, height, direction;
+    LZ4_streamDecode_t *stream;
+
+    spice_chunks_linearize(image->u.lz4.data);
+    data = image->u.lz4.data->chunk[0].data;
+    data_end = data + image->u.lz4.data->chunk[0].len;
+    width = image->descriptor.width;
+    height = image->descriptor.height;
+    direction = *(data++);
+
+    surface = surface_create(
+#ifdef WIN32
+                             canvas->dc,
+#endif
+                             PIXMAN_a8r8g8b8,
+                             width, height, direction == 0);
+    if (surface == NULL) {
+        spice_warning("create surface failed");
+        return NULL;
+    }
+
+    stream = LZ4_createStreamDecode();
+    dest = (uint8_t *)pixman_image_get_data(surface);
+    stride = pixman_image_get_stride(surface);
+    stride_abs = abs(stride);
+    if (direction == 1) {
+        dest -= (stride_abs * (height - 1));
+    }
+
+    do {
+        // Read next compressed block
+        enc_size = ntohl(*((uint32_t *)data));
+        data += 4;
+        dec_size = LZ4_decompress_safe_continue(stream, (const char *) data,
+                                                (char *) dest, enc_size, height * stride_abs);
+        if (dec_size <= 0) {
+            spice_warning("Error decoding LZ4 block\n");
+            pixman_image_unref(surface);
+            surface = NULL;
+            break;
+        }
+        dest += dec_size;
+        data += enc_size;
+    } while (data < data_end);
+
+    LZ4_freeStreamDecode(stream);
+    return surface;
+}
+#endif
 
 static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas,
                                              SpiceImage *image, int invers)
@@ -1117,6 +1179,15 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
     }
     case SPICE_IMAGE_TYPE_JPEG_ALPHA: {
         surface = canvas_get_jpeg_alpha(canvas, image, 0);
+        break;
+    }
+    case SPICE_IMAGE_TYPE_LZ4: {
+#ifdef USE_LZ4
+        surface = canvas_get_lz4(canvas, image, 0);
+#else
+        spice_warning("Lz4 compression algorithm not supported.\n");
+        surface = NULL;
+#endif
         break;
     }
 #if defined(SW_CANVAS_CACHE)

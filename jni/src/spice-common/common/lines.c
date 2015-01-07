@@ -1824,7 +1824,7 @@ miFillRectPolyHelper (GCPtr pGC, Boolean foreground, SpanDataPtr spanData, int x
 }
 
 static int
-miPolyBuildEdge (double x0, double y0, double k,        /* x0 * dy - y0 * dx */
+miPolyBuildEdge (SPICE_GNUC_UNUSED double x0, double y0, double k, /* x0 * dy - y0 * dx */
                  int dx, int dy, int xi, int yi, int left, PolyEdgePtr edge)
 {
     int x, y, e;
@@ -1835,15 +1835,6 @@ miPolyBuildEdge (double x0, double y0, double k,        /* x0 * dy - y0 * dx */
         dx = -dx;
         k = -k;
     }
-#ifdef NOTDEF
-    {
-        double realk, kerror;
-        realk = x0 * dy - y0 * dx;
-        kerror = Fabs (realk - k);
-        if (kerror > .1)
-            printf ("realk: %g k: %g\n", realk, k);
-    }
-#endif
     y = ICEIL (y0);
     xady = ICEIL (k) + y * dx;
 
@@ -1968,7 +1959,11 @@ miPolyBuildPoly (PolyVertexPtr vertices,
 }
 
 static void
-miLineOnePoint (GCPtr pGC, Boolean foreground, SpanDataPtr spanData, int x, int y)
+miLineOnePoint (GCPtr pGC,
+                Boolean foreground,
+                SPICE_GNUC_UNUSED SpanDataPtr spanData,
+                int x,
+                int y)
 {
     DDXPointRec pt;
     int wid;
@@ -2499,9 +2494,14 @@ miLineArc (GCPtr pGC,
 }
 
 static void
-miLineProjectingCap (GCPtr pGC, Boolean foreground,
-                     SpanDataPtr spanData, LineFacePtr face, Boolean isLeft,
-                     double xorg, double yorg, Boolean isInt)
+miLineProjectingCap (GCPtr pGC,
+                     Boolean foreground,
+                     SpanDataPtr spanData,
+                     LineFacePtr face,
+                     Boolean isLeft,
+                     SPICE_GNUC_UNUSED double xorg,
+                     SPICE_GNUC_UNUSED double yorg,
+                     Boolean isInt)
 {
     int xorgi = 0, yorgi = 0;
     int lw;
@@ -2978,7 +2978,7 @@ miWideDashSegment (GCPtr pGC,
     double L, l;
     double k;
     PolyVertexRec vertices[4];
-    PolyVertexRec saveRight = { 0 }, saveBottom;
+    PolyVertexRec saveRight = { 0, 0 }, saveBottom;
     PolySlopeRec slopes[4];
     PolyEdgeRec left[4], right[4];
     LineFaceRec lcapFace, rcapFace;
