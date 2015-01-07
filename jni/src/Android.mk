@@ -11,7 +11,7 @@ spice_objs := \
     $(SPICE_CLIENT_ANDROID_DEPS)/lib/libssl.a \
     $(SPICE_CLIENT_ANDROID_DEPS)/lib/libcrypto.a \
     $(SPICE_CLIENT_ANDROID_DEPS)/lib/libcelt051.a \
-    $(SPICE_CLIENT_ANDROID_DEPS)/lib/libjpeg.a
+    $(CROSS_DIR)/lib/libjpeg.a   # Move to GSTREAMER_EXTRA_DEPS in gst 1.5
 
 LOCAL_MODULE    := spice
 
@@ -82,7 +82,6 @@ LOCAL_C_INCLUDES += \
                     $(LOCAL_PATH)/spice-common/spice-protocol \
                     $(LOCAL_PATH)/virt-viewer \
                     $(SPICE_CLIENT_ANDROID_DEPS)/include \
-                    $(SPICE_CLIENT_ANDROID_DEPS)/include/jpeg-turbo \
                     $(CROSS_DIR)/include \
                     $(CROSS_DIR)/include/glib-2.0 \
                     $(CROSS_DIR)/include/libxml2 \
