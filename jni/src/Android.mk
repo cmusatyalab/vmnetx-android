@@ -74,7 +74,7 @@ LOCAL_LDLIBS 	+= $(spice_objs) \
 LOCAL_CPPFLAGS 	+= -DG_LOG_DOMAIN=\"GSpice\" \
                    -DSPICE_GTK_LOCALEDIR=\"/usr/local/share/locale\" \
                    -DHAVE_CONFIG_H -UHAVE_SYS_SHM_H \
-                   -D_REENTRANT -DWITH_GSTAUDIO
+                   -D_REENTRANT -DWITH_GST1AUDIO
 
 LOCAL_C_INCLUDES += \
                     $(LOCAL_PATH)/gtk \
@@ -102,17 +102,14 @@ LOCAL_SHARED_LIBRARIES := gstreamer_android
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-GSTREAMER_SDK_ROOT_ANDROID := /opt/gstreamer
-ifndef GSTREAMER_SDK_ROOT
-ifndef GSTREAMER_SDK_ROOT_ANDROID
-$(error GSTREAMER_SDK_ROOT_ANDROID is not defined!)
+GSTREAMER_ROOT  := /opt/gstreamer
+ifndef GSTREAMER_ROOT
+$(error GSTREAMER_ROOT is not defined!)
 endif
-GSTREAMER_SDK_ROOT        := $(GSTREAMER_SDK_ROOT_ANDROID)
-endif
-GSTREAMER_NDK_BUILD_PATH  := $(GSTREAMER_SDK_ROOT)/share/gst-android/ndk-build/
+GSTREAMER_NDK_BUILD_PATH  := $(GSTREAMER_ROOT)/share/gst-android/ndk-build/
 include $(GSTREAMER_NDK_BUILD_PATH)/plugins.mk
 GSTREAMER_PLUGINS         := $(GSTREAMER_PLUGINS_CORE) $(GSTREAMER_PLUGINS_SYS)
 G_IO_MODULES              := gnutls
-GSTREAMER_EXTRA_DEPS      := pixman-1 gstreamer-app-0.10 libsoup-2.4 libxml-2.0 gthread-2.0 gobject-2.0
+GSTREAMER_EXTRA_DEPS      := pixman-1 gstreamer-app-1.0 libsoup-2.4 libxml-2.0 glib-2.0 gthread-2.0 gobject-2.0
 
-include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer.mk
+include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer-1.0.mk

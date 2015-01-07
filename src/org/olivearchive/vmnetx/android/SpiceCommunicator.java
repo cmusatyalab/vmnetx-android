@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.KeyEvent;
+import org.freedesktop.gstreamer.GStreamer;
 
 import org.olivearchive.vmnetx.android.protocol.ProtocolException;
 import org.olivearchive.vmnetx.android.protocol.ViewerConnectionProcessor;
-import com.gstreamer.*;
 
 public class SpiceCommunicator {
     private final static String TAG = "SpiceCommunicator";
