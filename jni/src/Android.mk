@@ -1,17 +1,33 @@
 LOCAL_PATH 	:= $(call my-dir)
+PREBUILT_ROOT   := ../../deps/$(TARGET_ARCH_ABI)/root
 
 include $(CLEAR_VARS)
+LOCAL_MODULE            := celt
+LOCAL_SRC_FILES         := $(PREBUILT_ROOT)/lib/libcelt051.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
+include $(PREBUILT_STATIC_LIBRARY)
 
-LIB_PATH := $(LOCAL_PATH)/../../libs/armeabi
+include $(CLEAR_VARS)
+# Move to GSTREAMER_EXTRA_DEPS in gst 1.5
+LOCAL_MODULE            := jpeg
+LOCAL_SRC_FILES         := $(PREBUILT_ROOT)/lib/libjpeg.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
+include $(PREBUILT_STATIC_LIBRARY)
 
-SPICE_CLIENT_ANDROID_DEPS   := $(LOCAL_PATH)/../../deps/$(TARGET_ARCH_ABI)/root
+include $(CLEAR_VARS)
+LOCAL_MODULE            := libcrypto
+LOCAL_SRC_FILES         := $(PREBUILT_ROOT)/lib/libcrypto.a
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE            := libssl
+LOCAL_SRC_FILES         := $(PREBUILT_ROOT)/lib/libssl.a
+LOCAL_STATIC_LIBRARIES  := libcrypto
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
+include $(PREBUILT_STATIC_LIBRARY)
 
 CROSS_DIR  := /opt/gstreamer
-spice_objs := \
-    $(SPICE_CLIENT_ANDROID_DEPS)/lib/libssl.a \
-    $(SPICE_CLIENT_ANDROID_DEPS)/lib/libcrypto.a \
-    $(SPICE_CLIENT_ANDROID_DEPS)/lib/libcelt051.a \
-    $(SPICE_CLIENT_ANDROID_DEPS)/lib/libjpeg.a   # Move to GSTREAMER_EXTRA_DEPS in gst 1.5
 
 LOCAL_MODULE    := spice
 
@@ -67,8 +83,7 @@ LOCAL_SRC_FILES := android/android-io.c \
                    spice-common/common/snd_codec.c \
                    spice-common/common/ssl_verify.c
 
-LOCAL_LDLIBS 	+= $(spice_objs) \
-                   -ljnigraphics -llog -ldl -lstdc++ -lz
+LOCAL_LDLIBS 	+= -ljnigraphics -llog -ldl -lstdc++ -lz
 
 LOCAL_CPPFLAGS 	+= -DG_LOG_DOMAIN=\"GSpice\" \
                    -DSPICE_GTK_LOCALEDIR=\"/usr/local/share/locale\" \
@@ -81,7 +96,6 @@ LOCAL_C_INCLUDES += \
                     $(LOCAL_PATH)/spice-common/common \
                     $(LOCAL_PATH)/spice-common/spice-protocol \
                     $(LOCAL_PATH)/virt-viewer \
-                    $(SPICE_CLIENT_ANDROID_DEPS)/include \
                     $(CROSS_DIR)/include \
                     $(CROSS_DIR)/include/glib-2.0 \
                     $(CROSS_DIR)/include/libxml2 \
@@ -97,6 +111,7 @@ LOCAL_EXPORT_CFLAGS += $(LOCAL_CFLAGS)
 LOCAL_EXPORT_LDLIBS += $(LOCAL_LDLIBS)
 LOCAL_ARM_MODE := arm
 LOCAL_SHARED_LIBRARIES := gstreamer_android
+LOCAL_STATIC_LIBRARIES := celt jpeg libssl
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
