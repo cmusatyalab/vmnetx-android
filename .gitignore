@@ -8,7 +8,7 @@ local.properties
 deps/
 tar/
 obj/
-libs/armeabi/
 libs/armeabi-v7a
+libs/x86
 gst-build-*
 src/org/freedesktop/gstreamer/GStreamer.java

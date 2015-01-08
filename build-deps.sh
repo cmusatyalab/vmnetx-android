@@ -22,7 +22,7 @@
 set -eE
 
 platform="android-16"
-abis="armeabi armeabi-v7a x86"
+abis="armeabi-v7a x86"
 packages="configguess configsub jpeg celt openssl"
 
 # Package versions
