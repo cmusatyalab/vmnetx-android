@@ -27,8 +27,6 @@ LOCAL_STATIC_LIBRARIES  := libcrypto
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
 include $(PREBUILT_STATIC_LIBRARY)
 
-CROSS_DIR  := /opt/gstreamer
-
 LOCAL_MODULE    := spice
 
 LOCAL_SRC_FILES := android/android-io.c \
@@ -95,13 +93,7 @@ LOCAL_C_INCLUDES += \
                     $(LOCAL_PATH)/spice-common \
                     $(LOCAL_PATH)/spice-common/common \
                     $(LOCAL_PATH)/spice-common/spice-protocol \
-                    $(LOCAL_PATH)/virt-viewer \
-                    $(CROSS_DIR)/include \
-                    $(CROSS_DIR)/include/glib-2.0 \
-                    $(CROSS_DIR)/include/libxml2 \
-                    $(CROSS_DIR)/include/pixman-1 \
-                    $(CROSS_DIR)/include/spice-1 \
-                    $(CROSS_DIR)/lib/glib-2.0/include
+                    $(LOCAL_PATH)/virt-viewer
 
 LOCAL_CFLAGS 	:=  $(LOCAL_CPPFLAGS) \
                    -std=gnu99 -Wall -Wno-sign-compare -Wno-deprecated-declarations -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wl,--no-undefined \
