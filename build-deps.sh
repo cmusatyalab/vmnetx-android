@@ -31,6 +31,7 @@ configguess_ver="28d244f1"
 jpeg_ver="1.4.0"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
 openssl_ver="1.0.1j"
+gstreamer_ver="1.4.5"
 
 # Tarball URLs
 configguess_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=${configguess_ver}"
@@ -38,6 +39,9 @@ configsub_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=c
 jpeg_url="http://prdownloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${jpeg_ver}.tar.gz"
 celt_url="http://downloads.xiph.org/releases/celt/celt-${celt_ver}.tar.gz"
 openssl_url="http://www.openssl.org/source/openssl-${openssl_ver}.tar.gz"
+gstreamer_armeabi_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-arm-release-${gstreamer_ver}.tar.bz2"
+gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-armv7-release-${gstreamer_ver}.tar.bz2"
+gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-release-${gstreamer_ver}.tar.bz2"
 
 # Unpacked source trees
 jpeg_build="libjpeg-turbo-${jpeg_ver}"
@@ -53,11 +57,13 @@ openssl_artifacts="libssl.a libcrypto.a"
 jpeg_upurl="http://sourceforge.net/projects/libjpeg-turbo/files/"
 celt_upurl="http://downloads.xiph.org/releases/celt/"
 openssl_upurl="http://www.openssl.org/source/"
+gstreamer_upurl="http://gstreamer.freedesktop.org/data/pkg/android/"
 
 # Update-checking regexes
 jpeg_upregex="files/([0-9.]+)/"
 celt_upregex="celt-(0\.5\.1\.[0-9]+)\.tar"
 openssl_upregex="openssl-([0-9.]+[a-z]?)\.tar"
+gstreamer_upregex=">([0-9.]+)/<"
 
 expand() {
     # Print the contents of the named variable
@@ -316,11 +322,25 @@ setup() {
 build() {
     # Build binaries
     # $1 = ABI
-    local package
+    local package abi pkgstr gstpath
 
     # Set up build environment
     setup "$1"
     fetch configsub
+
+    # Unpack GStreamer SDK
+    for abi in $abis
+    do
+        gstpath="deps/${abi}/gstreamer"
+        if [ ! -e "${gstpath}/lib/libglib-2.0.a" ] ; then
+            pkgstr="gstreamer_$(echo ${abi} | tr -d -)"
+            fetch "${pkgstr}"
+            echo "Unpacking ${pkgstr}..."
+            rm -rf "${gstpath}"
+            mkdir -p "${gstpath}"
+            tar xf "$(tarpath ${pkgstr})" -C "${gstpath}"
+        fi
+    done
 
     # Build
     for package in $packages
@@ -353,7 +373,7 @@ clean() {
 updates() {
     # Report new releases of software packages
     local package url curver newver
-    for package in $wintools $packages
+    for package in $packages gstreamer
     do
         url="$(expand ${package}_upurl)"
         if [ -z "$url" ] ; then

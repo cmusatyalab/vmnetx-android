@@ -1,7 +1,5 @@
 1. Add vmnetx-android to Eclipse as an existing Android project.
 
-2. Install GStreamer Android binaries into /opt/gstreamer
+2. ./build-deps.sh -j 4 -n /path/to/ndk build
 
-3. ./build-deps.sh -j 4 -n /path/to/ndk build
-
-4. /path/to/ndk/ndk-build -j 4
+3. /path/to/ndk/ndk-build -j 4
