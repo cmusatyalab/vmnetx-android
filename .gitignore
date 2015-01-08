@@ -5,6 +5,8 @@ gen
 dist
 *~
 local.properties
+deps/
+tar/
 obj/
 libs/armeabi/
 libs/armeabi-v7a

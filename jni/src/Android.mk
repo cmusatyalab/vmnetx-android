@@ -4,14 +4,14 @@ include $(CLEAR_VARS)
 
 LIB_PATH := $(LOCAL_PATH)/../../libs/armeabi
 
-SPICE_CLIENT_ANDROID_DEPS   := $(LOCAL_PATH)/../libs/deps
+SPICE_CLIENT_ANDROID_DEPS   := $(LOCAL_PATH)/../../deps/$(TARGET_ARCH_ABI)/root
 
 CROSS_DIR  := /opt/gstreamer
 spice_objs := \
     $(SPICE_CLIENT_ANDROID_DEPS)/lib/libssl.a \
     $(SPICE_CLIENT_ANDROID_DEPS)/lib/libcrypto.a \
     $(SPICE_CLIENT_ANDROID_DEPS)/lib/libcelt051.a \
-    $(CROSS_DIR)/lib/libjpeg.a   # Move to GSTREAMER_EXTRA_DEPS in gst 1.5
+    $(SPICE_CLIENT_ANDROID_DEPS)/lib/libjpeg.a   # Move to GSTREAMER_EXTRA_DEPS in gst 1.5
 
 LOCAL_MODULE    := spice
 
