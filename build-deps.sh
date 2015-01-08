@@ -30,7 +30,7 @@ configsub_ver="bf654c7e"
 configguess_ver="28d244f1"
 jpeg_ver="1.4.0"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
-openssl_ver="1.0.1j"
+openssl_ver="1.0.1k"
 gstreamer_ver="1.4.5"
 
 # Tarball URLs
@@ -215,6 +215,7 @@ build_one() {
                 ${cppflags} \
                 ${cflags} \
                 ${ldflags}
+        make depend
         make
         make install_sw
         ;;
