@@ -27,6 +27,20 @@ LOCAL_STATIC_LIBRARIES  := libcrypto
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
 include $(PREBUILT_STATIC_LIBRARY)
 
+include $(CLEAR_VARS)
+GSTREAMER_ROOT            := /opt/gstreamer
+ifndef GSTREAMER_ROOT
+$(error GSTREAMER_ROOT is not defined!)
+endif
+GSTREAMER_NDK_BUILD_PATH  := $(GSTREAMER_ROOT)/share/gst-android/ndk-build/
+include $(GSTREAMER_NDK_BUILD_PATH)/plugins.mk
+GSTREAMER_PLUGINS         := $(GSTREAMER_PLUGINS_CORE) $(GSTREAMER_PLUGINS_SYS)
+G_IO_MODULES              := gnutls
+GSTREAMER_EXTRA_DEPS      := pixman-1 gstreamer-app-1.0 libsoup-2.4 libxml-2.0 glib-2.0 gthread-2.0 gobject-2.0
+include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer-1.0.mk
+
+
+include $(CLEAR_VARS)
 LOCAL_MODULE    := spice
 
 LOCAL_SRC_FILES := android/android-io.c \
@@ -105,16 +119,3 @@ LOCAL_ARM_MODE := arm
 LOCAL_SHARED_LIBRARIES := gstreamer_android
 LOCAL_STATIC_LIBRARIES := celt jpeg libssl
 include $(BUILD_SHARED_LIBRARY)
-
-include $(CLEAR_VARS)
-GSTREAMER_ROOT  := /opt/gstreamer
-ifndef GSTREAMER_ROOT
-$(error GSTREAMER_ROOT is not defined!)
-endif
-GSTREAMER_NDK_BUILD_PATH  := $(GSTREAMER_ROOT)/share/gst-android/ndk-build/
-include $(GSTREAMER_NDK_BUILD_PATH)/plugins.mk
-GSTREAMER_PLUGINS         := $(GSTREAMER_PLUGINS_CORE) $(GSTREAMER_PLUGINS_SYS)
-G_IO_MODULES              := gnutls
-GSTREAMER_EXTRA_DEPS      := pixman-1 gstreamer-app-1.0 libsoup-2.4 libxml-2.0 glib-2.0 gthread-2.0 gobject-2.0
-
-include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer-1.0.mk
