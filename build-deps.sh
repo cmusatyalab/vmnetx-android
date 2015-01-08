@@ -322,18 +322,18 @@ setup() {
 build() {
     # Build binaries
     # $1 = ABI
-    local package abi pkgstr gstpath
+    local package curabi pkgstr gstpath
 
     # Set up build environment
     setup "$1"
     fetch configsub
 
     # Unpack GStreamer SDK
-    for abi in $abis
+    for curabi in $abis
     do
-        gstpath="deps/${abi}/gstreamer"
+        gstpath="deps/${curabi}/gstreamer"
         if [ ! -e "${gstpath}/lib/libglib-2.0.a" ] ; then
-            pkgstr="gstreamer_$(echo ${abi} | tr -d -)"
+            pkgstr="gstreamer_$(echo ${curabi} | tr -d -)"
             fetch "${pkgstr}"
             echo "Unpacking ${pkgstr}..."
             rm -rf "${gstpath}"
@@ -351,13 +351,13 @@ build() {
 
 clean() {
     # Clean built files
-    local package artifact abi
+    local package artifact curabi
     if [ $# -gt 0 ] ; then
         for package in "$@"
         do
             echo "Cleaning ${package}..."
-            for abi in $abis; do
-                setup "${abi}"
+            for curabi in $abis; do
+                setup "${curabi}"
                 for artifact in $(expand ${package}_artifacts)
                 do
                     rm -f "${root}/lib/${artifact}"
