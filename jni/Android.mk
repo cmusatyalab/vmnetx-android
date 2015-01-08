@@ -106,8 +106,7 @@ LOCAL_C_INCLUDES += \
                     $(LOCAL_PATH)/gtk \
                     $(LOCAL_PATH)/spice-common \
                     $(LOCAL_PATH)/spice-common/common \
-                    $(LOCAL_PATH)/spice-common/spice-protocol \
-                    $(LOCAL_PATH)/virt-viewer
+                    $(LOCAL_PATH)/spice-common/spice-protocol
 
 LOCAL_CFLAGS 	:=  $(LOCAL_CPPFLAGS) \
                    -std=gnu99 -Wall -Wno-sign-compare -Wno-deprecated-declarations -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wl,--no-undefined \
