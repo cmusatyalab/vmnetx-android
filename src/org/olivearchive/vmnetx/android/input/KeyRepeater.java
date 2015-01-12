@@ -3,13 +3,14 @@ package org.olivearchive.vmnetx.android.input;
 import android.os.Handler;
 import android.view.KeyEvent;
 
-public class KeyRepeater implements Runnable {
+class KeyRepeater implements Runnable {
+    private final int DELAY_INITIAL = 400;
+    private final int DELAY_DEFAULT = 100;
 
-    private RemoteKeyboard keyboard = null;
-    private Handler handler = null;
+    private final RemoteKeyboard keyboard;
+    private final Handler handler;
+
     private KeyEvent event = null;
-    private int initialDelay = 400;
-    private int defaultDelay = 100;
     private boolean starting = false;
     
     public KeyRepeater (RemoteKeyboard keyboard, Handler handler) {
@@ -35,10 +36,10 @@ public class KeyRepeater implements Runnable {
     
     @Override
     public void run() {
-        int delay = defaultDelay;
+        int delay = DELAY_DEFAULT;
         if (starting) {
             starting = false;
-            delay = initialDelay;
+            delay = DELAY_INITIAL;
         } else {
             keyboard.processLocalKeyEvent(KeyEvent.changeAction(event, KeyEvent.ACTION_DOWN));
             keyboard.processLocalKeyEvent(KeyEvent.changeAction(event, KeyEvent.ACTION_UP));
@@ -46,5 +47,4 @@ public class KeyRepeater implements Runnable {
         
         handler.postDelayed(this, delay);
     }
-
 }
