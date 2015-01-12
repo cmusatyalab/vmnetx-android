@@ -55,17 +55,13 @@ public class RemotePointer {
     }
 
     /**
-     * Overloaded processPointerEvent method which supports right mouse button.
+     * processPointerEvent method.
      * @param evt motion event; x and y must already have been converted from screen coordinates
      * to remote frame buffer coordinates.
      * @param downEvent True if "mouse button" (touch or trackball button) is down when this happens
      * @param useRightButton If true, event is interpreted as happening with right mouse button
      * @return true if event was actually sent
      */
-    public boolean processPointerEvent(int x, int y, int action, boolean mouseIsDown, boolean useRightButton) {
-        return processPointerEvent(x, y, action, mouseIsDown, useRightButton, false, false, -1);
-    }
-    
     public boolean processPointerEvent(int x, int y, int action, boolean mouseIsDown, boolean useRightButton,
                                         boolean useMiddleButton, boolean useScrollButton, int direction) {
         
