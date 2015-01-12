@@ -31,7 +31,7 @@ import android.widget.ImageView;
 public class Scaling {
     static final String TAG = "Scaling";
 
-    private Matrix matrix;
+    private final Matrix matrix;
     private int canvasXOffset;
     private int canvasYOffset;
     private float scaling;

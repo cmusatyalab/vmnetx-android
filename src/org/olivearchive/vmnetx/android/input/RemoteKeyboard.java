@@ -8,11 +8,11 @@ import org.olivearchive.vmnetx.android.SpiceCommunicator;
 public class RemoteKeyboard {
     private static final String TAG = "RemoteKeyboard";
 
-    private SpiceCommunicator spice;
-    private KeyRepeater keyRepeater;
-    private ModifierKeyState modifiers;
+    private final SpiceCommunicator spice;
+    private final KeyRepeater keyRepeater;
+    private final ModifierKeyState modifiers;
     // State of the on-screen modifier key buttons
-    private ModifierKeyState.DeviceState onScreenButtons;
+    private final ModifierKeyState.DeviceState onScreenButtons;
 
     public RemoteKeyboard (SpiceCommunicator s, Handler h) {
         spice = s;

@@ -29,9 +29,10 @@ public class SpiceCommunicator {
     
     private int modifiers = 0;
     
-    private RemoteCanvas canvas;
-    private Handler handler;
-    private ConnectionBean connection;
+    private final RemoteCanvas canvas;
+    private final Handler handler;
+    private final ConnectionBean connection;
+    private final long context;
 
     private int width = 0;
     private int height = 0;
@@ -39,8 +40,6 @@ public class SpiceCommunicator {
     private boolean wantAbsoluteMouse = false;
 
     private boolean isInNormalProtocol = false;
-    
-    private long context;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionBean connection) {
         this.canvas = canvas;

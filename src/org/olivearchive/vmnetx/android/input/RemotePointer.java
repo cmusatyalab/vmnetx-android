@@ -23,8 +23,8 @@ public class RemotePointer {
     private int pointerMask = 0;
     private int prevPointerMask = 0;
 
-    private RemoteCanvas canvas;
-    private SpiceCommunicator spice;
+    private final RemoteCanvas canvas;
+    private final SpiceCommunicator spice;
 
     /**
      * Indicates where the mouse pointer is located.

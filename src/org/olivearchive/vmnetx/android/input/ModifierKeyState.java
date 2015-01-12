@@ -10,8 +10,8 @@ class ModifierKeyState {
             ON_SCREEN_BUTTONS,
         };
 
-        private Type type;
-        private int id;
+        private final Type type;
+        private final int id;
 
         private Device(Type type, int id) {
             this.type = type;

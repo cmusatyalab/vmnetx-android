@@ -32,13 +32,14 @@ import android.widget.ImageView;
 public class BitmapData {
     static private final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
 
+    private final SpiceCommunicator spice;
+    private final RemoteCanvas canvas;
+
     int framebufferwidth;
     int framebufferheight;
     int bitmapwidth;
     int bitmapheight;
     Bitmap mbitmap;
-    private SpiceCommunicator spice;
-    private RemoteCanvas canvas;
     public BitmapDrawable drawable;
 
     BitmapData(SpiceCommunicator s, RemoteCanvas c) {

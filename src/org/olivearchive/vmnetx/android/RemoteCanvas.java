@@ -108,7 +108,7 @@ public class RemoteCanvas extends ImageView {
      */
     private float shiftX = 0, shiftY = 0;
 
-    private float displayDensity = 0;
+    private final float displayDensity;
     
     private boolean spiceUpdateReceived = false;
     

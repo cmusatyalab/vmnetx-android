@@ -42,14 +42,14 @@ abstract public class GestureHandler
     @SuppressWarnings("unused")
     private static final String TAG = "GestureHandler";
 
-    protected GestureDetector gestures;
-    protected ScaleGestureDetector scaleGestures;
+    protected final GestureDetector gestures;
+    protected final ScaleGestureDetector scaleGestures;
 
     /**
      * Handles to the RemoteCanvas view and RemoteCanvasActivity activity.
      */
-    protected RemoteCanvas canvas;
-    protected RemoteCanvasActivity activity;
+    protected final RemoteCanvas canvas;
+    protected final RemoteCanvasActivity activity;
     
     // This is the initial "focal point" of the gesture (between the two fingers).
     private float xInitialFocus;
@@ -82,7 +82,7 @@ abstract public class GestureHandler
     private final double minScaleFactor = 0.1;
     
     // What the display density is.
-    protected float displayDensity = 0;
+    protected final float displayDensity;
     
     /**
      * In the drag modes, we process mouse events without sending them through
