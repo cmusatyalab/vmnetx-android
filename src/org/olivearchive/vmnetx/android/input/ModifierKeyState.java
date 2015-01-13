@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 class ModifierKeyState {
-    static class Device implements Comparable<Device> {
+    private static class Device implements Comparable<Device> {
         private static enum Type {
             HARDWARE,
             ON_SCREEN_BUTTONS,
@@ -63,7 +63,7 @@ class ModifierKeyState {
         }
     }
 
-    static final Device DEVICE_ON_SCREEN_BUTTONS =
+    private static final Device DEVICE_ON_SCREEN_BUTTONS =
             new Device(Device.Type.ON_SCREEN_BUTTONS, 0);
 
     private Map<Device, DeviceState> states =
@@ -73,7 +73,11 @@ class ModifierKeyState {
         return getDeviceState(new Device(Device.Type.HARDWARE, id));
     }
 
-    DeviceState getDeviceState(Device device) {
+    DeviceState getOnScreenButtonState() {
+        return getDeviceState(DEVICE_ON_SCREEN_BUTTONS);
+    }
+
+    private DeviceState getDeviceState(Device device) {
         DeviceState state = states.get(device);
         if (state == null) {
             state = new DeviceState();

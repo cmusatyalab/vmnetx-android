@@ -18,7 +18,7 @@ public class RemoteKeyboard {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
         modifiers = new ModifierKeyState();
-        onScreenButtons = modifiers.getDeviceState(ModifierKeyState.DEVICE_ON_SCREEN_BUTTONS);
+        onScreenButtons = modifiers.getOnScreenButtonState();
     }
 
     public boolean processLocalKeyEvent(KeyEvent evt) {
