@@ -58,15 +58,12 @@ abstract public class GestureHandler
     // This is the final "focal point" of the gesture (between the two fingers).
     private float xCurrentFocus;
     private float yCurrentFocus;
-    private float xPreviousFocus;
     private float yPreviousFocus;
     
     // These variables record whether there was a two-finger swipe performed up or down.
     protected boolean inSwiping         = false;
     private boolean twoFingerSwipeUp    = false;
     private boolean twoFingerSwipeDown  = false;
-    private boolean twoFingerSwipeLeft  = false;
-    private boolean twoFingerSwipeRight = false;
     
     // The variables which indicates how many scroll events to send per swipe 
     // event and the maximum number to send at one time.
@@ -180,7 +177,6 @@ abstract public class GestureHandler
         // If the mouse wheel was scrolled.
         case MotionEvent.ACTION_SCROLL:
             float vscroll = e.getAxisValue(MotionEvent.AXIS_VSCROLL);
-            float hscroll = e.getAxisValue(MotionEvent.AXIS_HSCROLL);
             int swipeSpeed = 0, direction = 0;
             if (vscroll < 0) {
                 swipeSpeed = (int)(-1*vscroll);
@@ -188,12 +184,6 @@ abstract public class GestureHandler
             } else if (vscroll > 0) {
                 swipeSpeed = (int)vscroll;
                 direction = 0;
-            } else if (hscroll < 0) {
-                swipeSpeed = (int)(-1*hscroll);
-                direction = 3;
-            } else if (hscroll > 0) {
-                swipeSpeed = (int)hscroll;
-                direction = 2;                
             } else
                 return false;
                 
@@ -368,17 +358,11 @@ abstract public class GestureHandler
                     setEventCoordinates(e, xInitialFocus, yInitialFocus);
                     int numEvents = 0;
                     while (numEvents < swipeSpeed && numEvents < maxSwipeSpeed) {
-                        if        (twoFingerSwipeUp)   {
+                        if (twoFingerSwipeUp) {
                             p.processPointerEvent(getX(e), getY(e), action, true, false, false, true, 0);
                             p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
                         } else if (twoFingerSwipeDown) {
                             p.processPointerEvent(getX(e), getY(e), action, true, false, false, true, 1);
-                            p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
-                        } else if (twoFingerSwipeLeft)   {
-                            p.processPointerEvent(getX(e), getY(e), action, true, false, false, true, 2);
-                            p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
-                        } else if (twoFingerSwipeRight) {
-                            p.processPointerEvent(getX(e), getY(e), action, true, false, false, true, 3);
                             p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
                         }
                         numEvents++;
@@ -467,11 +451,8 @@ abstract public class GestureHandler
             // Start swiping mode only after we've moved away from the initial focal point some distance.
             if (!inSwiping) {
                 if ( (yCurrentFocus < (yInitialFocus - baseSwipeDist)) ||
-                     (yCurrentFocus > (yInitialFocus + baseSwipeDist)) ||
-                     (xCurrentFocus < (xInitialFocus - baseSwipeDist)) ||
-                     (xCurrentFocus > (xInitialFocus + baseSwipeDist)) ) {
+                     (yCurrentFocus > (yInitialFocus + baseSwipeDist)) ) {
                     inSwiping      = true;
-                    xPreviousFocus = xInitialFocus;
                     yPreviousFocus = yInitialFocus;
                 }
             }
@@ -480,23 +461,11 @@ abstract public class GestureHandler
             if (inSwiping) {
                 twoFingerSwipeUp    = false;                    
                 twoFingerSwipeDown  = false;
-                twoFingerSwipeLeft  = false;                    
-                twoFingerSwipeRight = false;
-                if        (yCurrentFocus < (yPreviousFocus - baseSwipeDist)) {
+                if (yCurrentFocus < (yPreviousFocus - baseSwipeDist)) {
                     twoFingerSwipeDown   = true;
-                    xPreviousFocus = xCurrentFocus;
                     yPreviousFocus = yCurrentFocus;
                 } else if (yCurrentFocus > (yPreviousFocus + baseSwipeDist)) {
                     twoFingerSwipeUp     = true;
-                    xPreviousFocus = xCurrentFocus;
-                    yPreviousFocus = yCurrentFocus;
-                } else if (xCurrentFocus < (xPreviousFocus - baseSwipeDist)) {
-                    twoFingerSwipeRight  = true;
-                    xPreviousFocus = xCurrentFocus;
-                    yPreviousFocus = yCurrentFocus;
-                } else if (xCurrentFocus > (xPreviousFocus + baseSwipeDist)) {
-                    twoFingerSwipeLeft   = true;
-                    xPreviousFocus = xCurrentFocus;
                     yPreviousFocus = yCurrentFocus;
                 } else {
                     consumed           = false;
@@ -543,8 +512,6 @@ abstract public class GestureHandler
         inSwiping           = false;
         twoFingerSwipeUp    = false;                    
         twoFingerSwipeDown  = false;
-        twoFingerSwipeLeft  = false;                    
-        twoFingerSwipeRight = false;
         //android.util.Log.i(TAG,"scale begin ("+xInitialFocus+","+yInitialFocus+")");
         return true;
     }
