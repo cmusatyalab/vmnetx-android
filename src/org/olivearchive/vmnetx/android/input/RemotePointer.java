@@ -64,7 +64,7 @@ public class RemotePointer {
      * @return true if event was actually sent
      */
     public boolean processPointerEvent(int x, int y, int action, boolean mouseIsDown, boolean useRightButton,
-                                        boolean useMiddleButton, boolean useScrollButton, int direction) {
+                                        boolean useMiddleButton) {
         
         if (spice != null && spice.isInNormalProtocol()) {
             if (useRightButton) {
@@ -76,14 +76,6 @@ public class RemotePointer {
             } else if (action == MotionEvent.ACTION_DOWN) {
                 //android.util.Log.d(TAG, "Mouse button left");
                 pointerMask = MOUSE_BUTTON_LEFT;
-            } else if (useScrollButton) {
-                if        ( direction == 0 ) {
-                    //android.util.Log.d(TAG, "Scrolling up");
-                    pointerMask = BUTTON_SCROLL_UP;
-                } else if ( direction == 1 ) {
-                    //android.util.Log.d(TAG, "Scrolling down");
-                    pointerMask = BUTTON_SCROLL_DOWN;
-                }
             } else if (action == MotionEvent.ACTION_MOVE) {
                 //android.util.Log.d(TAG, "Mouse moving");
                 pointerMask = MOUSE_BUTTON_MOVE;

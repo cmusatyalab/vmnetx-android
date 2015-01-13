@@ -83,7 +83,7 @@ public class RelativeMouseHandler extends GestureHandler {
         // Compute the absolute new mouse position on the remote site.
         int newRemoteX = (int) (p.getX() + getDelta(-distanceX));
         int newRemoteY = (int) (p.getY() + getDelta(-distanceY));
-        p.processPointerEvent(newRemoteX, newRemoteY, action, false, false, false, false, 0);
+        p.processPointerEvent(newRemoteX, newRemoteY, action, false, false, false);
         canvas.panToMouse();
         return true;
     }

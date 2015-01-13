@@ -67,9 +67,9 @@ public class AbsoluteMouseHandler extends GestureHandler {
 
         if (!dragMode) {
             dragMode = true;
-            p.processPointerEvent(getX(e1), getY(e1), e1.getActionMasked(), true, false, false, false, 0);
+            p.processPointerEvent(getX(e1), getY(e1), e1.getActionMasked(), true, false, false);
         } else {
-            p.processPointerEvent(getX(e2), getY(e2), e2.getActionMasked(), true, false, false, false, 0);
+            p.processPointerEvent(getX(e2), getY(e2), e2.getActionMasked(), true, false, false);
         }
         canvas.panToMouse();
         return true;

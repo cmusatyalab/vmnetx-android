@@ -151,13 +151,13 @@ abstract public class GestureHandler
             switch (bstate) {
             case MotionEvent.BUTTON_PRIMARY:
                 canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, true, false, false, false, 0);
+                return p.processPointerEvent(x, y, action, true, false, false);
             case MotionEvent.BUTTON_SECONDARY:
                 canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, true, true, false, false, 0);
+                return p.processPointerEvent(x, y, action, true, true, false);
             case MotionEvent.BUTTON_TERTIARY:
                 canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, true, false, true, false, 0);
+                return p.processPointerEvent(x, y, action, true, false, true);
             }
             break;
         // If a mouse button was released.
@@ -171,7 +171,7 @@ abstract public class GestureHandler
             case MotionEvent.BUTTON_SECONDARY:
             case MotionEvent.BUTTON_TERTIARY:
                 canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, false, false, false, false, 0);
+                return p.processPointerEvent(x, y, action, false, false, false);
             }
             break;
         // If the mouse wheel was scrolled.
@@ -190,13 +190,13 @@ abstract public class GestureHandler
             canvas.panToMouse();
             switch (bstate) {
             case MotionEvent.BUTTON_PRIMARY:
-                return p.processPointerEvent(x, y, action, true, false, false, false, 0);
+                return p.processPointerEvent(x, y, action, true, false, false);
             case MotionEvent.BUTTON_SECONDARY:
-                return p.processPointerEvent(x, y, action, true, true, false, false, 0);
+                return p.processPointerEvent(x, y, action, true, true, false);
             case MotionEvent.BUTTON_TERTIARY:
-                return p.processPointerEvent(x, y, action, true, false, true, false, 0);
+                return p.processPointerEvent(x, y, action, true, false, true);
             default:
-                return p.processPointerEvent(x, y, action, false, false, false, false, 0);
+                return p.processPointerEvent(x, y, action, false, false, false);
             }
         }
         
@@ -212,9 +212,9 @@ abstract public class GestureHandler
     public boolean onSingleTapConfirmed(MotionEvent e) {
         RemotePointer p  = canvas.getPointer();
         final int action = e.getActionMasked();
-        p.processPointerEvent(getX(e), getY(e), action, true, false, false, false, 0);
+        p.processPointerEvent(getX(e), getY(e), action, true, false, false);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
+        p.processPointerEvent(getX(e), getY(e), action, false, false, false);
         canvas.panToMouse();
         return true;
     }
@@ -229,13 +229,13 @@ abstract public class GestureHandler
         RemotePointer p  = canvas.getPointer();
         final int action = e.getActionMasked();
         
-        p.processPointerEvent(getX(e), getY(e), action, true, false, false, false, 0);
+        p.processPointerEvent(getX(e), getY(e), action, true, false, false);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
+        p.processPointerEvent(getX(e), getY(e), action, false, false, false);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, true, false, false, false, 0);
+        p.processPointerEvent(getX(e), getY(e), action, true, false, false);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
+        p.processPointerEvent(getX(e), getY(e), action, false, false, false);
         canvas.panToMouse();
         return true;
     }
@@ -255,7 +255,7 @@ abstract public class GestureHandler
         
         Utils.performLongPressHaptic(canvas);
         dragMode = true;
-        p.processPointerEvent(getX(e), getY(e), e.getActionMasked(), true, false, false, false, 0);
+        p.processPointerEvent(getX(e), getY(e), e.getActionMasked(), true, false, false);
     }
 
     protected boolean endDragModesAndScrolling () {
@@ -321,7 +321,7 @@ abstract public class GestureHandler
             case MotionEvent.ACTION_UP:
                 // If any drag modes were going on, end them and send a mouse up event.
                 if (endDragModesAndScrolling())
-                    return p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
+                    return p.processPointerEvent(getX(e), getY(e), action, false, false, false);
                 break;
             case MotionEvent.ACTION_MOVE:
                 // Send scroll up/down events if swiping is happening.
@@ -333,13 +333,13 @@ abstract public class GestureHandler
                     return true;
                 } else if (dragMode) {
                     canvas.panToMouse();
-                    return p.processPointerEvent(getX(e), getY(e), action, true, false, false, false, 0);
+                    return p.processPointerEvent(getX(e), getY(e), action, true, false, false);
                 } else if (rightDragMode) {
                     canvas.panToMouse();
-                    return p.processPointerEvent(getX(e), getY(e), action, true, true, false, false, 0);
+                    return p.processPointerEvent(getX(e), getY(e), action, true, true, false);
                 } else if (middleDragMode) {
                     canvas.panToMouse();
-                    return p.processPointerEvent(getX(e), getY(e), action, true, false, true, false, 0);
+                    return p.processPointerEvent(getX(e), getY(e), action, true, false, true);
                 } else if (inSwiping) {
                     // Save the coordinates and restore them afterward.
                     float x = e.getX();
@@ -374,7 +374,7 @@ abstract public class GestureHandler
                     // finger is down, we treat it as a middle mouse click. We ignore the lifting of the
                     // second index when the third index has gone down
                     // to prevent inadvertent right-clicks when a middle click has been performed.
-                    p.processPointerEvent(getX(e), getY(e), action, true, true, false, false, 0);
+                    p.processPointerEvent(getX(e), getY(e), action, true, true, false);
                     // Enter right-drag mode.
                     rightDragMode = true;
                     // Now the event must be passed on to the parent class in order to 
@@ -392,7 +392,7 @@ abstract public class GestureHandler
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 if (!inSwiping && !inScaling && numPointersSeen <= 3) {
-                    p.processPointerEvent(getX(e), getY(e), action, true, false, true, false, 0);
+                    p.processPointerEvent(getX(e), getY(e), action, true, false, true);
                     // Enter middle-drag mode.
                     middleDragMode      = true;
                 }
