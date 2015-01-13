@@ -17,6 +17,7 @@ public class SpiceCommunicator {
     private native void SpiceClientConnect (long context, String password);
     private native void SpiceClientDisconnect (long context);
     private native void SpiceButtonEvent (long context, int x, int y, int pointerMask);
+    private native void SpiceScrollEvent (long context, int button, int count);
     private native void SpiceKeyEvent (long context, boolean keyDown, int virtualKeyCode);
     private native void SpiceUpdateBitmap (long context, Bitmap bitmap, int x, int y, int w, int h);
     private native void SpiceRequestResolution (long context, int x, int y);
@@ -90,6 +91,10 @@ public class SpiceCommunicator {
         SpiceButtonEvent(context, x, y, pointerMask);
     }
 
+    private void sendScrollEvent(int button, int count) {
+        SpiceScrollEvent(context, button, count);
+    }
+
     private void sendKeyEvent (boolean keyDown, int virtualKeyCode) {
         SpiceKeyEvent(context, keyDown, virtualKeyCode);
     }
@@ -143,6 +148,10 @@ public class SpiceCommunicator {
 
     public void writePointerEvent(int x, int y, int pointerMask) {
         sendMouseEvent(x, y, pointerMask);
+    }
+
+    public void writeScrollEvent(int button, int count) {
+        sendScrollEvent(button, count);
     }
 
     public void updateModifierKeys(int modifiers) {

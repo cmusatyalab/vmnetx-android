@@ -177,22 +177,12 @@ abstract public class GestureHandler
         // If the mouse wheel was scrolled.
         case MotionEvent.ACTION_SCROLL:
             float vscroll = e.getAxisValue(MotionEvent.AXIS_VSCROLL);
-            int swipeSpeed = 0, direction = 0;
             if (vscroll < 0) {
-                swipeSpeed = (int)(-1*vscroll);
-                direction = 1;
+                p.processScrollEvent(RemotePointer.BUTTON_SCROLL_DOWN, (int) -vscroll);
             } else if (vscroll > 0) {
-                swipeSpeed = (int)vscroll;
-                direction = 0;
+                p.processScrollEvent(RemotePointer.BUTTON_SCROLL_UP, (int) vscroll);
             } else
                 return false;
-                
-            int numEvents = 0;
-            while (numEvents < swipeSpeed) {
-                p.processPointerEvent(x, y, action, true, false, false, true, direction);
-                p.processPointerEvent(x, y, action, false, false, false, false, 0);
-                numEvents++;
-            }
             break;
         // If the mouse was moved OR as reported, some external mice trigger this when a
         // mouse button is pressed as well, so we check bstate here too.
@@ -356,16 +346,10 @@ abstract public class GestureHandler
                     float y = e.getY();
                     // Set the coordinates to where the swipe began (i.e. where scaling started).
                     setEventCoordinates(e, xInitialFocus, yInitialFocus);
-                    int numEvents = 0;
-                    while (numEvents < swipeSpeed && numEvents < maxSwipeSpeed) {
-                        if (twoFingerSwipeUp) {
-                            p.processPointerEvent(getX(e), getY(e), action, true, false, false, true, 0);
-                            p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
-                        } else if (twoFingerSwipeDown) {
-                            p.processPointerEvent(getX(e), getY(e), action, true, false, false, true, 1);
-                            p.processPointerEvent(getX(e), getY(e), action, false, false, false, false, 0);
-                        }
-                        numEvents++;
+                    if (twoFingerSwipeUp) {
+                        p.processScrollEvent(RemotePointer.BUTTON_SCROLL_UP, (int) Math.min(swipeSpeed, maxSwipeSpeed));
+                    } else if (twoFingerSwipeDown) {
+                        p.processScrollEvent(RemotePointer.BUTTON_SCROLL_DOWN, (int) Math.min(swipeSpeed, maxSwipeSpeed));
                     }
                     // Restore the coordinates so that onScale doesn't get all muddled up.
                     setEventCoordinates(e, x, y);

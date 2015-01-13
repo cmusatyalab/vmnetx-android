@@ -268,6 +268,38 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv *
     g_idle_add_full(G_PRIORITY_DEFAULT, do_button_event, args, NULL);
 }
 
+struct scroll_event_args {
+    struct spice_context *ctx;
+    int button;
+    int count;
+};
+
+static gboolean do_scroll_event(void *data) {
+    struct scroll_event_args *args = data;
+
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
+    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Scroll event: button %d, count %d", args->button, args->count);
+
+    if (d->inputs) {
+        int mask = update_mask(d, 0, false);
+        for (int i = 0; i < args->count; i++) {
+            spice_inputs_button_press(d->inputs, args->button, mask);
+            spice_inputs_button_release(d->inputs, args->button, mask);
+        }
+    }
+    g_slice_free(struct scroll_event_args, args);
+    return false;
+}
+
+JNIEXPORT void JNICALL
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceScrollEvent(JNIEnv * env, jobject  obj, jlong context, jint button, jint count) {
+    struct scroll_event_args *args = g_slice_new(struct scroll_event_args);
+    args->ctx = (struct spice_context *) context;
+    args->button = button;
+    args->count = count;
+    g_idle_add_full(G_PRIORITY_DEFAULT, do_scroll_event, args, NULL);
+}
+
 /* Callbacks to the UI layer to draw screen updates and invalidate part of the screen,
  * or to request a new bitmap. */
 

@@ -8,12 +8,13 @@ import android.view.MotionEvent;
 public class RemotePointer {
     //private static final String TAG = "RemotePointer";
 
+    public static final int BUTTON_SCROLL_UP	= 4;
+    public static final int BUTTON_SCROLL_DOWN	= 5;
+
     public static final int MOUSE_BUTTON_MOVE		= 0;
     public static final int MOUSE_BUTTON_LEFT		= 1;
     public static final int MOUSE_BUTTON_MIDDLE		= 2;
     public static final int MOUSE_BUTTON_RIGHT		= 3;
-    public static final int MOUSE_BUTTON_SCROLL_UP	= 4;
-    public static final int MOUSE_BUTTON_SCROLL_DOWN	= 5;
 
     public static final int PTRFLAGS_DOWN             = 0x8000;
     
@@ -78,10 +79,10 @@ public class RemotePointer {
             } else if (useScrollButton) {
                 if        ( direction == 0 ) {
                     //android.util.Log.d(TAG, "Scrolling up");
-                    pointerMask = MOUSE_BUTTON_SCROLL_UP;
+                    pointerMask = BUTTON_SCROLL_UP;
                 } else if ( direction == 1 ) {
                     //android.util.Log.d(TAG, "Scrolling down");
-                    pointerMask = MOUSE_BUTTON_SCROLL_DOWN;
+                    pointerMask = BUTTON_SCROLL_DOWN;
                 }
             } else if (action == MotionEvent.ACTION_MOVE) {
                 //android.util.Log.d(TAG, "Mouse moving");
@@ -121,6 +122,14 @@ public class RemotePointer {
             canvas.invalidateMousePosition();
             
             spice.writePointerEvent(mouseX, mouseY, pointerMask);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean processScrollEvent(int button, int count) {
+        if (spice != null && spice.isInNormalProtocol()) {
+            spice.writeScrollEvent(button, count);
             return true;
         }
         return false;
