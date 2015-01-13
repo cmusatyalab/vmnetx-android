@@ -10,14 +10,14 @@ public class RemoteKeyboard {
 
     private final SpiceCommunicator spice;
     private final KeyRepeater keyRepeater;
-    private final ModifierKeyState modifiers;
+    private final ModifierState modifiers;
     // State of the on-screen modifier key buttons
-    private final ModifierKeyState.DeviceState onScreenButtons;
+    private final ModifierState.DeviceState onScreenButtons;
 
     public RemoteKeyboard (SpiceCommunicator s, Handler h) {
         spice = s;
         keyRepeater = new KeyRepeater (this, h);
-        modifiers = new ModifierKeyState();
+        modifiers = new ModifierState();
         onScreenButtons = modifiers.getOnScreenButtonState();
     }
 
@@ -30,7 +30,7 @@ public class RemoteKeyboard {
                            (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
             int modifier = keyCodeToModifierMask(keyCode);
             if (modifier != 0) {
-                ModifierKeyState.DeviceState state =
+                ModifierState.DeviceState state =
                         modifiers.getDeviceState(evt.getDeviceId());
                 if (down)
                     state.press(modifier);

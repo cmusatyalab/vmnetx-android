@@ -3,7 +3,7 @@ package org.olivearchive.vmnetx.android.input;
 import java.util.Map;
 import java.util.TreeMap;
 
-class ModifierKeyState {
+class ModifierState {
     private static class Device implements Comparable<Device> {
         private static enum Type {
             HARDWARE,
