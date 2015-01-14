@@ -89,9 +89,7 @@ abstract public class GestureHandler
      * the gesture detector.
      */
     protected boolean panMode        = false;
-    protected boolean dragMode       = false;
-    protected boolean rightDragMode  = false;
-    protected boolean middleDragMode = false;
+    protected int     dragModeButton = 0;
     protected float   dragX, dragY;
 
     // How many pointers have seen ACTION_DOWN events.
@@ -234,21 +232,19 @@ abstract public class GestureHandler
             return;
         
         Utils.performLongPressHaptic(canvas);
-        dragMode = true;
+        dragModeButton = MotionEvent.BUTTON_PRIMARY;
         p.processPointerEvent(getX(e), getY(e));
         p.processButtonEvent(e.getDeviceId(), MotionEvent.BUTTON_PRIMARY);
     }
 
-    protected boolean endDragModesAndScrolling () {
+    protected boolean endDragModeAndScrolling () {
         canvas.inScrolling = false;
         panMode               = false;
         inScaling             = false;
         inSwiping             = false;
         inScrolling           = false;
-        if (dragMode || rightDragMode || middleDragMode) {
-            dragMode          = false;
-            rightDragMode     = false;
-            middleDragMode    = false;
+        if (dragModeButton != 0) {
+            dragModeButton    = 0;
             return true;
         } else
             return false;
@@ -292,8 +288,8 @@ abstract public class GestureHandler
                 numPointersSeen = 1;
                 // Cancel any effect of scaling having "just finished" (e.g. ignoring scrolling).
                 scalingJustFinished = false;
-                // Cancel drag modes and scrolling.
-                endDragModesAndScrolling();
+                // Cancel drag mode and scrolling.
+                endDragModeAndScrolling();
                 canvas.inScrolling = true;
                 // If we are manipulating the desktop, turn off bitmap filtering for faster response.
                 canvas.bitmapData.drawable._defaultPaint.setFilterBitmap(false);
@@ -301,8 +297,8 @@ abstract public class GestureHandler
                 dragY = e.getY();
                 break;
             case MotionEvent.ACTION_UP:
-                // If any drag modes were going on, end them and send a mouse up event.
-                if (endDragModesAndScrolling()) {
+                // If any drag mode was going on, end it and send a mouse up event.
+                if (endDragModeAndScrolling()) {
                     if (!p.processPointerEvent(getX(e), getY(e)))
                         return false;
                     return p.processButtonEvent(deviceID, 0);
@@ -316,21 +312,11 @@ abstract public class GestureHandler
                     dragX = e.getX();
                     dragY = e.getY();
                     return true;
-                } else if (dragMode) {
+                } else if (dragModeButton != 0) {
                     canvas.panToMouse();
                     if (!p.processPointerEvent(getX(e), getY(e)))
                         return false;
-                    return p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
-                } else if (rightDragMode) {
-                    canvas.panToMouse();
-                    if (!p.processPointerEvent(getX(e), getY(e)))
-                        return false;
-                    return p.processButtonEvent(deviceID, MotionEvent.BUTTON_SECONDARY);
-                } else if (middleDragMode) {
-                    canvas.panToMouse();
-                    if (!p.processPointerEvent(getX(e), getY(e)))
-                        return false;
-                    return p.processButtonEvent(deviceID, MotionEvent.BUTTON_TERTIARY);
+                    return p.processButtonEvent(deviceID, dragModeButton);
                 } else if (inSwiping) {
                     // Save the coordinates and restore them afterward.
                     float x = e.getX();
@@ -352,7 +338,7 @@ abstract public class GestureHandler
             switch (action) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 // Here we only prepare for the second click, which we perform on ACTION_POINTER_UP for pointerID==1.
-                endDragModesAndScrolling();
+                endDragModeAndScrolling();
                 // Prohibit sending mouse-down event on long-tap, and permit
                 // right-clicking.
                 numPointersSeen = 2;
@@ -368,7 +354,7 @@ abstract public class GestureHandler
                     p.processPointerEvent(getX(e), getY(e));
                     p.processButtonEvent(deviceID, MotionEvent.BUTTON_SECONDARY);
                     // Enter right-drag mode.
-                    rightDragMode = true;
+                    dragModeButton = MotionEvent.BUTTON_SECONDARY;
                     // Now the event must be passed on to the parent class in order to 
                     // end scaling as it was certainly started when the second pointer went down.
                 }
@@ -387,7 +373,7 @@ abstract public class GestureHandler
                     p.processPointerEvent(getX(e), getY(e));
                     p.processButtonEvent(deviceID, MotionEvent.BUTTON_TERTIARY);
                     // Enter middle-drag mode.
-                    middleDragMode      = true;
+                    dragModeButton = MotionEvent.BUTTON_TERTIARY;
                 }
                 break;
             }

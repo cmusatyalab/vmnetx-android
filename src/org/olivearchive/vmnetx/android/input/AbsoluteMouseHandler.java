@@ -36,7 +36,7 @@ public class AbsoluteMouseHandler extends GestureHandler {
         
         Utils.performLongPressHaptic(canvas);
         canvas.displayShortToastMessage("Panning");
-        endDragModesAndScrolling();
+        endDragModeAndScrolling();
         panMode = true;
     }
     
@@ -65,8 +65,8 @@ public class AbsoluteMouseHandler extends GestureHandler {
         if (twoFingers||inSwiping||inScaling||scalingJustFinished)
             return true;
 
-        if (!dragMode) {
-            dragMode = true;
+        if (dragModeButton == 0) {
+            dragModeButton = MotionEvent.BUTTON_PRIMARY;
             p.processPointerEvent(getX(e1), getY(e1));
             p.processButtonEvent(e1.getDeviceId(), MotionEvent.BUTTON_PRIMARY);
         } else {

@@ -99,7 +99,7 @@ public class RelativeMouseHandler extends GestureHandler {
     
     protected int getX (MotionEvent e) {
         RemotePointer p = canvas.getPointer();
-        if (dragMode || rightDragMode || middleDragMode) {
+        if (dragModeButton != 0) {
             float distanceX = e.getX() - dragX;
             dragX = e.getX();
             // Compute the absolute new X coordinate on the remote site.
@@ -111,7 +111,7 @@ public class RelativeMouseHandler extends GestureHandler {
 
     protected int getY (MotionEvent e) {
         RemotePointer p = canvas.getPointer();
-        if (dragMode || rightDragMode || middleDragMode) {
+        if (dragModeButton != 0) {
             float distanceY = e.getY() - dragY;
             dragY = e.getY();
             // Compute the absolute new Y coordinate on the remote site.
