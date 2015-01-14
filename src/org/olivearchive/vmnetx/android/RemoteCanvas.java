@@ -538,10 +538,8 @@ public class RemoteCanvas extends ImageView {
         int h = bm.getHeight();
         int [] tempPixels = new int[w*h];
         bm.getPixels(tempPixels, 0, w, 0, 0, w, h);
-        // Set cursor rectangle as well.
-        bitmapData.setCursorRect(pointer.getX(), pointer.getY(), w, h, 0, 0);
         // Set softCursor to whatever the resource is.
-        bitmapData.setSoftCursor (tempPixels);
+        bitmapData.setSoftCursor(tempPixels, w, h, 0, 0);
         bm.recycle();
     }
     
