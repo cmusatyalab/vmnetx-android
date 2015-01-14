@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import org.freedesktop.gstreamer.GStreamer;
 
 import org.olivearchive.vmnetx.android.protocol.ProtocolException;
@@ -16,7 +17,8 @@ public class SpiceCommunicator {
     private native void SpiceClientFreeContext (long context);
     private native void SpiceClientConnect (long context, String password);
     private native void SpiceClientDisconnect (long context);
-    private native void SpiceButtonEvent (long context, int x, int y, int pointerMask);
+    private native void SpicePointerEvent (long context, int x, int y);
+    private native void SpiceButtonEvent (long context, boolean buttonDown, int button);
     private native void SpiceScrollEvent (long context, int button, int count);
     private native void SpiceKeyEvent (long context, boolean keyDown, int virtualKeyCode);
     private native void SpiceUpdateBitmap (long context, Bitmap bitmap, int x, int y, int w, int h);
@@ -29,6 +31,7 @@ public class SpiceCommunicator {
     }
     
     private int modifiers = 0;
+    private int buttons = 0;
     
     private final RemoteCanvas canvas;
     private final Handler handler;
@@ -87,8 +90,12 @@ public class SpiceCommunicator {
         }
     }
 
-    private void sendMouseEvent (int x, int y, int pointerMask) {
-        SpiceButtonEvent(context, x, y, pointerMask);
+    private void sendPointerEvent (int x, int y) {
+        SpicePointerEvent(context, x, y);
+    }
+
+    private void sendButtonEvent (boolean buttonDown, int button) {
+        SpiceButtonEvent(context, buttonDown, button);
     }
 
     private void sendScrollEvent(int button, int count) {
@@ -146,8 +153,31 @@ public class SpiceCommunicator {
         return wantAbsoluteMouse;
     }
 
-    public void writePointerEvent(int x, int y, int pointerMask) {
-        sendMouseEvent(x, y, pointerMask);
+    public void writePointerEvent(int x, int y) {
+        sendPointerEvent(x, y);
+    }
+
+    public void updateButtons(int buttons) {
+        int changes = this.buttons ^ buttons;
+        int pressed = buttons & changes;
+        int released = this.buttons & changes;
+        this.buttons = buttons;
+
+        updateButton(pressed, released, MotionEvent.BUTTON_PRIMARY);
+        updateButton(pressed, released, MotionEvent.BUTTON_SECONDARY);
+        updateButton(pressed, released, MotionEvent.BUTTON_TERTIARY);
+    }
+
+    private void updateButton(int pressed, int released, int button) {
+        boolean buttonDown;
+        if ((pressed & button) != 0)
+            buttonDown = true;
+        else if ((released & button) != 0)
+            buttonDown = false;
+        else
+            return;
+        //android.util.Log.d(TAG, (buttonDown ? "Pressing" : "Releasing") + " button: " + button);
+        sendButtonEvent(buttonDown, button);
     }
 
     public void writeScrollEvent(int button, int count) {

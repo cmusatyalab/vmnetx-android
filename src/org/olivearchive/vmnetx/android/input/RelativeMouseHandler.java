@@ -35,7 +35,6 @@ public class RelativeMouseHandler extends GestureHandler {
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         RemotePointer p = canvas.getPointer();
-        final int action = e2.getActionMasked();
         
         // TODO: This is a workaround for Android 4.2
         boolean twoFingers = false;
@@ -83,7 +82,7 @@ public class RelativeMouseHandler extends GestureHandler {
         // Compute the absolute new mouse position on the remote site.
         int newRemoteX = (int) (p.getX() + getDelta(-distanceX));
         int newRemoteY = (int) (p.getY() + getDelta(-distanceY));
-        p.processPointerEvent(newRemoteX, newRemoteY, action, false, false, false);
+        p.processPointerEvent(newRemoteX, newRemoteY);
         canvas.panToMouse();
         return true;
     }

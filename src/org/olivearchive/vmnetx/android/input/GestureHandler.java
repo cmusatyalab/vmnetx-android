@@ -137,44 +137,37 @@ abstract public class GestureHandler
      * @return
      */
     protected boolean handleMouseActions (MotionEvent e) {
-        final int action = e.getActionMasked();
-        final int bstate = e.getButtonState();
+        // Only handle mouse-like tools
+        switch (e.getToolType(0)) {
+            case MotionEvent.TOOL_TYPE_MOUSE:
+            case MotionEvent.TOOL_TYPE_STYLUS:
+            case MotionEvent.TOOL_TYPE_ERASER:
+                break;
+            default:
+                return false;
+        }
+
         RemotePointer p  = canvas.getPointer();
         float scale = canvas.getScale();
         int x = (int)(canvas.getAbsoluteX() +  e.getX()                         / scale);
         int y = (int)(canvas.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
 
-        switch (action) {
-        // If a mouse button was pressed or mouse was moved.
+        switch (e.getActionMasked()) {
+        // First mouse button pressed
         case MotionEvent.ACTION_DOWN:
+        // Mouse moved while down, or additional button pressed/released
         case MotionEvent.ACTION_MOVE:
-            switch (bstate) {
-            case MotionEvent.BUTTON_PRIMARY:
-                canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, true, false, false);
-            case MotionEvent.BUTTON_SECONDARY:
-                canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, true, true, false);
-            case MotionEvent.BUTTON_TERTIARY:
-                canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, true, false, true);
-            }
-            break;
-        // If a mouse button was released.
+        // Last mouse button released
         case MotionEvent.ACTION_UP:
-            switch (bstate) {
-            case 0:
-                if (e.getToolType(0) != MotionEvent.TOOL_TYPE_MOUSE) {
-                    break;
-                }
-            case MotionEvent.BUTTON_PRIMARY:
-            case MotionEvent.BUTTON_SECONDARY:
-            case MotionEvent.BUTTON_TERTIARY:
-                canvas.panToMouse();
-                return p.processPointerEvent(x, y, action, false, false, false);
-            }
-            break;
-        // If the mouse wheel was scrolled.
+        // Mouse was moved OR as reported, some external mice trigger
+        // this when a mouse button is pressed as well
+        case MotionEvent.ACTION_HOVER_MOVE:
+            canvas.panToMouse();
+            if (!p.processPointerEvent(x, y))
+                return false;
+            return p.processButtonEvent(e.getButtonState());
+
+        // Scroll wheel
         case MotionEvent.ACTION_SCROLL:
             float vscroll = e.getAxisValue(MotionEvent.AXIS_VSCROLL);
             if (vscroll < 0) {
@@ -184,20 +177,6 @@ abstract public class GestureHandler
             } else
                 return false;
             break;
-        // If the mouse was moved OR as reported, some external mice trigger this when a
-        // mouse button is pressed as well, so we check bstate here too.
-        case MotionEvent.ACTION_HOVER_MOVE:
-            canvas.panToMouse();
-            switch (bstate) {
-            case MotionEvent.BUTTON_PRIMARY:
-                return p.processPointerEvent(x, y, action, true, false, false);
-            case MotionEvent.BUTTON_SECONDARY:
-                return p.processPointerEvent(x, y, action, true, true, false);
-            case MotionEvent.BUTTON_TERTIARY:
-                return p.processPointerEvent(x, y, action, true, false, true);
-            default:
-                return p.processPointerEvent(x, y, action, false, false, false);
-            }
         }
         
         return false;
@@ -211,10 +190,10 @@ abstract public class GestureHandler
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
         RemotePointer p  = canvas.getPointer();
-        final int action = e.getActionMasked();
-        p.processPointerEvent(getX(e), getY(e), action, true, false, false);
+        p.processPointerEvent(getX(e), getY(e));
+        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, false, false, false);
+        p.processButtonEvent(0);
         canvas.panToMouse();
         return true;
     }
@@ -227,15 +206,14 @@ abstract public class GestureHandler
     @Override
     public boolean onDoubleTap (MotionEvent e) {
         RemotePointer p  = canvas.getPointer();
-        final int action = e.getActionMasked();
-        
-        p.processPointerEvent(getX(e), getY(e), action, true, false, false);
+        p.processPointerEvent(getX(e), getY(e));
+        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, false, false, false);
+        p.processButtonEvent(0);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, true, false, false);
+        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
-        p.processPointerEvent(getX(e), getY(e), action, false, false, false);
+        p.processButtonEvent(0);
         canvas.panToMouse();
         return true;
     }
@@ -255,7 +233,8 @@ abstract public class GestureHandler
         
         Utils.performLongPressHaptic(canvas);
         dragMode = true;
-        p.processPointerEvent(getX(e), getY(e), e.getActionMasked(), true, false, false);
+        p.processPointerEvent(getX(e), getY(e));
+        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
     }
 
     protected boolean endDragModesAndScrolling () {
@@ -320,8 +299,11 @@ abstract public class GestureHandler
                 break;
             case MotionEvent.ACTION_UP:
                 // If any drag modes were going on, end them and send a mouse up event.
-                if (endDragModesAndScrolling())
-                    return p.processPointerEvent(getX(e), getY(e), action, false, false, false);
+                if (endDragModesAndScrolling()) {
+                    if (!p.processPointerEvent(getX(e), getY(e)))
+                        return false;
+                    return p.processButtonEvent(0);
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 // Send scroll up/down events if swiping is happening.
@@ -333,13 +315,19 @@ abstract public class GestureHandler
                     return true;
                 } else if (dragMode) {
                     canvas.panToMouse();
-                    return p.processPointerEvent(getX(e), getY(e), action, true, false, false);
+                    if (!p.processPointerEvent(getX(e), getY(e)))
+                        return false;
+                    return p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
                 } else if (rightDragMode) {
                     canvas.panToMouse();
-                    return p.processPointerEvent(getX(e), getY(e), action, true, true, false);
+                    if (!p.processPointerEvent(getX(e), getY(e)))
+                        return false;
+                    return p.processButtonEvent(MotionEvent.BUTTON_SECONDARY);
                 } else if (middleDragMode) {
                     canvas.panToMouse();
-                    return p.processPointerEvent(getX(e), getY(e), action, true, false, true);
+                    if (!p.processPointerEvent(getX(e), getY(e)))
+                        return false;
+                    return p.processButtonEvent(MotionEvent.BUTTON_TERTIARY);
                 } else if (inSwiping) {
                     // Save the coordinates and restore them afterward.
                     float x = e.getX();
@@ -374,7 +362,8 @@ abstract public class GestureHandler
                     // finger is down, we treat it as a middle mouse click. We ignore the lifting of the
                     // second index when the third index has gone down
                     // to prevent inadvertent right-clicks when a middle click has been performed.
-                    p.processPointerEvent(getX(e), getY(e), action, true, true, false);
+                    p.processPointerEvent(getX(e), getY(e));
+                    p.processButtonEvent(MotionEvent.BUTTON_SECONDARY);
                     // Enter right-drag mode.
                     rightDragMode = true;
                     // Now the event must be passed on to the parent class in order to 
@@ -392,7 +381,8 @@ abstract public class GestureHandler
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 if (!inSwiping && !inScaling && numPointersSeen <= 3) {
-                    p.processPointerEvent(getX(e), getY(e), action, true, false, true);
+                    p.processPointerEvent(getX(e), getY(e));
+                    p.processButtonEvent(MotionEvent.BUTTON_TERTIARY);
                     // Enter middle-drag mode.
                     middleDragMode      = true;
                 }

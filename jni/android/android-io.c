@@ -20,6 +20,7 @@
 #include <endian.h>
 #include <jni.h>
 #include <android/bitmap.h>
+#include <android/input.h>
 #include <android/keycodes.h>
 #include <android/log.h>
 
@@ -94,22 +95,6 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Copying new data into pixels.");
     updatePixels (pixels, d->data, x, y, width, height, d->width, d->height);
     AndroidBitmap_unlockPixels(env, bitmap);
-}
-
-static int update_mask (SpiceDisplayPrivate *d, int button, gboolean down) {
-    int update = 0;
-    if (button == SPICE_MOUSE_BUTTON_LEFT)
-        update = SPICE_MOUSE_BUTTON_MASK_LEFT;
-    else if (button == SPICE_MOUSE_BUTTON_MIDDLE)
-        update = SPICE_MOUSE_BUTTON_MASK_MIDDLE;
-    else if (button == SPICE_MOUSE_BUTTON_RIGHT)
-        update = SPICE_MOUSE_BUTTON_MASK_RIGHT;
-    if (down) {
-        d->mouse_button_mask |= update;
-    } else {
-        d->mouse_button_mask &= ~update;
-    }
-    return d->mouse_button_mask;
 }
 
 
@@ -201,15 +186,14 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceKeyEvent(JNIEnv * en
     g_idle_add_full(G_PRIORITY_DEFAULT, do_key_event, args, NULL);
 }
 
-struct button_event_args {
+struct pointer_event_args {
     struct spice_context *ctx;
     int x;
     int y;
-    int type;
 };
 
-static gboolean do_button_event(void *data) {
-    struct button_event_args *args = data;
+static gboolean do_pointer_event(void *data) {
+    struct pointer_event_args *args = data;
     int x = args->x;
     int y = args->y;
 
@@ -217,23 +201,18 @@ static gboolean do_button_event(void *data) {
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Pointer event: %d at x: %d, y: %d", args->type, x, y);
 
     if (!d->inputs || (x >= 0 && x < d->width && y >= 0 && y < d->height)) {
-
-        gboolean down = (args->type & PTRFLAGS_DOWN) != 0;
-        int mouseButton = args->type &~ PTRFLAGS_DOWN;
-        int newMask = update_mask(d, mouseButton, down);
-
         gint dx;
         gint dy;
         switch (d->mouse_mode) {
         case SPICE_MOUSE_MODE_CLIENT:
             //__android_log_write(ANDROID_LOG_DEBUG, TAG, "spice mouse mode client");
-            spice_inputs_position(d->inputs, x, y, d->channel_id, newMask);
+            spice_inputs_position(d->inputs, x, y, d->channel_id, d->mouse_button_mask);
             break;
         case SPICE_MOUSE_MODE_SERVER:
             //__android_log_write(ANDROID_LOG_DEBUG, TAG, "spice mouse mode server");
             dx = d->mouse_last_x != -1 ? x - d->mouse_last_x : 0;
             dy = d->mouse_last_y != -1 ? y - d->mouse_last_y : 0;
-            spice_inputs_motion(d->inputs, dx, dy, newMask);
+            spice_inputs_motion(d->inputs, dx, dy, d->mouse_button_mask);
             d->mouse_last_x = x;
             d->mouse_last_y = y;
             break;
@@ -241,30 +220,70 @@ static gboolean do_button_event(void *data) {
             g_warn_if_reached();
             break;
         }
+    }
+    g_slice_free(struct pointer_event_args, args);
+    return false;
+}
 
-        if (mouseButton != SPICE_MOUSE_BUTTON_INVALID) {
-            if (down) {
-                //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Button press");
-                spice_inputs_button_press(d->inputs, mouseButton, newMask);
-            } else {
-                //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Button release");
-                // This sleep is an ugly hack to prevent stuck buttons after a drag/drop gesture.
-                usleep(50000);
-                spice_inputs_button_release(d->inputs, mouseButton, newMask);
-            }
-        }
+JNIEXPORT void JNICALL
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpicePointerEvent(JNIEnv * env, jobject obj, jlong context, jint x, jint y) {
+    struct pointer_event_args *args = g_slice_new(struct pointer_event_args);
+    args->ctx = (struct spice_context *) context;
+    args->x = x;
+    args->y = y;
+    g_idle_add_full(G_PRIORITY_DEFAULT, do_pointer_event, args, NULL);
+}
+
+struct button_event_args {
+    struct spice_context *ctx;
+    int button;
+    bool down;
+};
+
+static gboolean do_button_event(void *data) {
+    struct button_event_args *args = data;
+
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
+    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Button event: button %d, down %d", args->button, args->down);
+
+    int spice_button;
+    int button_mask;
+    switch (args->button) {
+    case AMOTION_EVENT_BUTTON_PRIMARY:
+        spice_button = SPICE_MOUSE_BUTTON_LEFT;
+        button_mask = SPICE_MOUSE_BUTTON_MASK_LEFT;
+        break;
+    case AMOTION_EVENT_BUTTON_SECONDARY:
+        spice_button = SPICE_MOUSE_BUTTON_RIGHT;
+        button_mask = SPICE_MOUSE_BUTTON_MASK_RIGHT;
+        break;
+    case AMOTION_EVENT_BUTTON_TERTIARY:
+        spice_button = SPICE_MOUSE_BUTTON_MIDDLE;
+        button_mask = SPICE_MOUSE_BUTTON_MASK_MIDDLE;
+        break;
+    default:
+        return false;
+    }
+
+    if (args->down) {
+        d->mouse_button_mask |= button_mask;
+        if (d->inputs)
+            spice_inputs_button_press(d->inputs, spice_button, d->mouse_button_mask);
+    } else {
+        d->mouse_button_mask &= ~button_mask;
+        if (d->inputs)
+            spice_inputs_button_release(d->inputs, spice_button, d->mouse_button_mask);
     }
     g_slice_free(struct button_event_args, args);
     return false;
 }
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject  obj, jlong context, jint x, jint y, jint type) {
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceButtonEvent(JNIEnv * env, jobject obj, jlong context, jboolean down, jint button) {
     struct button_event_args *args = g_slice_new(struct button_event_args);
     args->ctx = (struct spice_context *) context;
-    args->x = x;
-    args->y = y;
-    args->type = type;
+    args->down = down;
+    args->button = button;
     g_idle_add_full(G_PRIORITY_DEFAULT, do_button_event, args, NULL);
 }
 
@@ -281,10 +300,9 @@ static gboolean do_scroll_event(void *data) {
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Scroll event: button %d, count %d", args->button, args->count);
 
     if (d->inputs) {
-        int mask = update_mask(d, 0, false);
         for (int i = 0; i < args->count; i++) {
-            spice_inputs_button_press(d->inputs, args->button, mask);
-            spice_inputs_button_release(d->inputs, args->button, mask);
+            spice_inputs_button_press(d->inputs, args->button, d->mouse_button_mask);
+            spice_inputs_button_release(d->inputs, args->button, d->mouse_button_mask);
         }
     }
     g_slice_free(struct scroll_event_args, args);

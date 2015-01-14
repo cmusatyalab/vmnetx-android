@@ -24,8 +24,6 @@
 #include <android/bitmap.h>
 #include <glib.h>
 
-#define PTRFLAGS_DOWN 0x8000
-
 struct spice_main_thread {
     JavaVM               *jvm;  // only for thread startup
     JNIEnv               *jenv;
