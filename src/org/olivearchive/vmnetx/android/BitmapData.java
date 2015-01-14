@@ -101,7 +101,7 @@ public class BitmapData {
      * Create drawable appropriate for this data
      * @return drawable
      */
-    BitmapDrawable createDrawable() {
+    private BitmapDrawable createDrawable() {
         return new BitmapDrawable(this);
     }
 
@@ -120,7 +120,7 @@ public class BitmapData {
      * This method is called when the framebuffer has changed size and reinitializes the
      * necessary data structures to support that change.
      */
-    public void frameBufferSizeChanged() {
+    void frameBufferSizeChanged() {
         framebufferwidth = spice.framebufferWidth();
         framebufferheight = spice.framebufferHeight();
         android.util.Log.i("CBM", "bitmapsize changed = ("+bitmapwidth+","+bitmapheight+")");

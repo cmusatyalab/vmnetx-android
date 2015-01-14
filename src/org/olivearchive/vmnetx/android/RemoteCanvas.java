@@ -470,7 +470,7 @@ public class RemoteCanvas extends ImageView {
     /**
      * Causes a redraw of the bitmapData to happen at the indicated coordinates.
      */
-    public void reDraw(int x, int y, int w, int h) {
+    private void reDraw(int x, int y, int w, int h) {
         float scale = getScale();
         float shiftedX = x-shiftX;
         float shiftedY = y-shiftY;
@@ -484,7 +484,7 @@ public class RemoteCanvas extends ImageView {
      * This is a float-accepting version of reDraw().
      * Causes a redraw of the bitmapData to happen at the indicated coordinates.
      */
-    public void reDraw(float x, float y, float w, float h) {
+    private void reDraw(float x, float y, float w, float h) {
         float scale = getScale();
         float shiftedX = x-shiftX;
         float shiftedY = y-shiftY;
