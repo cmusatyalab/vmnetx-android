@@ -87,7 +87,7 @@ public class RemoteCanvas extends ImageView {
     private RemoteKeyboard keyboard;
     
     // Internal bitmap data
-    public BitmapData bitmapData;
+    private BitmapData bitmapData;
     
     // Progress dialog shown at connection time.
     private ProgressDialog pd;
@@ -556,6 +556,11 @@ public class RemoteCanvas extends ImageView {
         outAttrs.imeOptions |= EditorInfo.IME_FLAG_NO_FULLSCREEN;
         */
         return new BaseInputConnection(this, false);
+    }
+
+    public void setFilteringEnabled(boolean enabled) {
+        if (bitmapData != null)
+            bitmapData.setFilteringEnabled(enabled);
     }
     
     public RemotePointer getPointer() {

@@ -273,7 +273,7 @@ abstract public class GestureHandler
 
         if (action == MotionEvent.ACTION_UP) {
             // Turn filtering back on and invalidate to make things pretty.
-            canvas.bitmapData.drawable._defaultPaint.setFilterBitmap(true);
+            canvas.setFilteringEnabled(true);
             canvas.invalidate();
         }
 
@@ -292,7 +292,7 @@ abstract public class GestureHandler
                 endDragModeAndScrolling();
                 canvas.inScrolling = true;
                 // If we are manipulating the desktop, turn off bitmap filtering for faster response.
-                canvas.bitmapData.drawable._defaultPaint.setFilterBitmap(false);
+                canvas.setFilteringEnabled(false);
                 dragX = e.getX();
                 dragY = e.getY();
                 break;

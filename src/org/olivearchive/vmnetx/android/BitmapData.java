@@ -29,7 +29,7 @@ import android.widget.ImageView;
  * the data.
  * @author Michael A. MacDonald
  */
-public class BitmapData {
+class BitmapData {
     static private final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
 
     private final SpiceCommunicator spice;
@@ -40,7 +40,7 @@ public class BitmapData {
     int bitmapwidth;
     int bitmapheight;
     Bitmap mbitmap;
-    public BitmapDrawable drawable;
+    private BitmapDrawable drawable;
 
     BitmapData(SpiceCommunicator s, RemoteCanvas c) {
         spice = s;
@@ -114,6 +114,11 @@ public class BitmapData {
         v.setImageDrawable(drawable);
     }
 
+    void setFilteringEnabled(boolean enabled) {
+        if (drawable != null)
+            drawable.setFilteringEnabled(enabled);
+    }
+
     /**
      * Remote framebuffer size has changed.
      * <p>
@@ -148,19 +153,19 @@ public class BitmapData {
         mbitmap      = null;
     }
     
-    public int fbWidth () {
+    int fbWidth() {
         return framebufferwidth;
     }
 
-    public int fbHeight () {
+    int fbHeight() {
         return framebufferheight;
     }
     
-    public int bmWidth () {
+    int bmWidth() {
         return bitmapwidth;
     }
 
-    public int bmHeight () {
+    int bmHeight() {
         return bitmapheight;
     }
 }

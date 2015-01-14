@@ -30,7 +30,7 @@ import android.graphics.drawable.DrawableContainer;
 /**
  * @author Michael A. MacDonald
  */
-public class BitmapDrawable extends DrawableContainer {
+class BitmapDrawable extends DrawableContainer {
     RectF cursorRect;
     boolean softCursorInit;
 
@@ -39,7 +39,7 @@ public class BitmapDrawable extends DrawableContainer {
 
     private int hotX, hotY;
 
-    public Paint _defaultPaint;
+    private final Paint paint;
 
     BitmapDrawable(BitmapData data) {
         this.data = data;
@@ -49,8 +49,8 @@ public class BitmapDrawable extends DrawableContainer {
         softCursor = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         softCursorInit = false;
 
-        _defaultPaint = new Paint();
-        _defaultPaint.setFilterBitmap(true);
+        paint = new Paint();
+        setFilteringEnabled(true);
     }
 
     /* (non-Javadoc)
@@ -60,10 +60,14 @@ public class BitmapDrawable extends DrawableContainer {
     public void draw(Canvas canvas) {
         try {
             synchronized (data.mbitmap) {
-                canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, _defaultPaint);
-                canvas.drawBitmap(softCursor, cursorRect.left, cursorRect.top, _defaultPaint);
+                canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, paint);
+                canvas.drawBitmap(softCursor, cursorRect.left, cursorRect.top, paint);
             }
         } catch (Throwable e) { }
+    }
+
+    void setFilteringEnabled(boolean enabled) {
+        paint.setFilterBitmap(enabled);
     }
 
     void setCursorRect(int x, int y, float w, float h, int hX, int hY) {
@@ -119,7 +123,7 @@ public class BitmapDrawable extends DrawableContainer {
         return false;
     }
 
-    public void dispose() {
+    void dispose() {
         if (softCursor != null)
             softCursor.recycle();
         softCursor = null;
