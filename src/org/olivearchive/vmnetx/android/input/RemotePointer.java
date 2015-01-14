@@ -11,6 +11,7 @@ public class RemotePointer {
 
     private final RemoteCanvas canvas;
     private final SpiceCommunicator spice;
+    private final ModifierState buttons;
 
     /**
      * Indicates where the mouse pointer is located.
@@ -22,6 +23,7 @@ public class RemotePointer {
         mouseX = spice.framebufferWidth()/2;
         mouseY = spice.framebufferHeight()/2;
         canvas = c;
+        buttons = new ModifierState();
     }
     
     public int getX() {
@@ -57,9 +59,10 @@ public class RemotePointer {
         return false;
     }
 
-    public boolean processButtonEvent(int buttonState) {
+    public boolean processButtonEvent(int deviceID, int buttonState) {
+        buttons.getDeviceState(deviceID).set(buttonState);
         if (spice != null && spice.isInNormalProtocol()) {
-            spice.updateButtons(buttonState);
+            spice.updateButtons(buttons.getModifiers());
             return true;
         }
         return false;

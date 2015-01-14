@@ -165,7 +165,7 @@ abstract public class GestureHandler
             canvas.panToMouse();
             if (!p.processPointerEvent(x, y))
                 return false;
-            return p.processButtonEvent(e.getButtonState());
+            return p.processButtonEvent(e.getDeviceId(), e.getButtonState());
 
         // Scroll wheel
         case MotionEvent.ACTION_SCROLL:
@@ -190,10 +190,11 @@ abstract public class GestureHandler
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
         RemotePointer p  = canvas.getPointer();
+        final int deviceID = e.getDeviceId();
         p.processPointerEvent(getX(e), getY(e));
-        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
+        p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
-        p.processButtonEvent(0);
+        p.processButtonEvent(deviceID, 0);
         canvas.panToMouse();
         return true;
     }
@@ -206,14 +207,15 @@ abstract public class GestureHandler
     @Override
     public boolean onDoubleTap (MotionEvent e) {
         RemotePointer p  = canvas.getPointer();
+        final int deviceID = e.getDeviceId();
         p.processPointerEvent(getX(e), getY(e));
-        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
+        p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
-        p.processButtonEvent(0);
+        p.processButtonEvent(deviceID, 0);
         SystemClock.sleep(50);
-        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
+        p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
-        p.processButtonEvent(0);
+        p.processButtonEvent(deviceID, 0);
         canvas.panToMouse();
         return true;
     }
@@ -234,7 +236,7 @@ abstract public class GestureHandler
         Utils.performLongPressHaptic(canvas);
         dragMode = true;
         p.processPointerEvent(getX(e), getY(e));
-        p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
+        p.processButtonEvent(e.getDeviceId(), MotionEvent.BUTTON_PRIMARY);
     }
 
     protected boolean endDragModesAndScrolling () {
@@ -265,6 +267,7 @@ abstract public class GestureHandler
     public boolean onTouchEvent(MotionEvent e) {
         final int action     = e.getActionMasked();
         final int index      = e.getActionIndex();
+        final int deviceID   = e.getDeviceId();
         final int pointerID  = e.getPointerId(index);
         RemotePointer p = canvas.getPointer();
         
@@ -302,7 +305,7 @@ abstract public class GestureHandler
                 if (endDragModesAndScrolling()) {
                     if (!p.processPointerEvent(getX(e), getY(e)))
                         return false;
-                    return p.processButtonEvent(0);
+                    return p.processButtonEvent(deviceID, 0);
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -317,17 +320,17 @@ abstract public class GestureHandler
                     canvas.panToMouse();
                     if (!p.processPointerEvent(getX(e), getY(e)))
                         return false;
-                    return p.processButtonEvent(MotionEvent.BUTTON_PRIMARY);
+                    return p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
                 } else if (rightDragMode) {
                     canvas.panToMouse();
                     if (!p.processPointerEvent(getX(e), getY(e)))
                         return false;
-                    return p.processButtonEvent(MotionEvent.BUTTON_SECONDARY);
+                    return p.processButtonEvent(deviceID, MotionEvent.BUTTON_SECONDARY);
                 } else if (middleDragMode) {
                     canvas.panToMouse();
                     if (!p.processPointerEvent(getX(e), getY(e)))
                         return false;
-                    return p.processButtonEvent(MotionEvent.BUTTON_TERTIARY);
+                    return p.processButtonEvent(deviceID, MotionEvent.BUTTON_TERTIARY);
                 } else if (inSwiping) {
                     // Save the coordinates and restore them afterward.
                     float x = e.getX();
@@ -363,7 +366,7 @@ abstract public class GestureHandler
                     // second index when the third index has gone down
                     // to prevent inadvertent right-clicks when a middle click has been performed.
                     p.processPointerEvent(getX(e), getY(e));
-                    p.processButtonEvent(MotionEvent.BUTTON_SECONDARY);
+                    p.processButtonEvent(deviceID, MotionEvent.BUTTON_SECONDARY);
                     // Enter right-drag mode.
                     rightDragMode = true;
                     // Now the event must be passed on to the parent class in order to 
@@ -382,7 +385,7 @@ abstract public class GestureHandler
             case MotionEvent.ACTION_POINTER_UP:
                 if (!inSwiping && !inScaling && numPointersSeen <= 3) {
                     p.processPointerEvent(getX(e), getY(e));
-                    p.processButtonEvent(MotionEvent.BUTTON_TERTIARY);
+                    p.processButtonEvent(deviceID, MotionEvent.BUTTON_TERTIARY);
                     // Enter middle-drag mode.
                     middleDragMode      = true;
                 }

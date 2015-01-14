@@ -58,6 +58,10 @@ class ModifierState {
             return (modifiers & modifier) != 0;
         }
 
+        void set(int modifiers) {
+            this.modifiers = modifiers;
+        }
+
         void clear() {
             modifiers = 0;
         }
