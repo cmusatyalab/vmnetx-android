@@ -69,18 +69,16 @@ class BitmapData {
             drawable.setSoftCursor(newSoftCursorPixels, w, h, hX, hY);
     }
 
+    void clearSoftCursor() {
+        if (drawable != null)
+            drawable.clearSoftCursor();
+    }
+
     Rect getCursorRect() {
         if (drawable != null)
             return drawable.getCursorRect();
         else // Return an empty new rectangle if drawable is null.
             return new Rect();
-    }
-
-    boolean isNotInitSoftCursor() {
-        if (drawable != null)
-            return (drawable.softCursorInit == false);
-        else
-            return false;
     }
 
     /**

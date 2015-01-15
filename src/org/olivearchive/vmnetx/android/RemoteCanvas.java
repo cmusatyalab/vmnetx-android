@@ -498,10 +498,6 @@ public class RemoteCanvas extends ImageView {
      * @param y
      */
     synchronized void softCursorMove(int x, int y) {
-        if (bitmapData.isNotInitSoftCursor()) {
-            initializeSoftCursor();
-        }
-        
         if (!inScrolling) {
             pointer.setX(x);
             pointer.setY(y);
@@ -530,6 +526,24 @@ public class RemoteCanvas extends ImageView {
         bm.recycle();
     }
     
+    private final Runnable configureCursor = new Runnable() {
+        public void run() {
+            if (spice == null || bitmapData == null)
+                return;
+
+            Rect prevR = new Rect(bitmapData.getCursorRect());
+            if (spice.getAbsoluteMouse()) {
+                initializeSoftCursor();
+            } else {
+                bitmapData.clearSoftCursor();
+            }
+            // Redraw the cursor.
+            Rect r = bitmapData.getCursorRect();
+            reDraw(r.left, r.top, r.width(), r.height());
+            reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
+        }
+    };
+
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         outAttrs.actionLabel = null;
@@ -668,9 +682,9 @@ public class RemoteCanvas extends ImageView {
             return;
         }
         
-        // TODO: In RDP mode, pointer is not visible, so we use a soft cursor.
-        initializeSoftCursor();
-        
+        // Re-initialize cursor.
+        handler.post(configureCursor);
+
         // Set the drawable for the canvas, now that we have it (re)initialized.
         handler.post(drawableSetter);
         handler.post(setModes);
@@ -690,6 +704,7 @@ public class RemoteCanvas extends ImageView {
     }
 
     public void OnCursorConfig() {
+        handler.post(configureCursor);
         handler.post(setModes);
     }
 
