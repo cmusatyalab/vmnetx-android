@@ -648,15 +648,20 @@ public class RemoteCanvas extends ImageView {
             android.util.Log.d(TAG, "Requesting new res: " + remoteWidth + "x" + remoteHeight);
             spice.requestResolution(remoteWidth, remoteHeight);
         }
-        
-        disposeDrawable ();
-        try {
-            // TODO: Use frameBufferSizeChanged instead.
-            bitmapData = new BitmapData(spice, this);
-        } catch (Throwable e) {
-            showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
-            return;
-        }
+
+        // Recreate bitmap.
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                disposeDrawable();
+                try {
+                    // TODO: Use frameBufferSizeChanged instead.
+                    bitmapData = new BitmapData(spice, RemoteCanvas.this);
+                } catch (Throwable e) {
+                    showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
+                }
+            }
+        });
         
         // Re-initialize cursor.
         handler.post(configureCursor);
