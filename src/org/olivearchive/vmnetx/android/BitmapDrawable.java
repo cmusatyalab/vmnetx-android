@@ -74,17 +74,15 @@ class BitmapDrawable extends DrawableContainer {
         return cursorRect;
     }
 
-    private void setCursorRect(int x, int y, int w, int h, int hX, int hY) {
-        hotX = hX;
-        hotY = hY;
+    private void setCursorRect(int x, int y, int w, int h) {
         cursorRect.left   = x-hotX;
         cursorRect.right  = cursorRect.left + w;
         cursorRect.top    = y-hotY;
         cursorRect.bottom = cursorRect.top + h;
     }
 
-    void moveCursorRect(int x, int y) {
-        setCursorRect(x, y, cursorRect.width(), cursorRect.height(), hotX, hotY);
+    void moveCursor(int x, int y) {
+        setCursorRect(x, y, cursorRect.width(), cursorRect.height());
     }
 
     void setSoftCursor(int[] newSoftCursorPixels, int w, int h, int hX, int hY) {
@@ -95,7 +93,9 @@ class BitmapDrawable extends DrawableContainer {
         softCursor = Bitmap.createBitmap(newSoftCursorPixels, w, h,
                 Bitmap.Config.ARGB_8888);
         softCursorInit = true;
-        setCursorRect(x, y, w, h, hX, hY);
+        hotX = hX;
+        hotY = hY;
+        setCursorRect(x, y, w, h);
         oldSoftCursor.recycle();
     }
 

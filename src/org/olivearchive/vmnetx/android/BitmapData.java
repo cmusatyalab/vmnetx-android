@@ -59,9 +59,9 @@ class BitmapData {
         mbitmap.setHasAlpha(false);
     }
 
-    void moveCursorRect(int x, int y) {
+    void moveCursor(int x, int y) {
         if (drawable != null)
-            drawable.moveCursorRect(x, y);
+            drawable.moveCursor(x, y);
     }
 
     void setSoftCursor(int[] newSoftCursorPixels, int w, int h, int hX, int hY) {

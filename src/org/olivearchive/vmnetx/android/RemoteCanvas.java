@@ -485,7 +485,7 @@ public class RemoteCanvas extends ImageView {
      */
     public void invalidateMousePosition() {
         if (bitmapData != null) {
-            bitmapData.moveCursorRect(pointer.getX(), pointer.getY());
+            bitmapData.moveCursor(pointer.getX(), pointer.getY());
             Rect r = bitmapData.getCursorRect();
             reDraw(r.left, r.top, r.width(), r.height());
         }
@@ -507,7 +507,7 @@ public class RemoteCanvas extends ImageView {
             pointer.setY(y);
             Rect prevR = new Rect(bitmapData.getCursorRect());
             // Move the cursor.
-            bitmapData.moveCursorRect(x, y);
+            bitmapData.moveCursor(x, y);
             // Show the cursor.
             Rect r = bitmapData.getCursorRect();
             reDraw(r.left, r.top, r.width(), r.height());
