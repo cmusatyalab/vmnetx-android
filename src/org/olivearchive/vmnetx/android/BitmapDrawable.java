@@ -24,14 +24,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.RectF;
+import android.graphics.Rect;
 import android.graphics.drawable.DrawableContainer;
 
 /**
  * @author Michael A. MacDonald
  */
 class BitmapDrawable extends DrawableContainer {
-    RectF cursorRect;
+    private final Rect cursorRect;
     boolean softCursorInit;
 
     private Bitmap softCursor;
@@ -43,7 +43,7 @@ class BitmapDrawable extends DrawableContainer {
 
     BitmapDrawable(BitmapData data) {
         this.data = data;
-        cursorRect = new RectF();
+        cursorRect = new Rect();
         // Try to free up some memory.
         System.gc();
         softCursor = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
@@ -70,7 +70,11 @@ class BitmapDrawable extends DrawableContainer {
         paint.setFilterBitmap(enabled);
     }
 
-    private void setCursorRect(int x, int y, float w, float h, int hX, int hY) {
+    public Rect getCursorRect() {
+        return cursorRect;
+    }
+
+    private void setCursorRect(int x, int y, int w, int h, int hX, int hY) {
         hotX = hX;
         hotY = hY;
         cursorRect.left   = x-hotX;
@@ -85,8 +89,8 @@ class BitmapDrawable extends DrawableContainer {
 
     void setSoftCursor(int[] newSoftCursorPixels, int w, int h, int hX, int hY) {
         Bitmap oldSoftCursor = softCursor;
-        int x = (int) cursorRect.left + hotX;
-        int y = (int) cursorRect.top + hotY;
+        int x = cursorRect.left + hotX;
+        int y = cursorRect.top + hotY;
 
         softCursor = Bitmap.createBitmap(newSoftCursorPixels, w, h,
                 Bitmap.Config.ARGB_8888);
@@ -131,6 +135,5 @@ class BitmapDrawable extends DrawableContainer {
         if (softCursor != null)
             softCursor.recycle();
         softCursor = null;
-        cursorRect = null;
     }
 }

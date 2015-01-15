@@ -21,7 +21,7 @@
 package org.olivearchive.vmnetx.android;
 
 import android.graphics.Bitmap;
-import android.graphics.RectF;
+import android.graphics.Rect;
 import android.widget.ImageView;
 
 /**
@@ -69,11 +69,11 @@ class BitmapData {
             drawable.setSoftCursor(newSoftCursorPixels, w, h, hX, hY);
     }
 
-    RectF getCursorRect () {
+    Rect getCursorRect() {
         if (drawable != null)
-            return drawable.cursorRect;
+            return drawable.getCursorRect();
         else // Return an empty new rectangle if drawable is null.
-            return new RectF();
+            return new Rect();
     }
 
     boolean isNotInitSoftCursor() {

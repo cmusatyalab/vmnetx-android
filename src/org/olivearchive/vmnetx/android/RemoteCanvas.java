@@ -53,7 +53,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
-import android.graphics.RectF;
+import android.graphics.Rect;
 
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
@@ -481,25 +481,12 @@ public class RemoteCanvas extends ImageView {
     
     
     /**
-     * This is a float-accepting version of reDraw().
-     * Causes a redraw of the bitmapData to happen at the indicated coordinates.
-     */
-    private void reDraw(float x, float y, float w, float h) {
-        float scale = getScale();
-        float shiftedX = x-shiftX;
-        float shiftedY = y-shiftY;
-        // Make the box slightly larger to avoid artifacts due to truncation errors.
-        postInvalidate ((int)((shiftedX-1.f)*scale),   (int)((shiftedY-1.f)*scale),
-                        (int)((shiftedX+w+1.f)*scale), (int)((shiftedY+h+1.f)*scale));
-    }
-    
-    /**
      * Invalidates (to redraw) the location of the remote pointer.
      */
     public void invalidateMousePosition() {
         if (bitmapData != null) {
             bitmapData.moveCursorRect(pointer.getX(), pointer.getY());
-            RectF r = bitmapData.getCursorRect();
+            Rect r = bitmapData.getCursorRect();
             reDraw(r.left, r.top, r.width(), r.height());
         }
     }
@@ -518,11 +505,11 @@ public class RemoteCanvas extends ImageView {
         if (!inScrolling) {
             pointer.setX(x);
             pointer.setY(y);
-            RectF prevR = new RectF(bitmapData.getCursorRect());
+            Rect prevR = new Rect(bitmapData.getCursorRect());
             // Move the cursor.
             bitmapData.moveCursorRect(x, y);
             // Show the cursor.
-            RectF r = bitmapData.getCursorRect();
+            Rect r = bitmapData.getCursorRect();
             reDraw(r.left, r.top, r.width(), r.height());
             reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
         }
