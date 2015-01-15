@@ -65,9 +65,6 @@ public class RemoteCanvas extends ImageView {
     
     public Scaling scaling;
     
-    // Variable indicating that we are currently scrolling in simulated touchpad mode.
-    public boolean inScrolling = false;
-    
     // Connection parameters
     private ConnectionBean connection;
 
@@ -490,27 +487,6 @@ public class RemoteCanvas extends ImageView {
             reDraw(r.left, r.top, r.width(), r.height());
         }
     }
-    
-    
-    /**
-     * Moves soft cursor into a particular location.
-     * @param x
-     * @param y
-     */
-    synchronized void softCursorMove(int x, int y) {
-        if (!inScrolling) {
-            pointer.setX(x);
-            pointer.setY(y);
-            Rect prevR = new Rect(bitmapData.getCursorRect());
-            // Move the cursor.
-            bitmapData.moveCursor(x, y);
-            // Show the cursor.
-            Rect r = bitmapData.getCursorRect();
-            reDraw(r.left, r.top, r.width(), r.height());
-            reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
-        }
-    }
-    
     
     /**
      * Initializes the data structure which holds the remote pointer data.

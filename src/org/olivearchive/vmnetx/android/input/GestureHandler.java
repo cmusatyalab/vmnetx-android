@@ -238,7 +238,6 @@ abstract public class GestureHandler
     }
 
     protected boolean endDragModeAndScrolling () {
-        canvas.inScrolling = false;
         panMode               = false;
         inScaling             = false;
         inSwiping             = false;
@@ -290,7 +289,6 @@ abstract public class GestureHandler
                 scalingJustFinished = false;
                 // Cancel drag mode and scrolling.
                 endDragModeAndScrolling();
-                canvas.inScrolling = true;
                 // If we are manipulating the desktop, turn off bitmap filtering for faster response.
                 canvas.setFilteringEnabled(false);
                 dragX = e.getX();

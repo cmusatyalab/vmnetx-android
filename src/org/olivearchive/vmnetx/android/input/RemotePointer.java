@@ -34,14 +34,6 @@ public class RemotePointer {
         return mouseY;
     }
 
-    public void setX(int newX) {
-        mouseX = newX;
-    }
-
-    public void setY(int newY) {
-        mouseY = newY;
-    }
-
     public boolean processPointerEvent(int x, int y) {
         if (spice != null && spice.isInNormalProtocol()) {
             canvas.invalidateMousePosition();
