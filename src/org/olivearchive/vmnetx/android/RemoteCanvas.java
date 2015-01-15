@@ -637,7 +637,7 @@ public class RemoteCanvas extends ImageView {
     //  desktop size and updates.
     //////////////////////////////////////////////////////////////////////////////////
     
-    public void OnSettingsChanged(int width, int height, int bpp) {
+    void OnSettingsChanged(int width, int height, int bpp) {
         android.util.Log.d(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
         // We need to initialize the communicator and remote keyboard and mouse now.
@@ -670,7 +670,7 @@ public class RemoteCanvas extends ImageView {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 
-    public void OnGraphicsUpdate(int x, int y, int width, int height) {
+    void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.d(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
         synchronized (bitmapData.mbitmap) {
             spice.updateBitmap(bitmapData.mbitmap, x, y, width, height);
@@ -679,7 +679,7 @@ public class RemoteCanvas extends ImageView {
         reDraw(x, y, width, height);
     }
 
-    public void OnMouseMode() {
+    void OnMouseMode() {
         handler.post(configureCursor);
         handler.post(setModes);
     }
