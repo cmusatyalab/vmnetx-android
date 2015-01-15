@@ -81,7 +81,7 @@ static gpointer start_main_loop(gpointer data) {
     thr->jni_get_fd           = (*env)->GetMethodID(env, cls, "OnGetFd", "(J)V");
     thr->jni_settings_changed = (*env)->GetMethodID(env, cls, "OnSettingsChanged", "(IIII)V");
     thr->jni_graphics_update  = (*env)->GetMethodID(env, cls, "OnGraphicsUpdate", "(IIIII)V");
-    thr->jni_cursor_config    = (*env)->GetMethodID(env, cls, "OnCursorConfig", "(Z)V");
+    thr->jni_mouse_mode       = (*env)->GetMethodID(env, cls, "OnMouseMode", "(Z)V");
     thr->jni_disconnect       = (*env)->GetMethodID(env, cls, "OnDisconnect", "()V");
 
     // Start thread

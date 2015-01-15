@@ -339,9 +339,9 @@ void uiCallbackSettingsChanged (struct spice_context *ctx, gint instance, gint w
     (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_settings_changed, instance, width, height, bpp);
 }
 
-void uiCallbackCursorConfig (struct spice_context *ctx, bool absolute_mouse) {
+void uiCallbackMouseMode (struct spice_context *ctx, bool absolute_mouse) {
     assert_on_main_loop_thread();
-    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_cursor_config, absolute_mouse);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_mouse_mode, absolute_mouse);
 }
 
 void uiCallbackDisconnect (struct spice_context *ctx) {

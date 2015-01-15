@@ -126,11 +126,11 @@ public class SpiceCommunicator {
         canvas.OnGraphicsUpdate(x, y, width, height);
     }
 
-    private void OnCursorConfig(boolean absoluteMouse) {
+    private void OnMouseMode(boolean absoluteMouse) {
         synchronized (this) {
             wantAbsoluteMouse = absoluteMouse;
         }
-        canvas.OnCursorConfig();
+        canvas.OnMouseMode();
     }
 
     private void OnDisconnect() {

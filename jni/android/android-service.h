@@ -30,7 +30,7 @@ struct spice_main_thread {
     jmethodID             jni_get_fd;
     jmethodID             jni_settings_changed;
     jmethodID             jni_graphics_update;
-    jmethodID             jni_cursor_config;
+    jmethodID             jni_mouse_mode;
     jmethodID             jni_disconnect;
 };
 

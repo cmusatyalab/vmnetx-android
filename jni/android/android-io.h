@@ -27,5 +27,5 @@ void _assert_on_main_loop_thread(const char *caller);
 void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel);
 void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gint h);
 void uiCallbackSettingsChanged (struct spice_context *ctx, gint instance, gint width, gint height, gint bpp);
-void uiCallbackCursorConfig (struct spice_context *ctx, bool absolute_mouse);
+void uiCallbackMouseMode (struct spice_context *ctx, bool absolute_mouse);
 void uiCallbackDisconnect (struct spice_context *ctx);

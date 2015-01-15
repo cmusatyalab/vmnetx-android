@@ -679,7 +679,7 @@ public class RemoteCanvas extends ImageView {
         reDraw(x, y, width, height);
     }
 
-    public void OnCursorConfig() {
+    public void OnMouseMode() {
         handler.post(configureCursor);
         handler.post(setModes);
     }
