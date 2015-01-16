@@ -85,6 +85,11 @@ public class RemoteCanvas extends ImageView {
     
     // Internal bitmap data
     private BitmapData bitmapData;
+
+    // Mouse cursor
+    private int[] cursor;
+    private boolean cursorVisible;
+    private int cursorWidth, cursorHeight, hotX, hotY;
     
     // Progress dialog shown at connection time.
     private ProgressDialog pd;
@@ -491,7 +496,7 @@ public class RemoteCanvas extends ImageView {
     /**
      * Initializes the data structure which holds the remote pointer data.
      */
-    void initializeSoftCursor () {
+    private void setDefaultSoftCursor() {
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.cursor);
         int w = bm.getWidth();
         int h = bm.getHeight();
@@ -508,10 +513,14 @@ public class RemoteCanvas extends ImageView {
                 return;
 
             Rect prevR = new Rect(bitmapData.getCursorRect());
-            if (spice.getAbsoluteMouse()) {
-                initializeSoftCursor();
-            } else {
-                bitmapData.clearSoftCursor();
+            synchronized (this) {
+                if (!cursorVisible)
+                    bitmapData.clearSoftCursor();
+                else if (cursor != null)
+                    bitmapData.setSoftCursor(cursor, cursorWidth,
+                            cursorHeight, hotX, hotY);
+                else
+                    setDefaultSoftCursor();
             }
             // Redraw the cursor.
             Rect r = bitmapData.getCursorRect();
@@ -685,8 +694,20 @@ public class RemoteCanvas extends ImageView {
     }
 
     void OnMouseMode() {
-        handler.post(configureCursor);
         handler.post(setModes);
+    }
+
+    void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
+            int hx, int hy) {
+        synchronized (this) {
+            cursorVisible = shown;
+            cursor = bitmap;
+            cursorWidth = w;
+            cursorHeight = h;
+            hotX = hx;
+            hotY = hy;
+        }
+        handler.post(configureCursor);
     }
 
     private void wantVMState(int wanted) {

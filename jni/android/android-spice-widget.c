@@ -120,6 +120,30 @@ static void update_mouse_mode(SpiceChannel *channel, gpointer data)
     uiCallbackMouseMode(d->ctx, d->mouse_mode == SPICE_MOUSE_MODE_CLIENT);
 }
 
+static void cursor_set(SpiceCursorChannel *cursor,
+                       int w, int h,
+                       int hot_x, int hot_y,
+                       void *bitmap, void *data) {
+    SpiceDisplay *display = data;
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+
+    uiCallbackCursorConfig(d->ctx, true, bitmap, w, h, hot_x, hot_y);
+}
+
+static void cursor_hide(SpiceCursorChannel *cursor, void *data) {
+    SpiceDisplay *display = data;
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+
+    uiCallbackCursorConfig(d->ctx, false, NULL, 0, 0, 0, 0);
+}
+
+static void cursor_reset(SpiceCursorChannel *cursor, void *data) {
+    SpiceDisplay *display = data;
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+
+    uiCallbackCursorConfig(d->ctx, true, NULL, 0, 0, 0, 0);
+}
+
 /* ---------------------------------------------------------------- */
 
 #define CONVERT_0565_TO_0888(s)                                         \
@@ -343,21 +367,19 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
         return;
     }
 
-    //if (SPICE_IS_CURSOR_CHANNEL(channel)) {
-    //    if (id != d->channel_id)
-    //        return;
-    //    d->cursor = SPICE_CURSOR_CHANNEL(channel);
-    //    g_signal_connect(channel, "cursor-set",
-    //                     G_CALLBACK(cursor_set), display);
-    //    g_signal_connect(channel, "cursor-move",
-    //                     G_CALLBACK(cursor_move), display);
-    //    g_signal_connect(channel, "cursor-hide",
-    //                     G_CALLBACK(cursor_hide), display);
-    //    g_signal_connect(channel, "cursor-reset",
-    //                     G_CALLBACK(cursor_reset), display);
-    //    spice_channel_connect(channel);
-    //    return;
-    //}
+    if (SPICE_IS_CURSOR_CHANNEL(channel)) {
+        if (id != d->channel_id)
+            return;
+        d->cursor = SPICE_CURSOR_CHANNEL(channel);
+        g_signal_connect(channel, "cursor-set",
+                         G_CALLBACK(cursor_set), display);
+        g_signal_connect(channel, "cursor-hide",
+                         G_CALLBACK(cursor_hide), display);
+        g_signal_connect(channel, "cursor-reset",
+                         G_CALLBACK(cursor_reset), display);
+        spice_channel_connect(channel);
+        return;
+    }
 
     if (SPICE_IS_INPUTS_CHANNEL(channel)) {
         d->inputs = SPICE_INPUTS_CHANNEL(channel);
@@ -365,8 +387,6 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
         //sync_keyboard_lock_modifiers(display);
         return;
     }
-
-    return;
 }
 
 static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer data)

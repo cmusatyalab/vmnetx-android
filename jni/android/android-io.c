@@ -344,6 +344,34 @@ void uiCallbackMouseMode (struct spice_context *ctx, bool absolute_mouse) {
     (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_mouse_mode, absolute_mouse);
 }
 
+void uiCallbackCursorConfig (struct spice_context *ctx, bool shown, uint32_t *data, int w, int h, int hot_x, int hot_y) {
+    assert_on_main_loop_thread();
+    jintArray *bitmap = NULL;
+    if (data) {
+        // make Java array
+        bitmap = (*ctx->thr->jenv)->NewIntArray(ctx->thr->jenv, w * h);
+        if (!bitmap) {
+            __android_log_write(ANDROID_LOG_FATAL, TAG, "Couldn't allocate array for cursor data");
+            abort();
+        }
+        // convert R G B A -> ARGB and copy
+        int *elems = (*ctx->thr->jenv)->GetPrimitiveArrayCritical(ctx->thr->jenv, bitmap, NULL);
+        if (!elems) {
+            __android_log_write(ANDROID_LOG_FATAL, TAG, "Couldn't access array for cursor data");
+            abort();
+        }
+        for (int64_t i = 0; i < w * h; i++) {
+            uint32_t val = GUINT32_FROM_BE(data[i]);
+            elems[i] = (val << 24) | (val >> 8);
+        }
+        (*ctx->thr->jenv)->ReleasePrimitiveArrayCritical(ctx->thr->jenv, bitmap, elems, 0);
+    }
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_cursor_config, shown, bitmap, w, h, hot_x, hot_y);
+    // Main loop thread never frees local references
+    if (bitmap)
+        (*ctx->thr->jenv)->DeleteLocalRef(ctx->thr->jenv, bitmap);
+}
+
 void uiCallbackDisconnect (struct spice_context *ctx) {
     assert_on_main_loop_thread();
     (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_disconnect);

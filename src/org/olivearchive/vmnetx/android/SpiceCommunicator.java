@@ -133,6 +133,11 @@ public class SpiceCommunicator {
         canvas.OnMouseMode();
     }
 
+    private void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
+            int hotX, int hotY) {
+        canvas.OnCursorConfig(shown, bitmap, w, h, hotX, hotY);
+    }
+
     private void OnDisconnect() {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
     }
