@@ -56,9 +56,9 @@ public class Scaling {
      */
     void updateForCanvas(RemoteCanvas canvas) {
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
+        canvas.computeShiftFromFullToView();
         canvasXOffset = -canvas.getCenteredXOffset();
         canvasYOffset = -canvas.getCenteredYOffset();
-        canvas.computeShiftFromFullToView ();
 
         boolean zoomedOut = (scaling <= minimumScale);
         minimumScale = canvas.getMinimumScale();

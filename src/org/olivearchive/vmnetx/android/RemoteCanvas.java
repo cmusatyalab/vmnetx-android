@@ -581,11 +581,11 @@ public class RemoteCanvas extends ImageView {
     }
     
     public int getCenteredXOffset() {
-        return (spice.framebufferWidth() - getWidth()) / 2;
+        return (int) shiftX;
     }
     
     public int getCenteredYOffset() {
-        return (spice.framebufferHeight() - getHeight()) / 2;
+        return (int) shiftY;
     }
     
     public float getMinimumScale() {
