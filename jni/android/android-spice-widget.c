@@ -89,8 +89,6 @@ static void spice_display_init(SpiceDisplay *display)
 
     d = display->priv = SPICE_DISPLAY_GET_PRIVATE(display);
     memset(d, 0, sizeof(*d));
-    d->mouse_last_x = -1;
-    d->mouse_last_y = -1;
 }
 
 
@@ -114,10 +112,9 @@ static void update_mouse_mode(SpiceChannel *channel, gpointer data)
     SpiceDisplay *display = data;
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
 
-    g_object_get(channel, "mouse-mode", &d->mouse_mode, NULL);
-    SPICE_DEBUG("mouse mode %d", d->mouse_mode);
-
-    uiCallbackMouseMode(d->ctx, d->mouse_mode == SPICE_MOUSE_MODE_CLIENT);
+    int mode;
+    g_object_get(channel, "mouse-mode", &mode, NULL);
+    uiCallbackMouseMode(d->ctx, mode == SPICE_MOUSE_MODE_CLIENT);
 }
 
 static void cursor_set(SpiceCursorChannel *cursor,

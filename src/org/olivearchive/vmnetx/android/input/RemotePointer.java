@@ -51,6 +51,14 @@ public class RemotePointer {
         return false;
     }
 
+    public boolean processMotionEvent(int dx, int dy) {
+        if (spice != null && spice.isInNormalProtocol()) {
+            spice.writeMotionEvent(dx, dy);
+            return true;
+        }
+        return false;
+    }
+
     public boolean processButtonEvent(int deviceID, int buttonState) {
         buttons.getDeviceState(deviceID).set(buttonState);
         if (spice != null && spice.isInNormalProtocol()) {

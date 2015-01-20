@@ -188,47 +188,35 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceKeyEvent(JNIEnv * en
 
 struct pointer_event_args {
     struct spice_context *ctx;
+    bool absolute;
     int x;
     int y;
 };
 
 static gboolean do_pointer_event(void *data) {
     struct pointer_event_args *args = data;
-    int x = args->x;
-    int y = args->y;
 
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Pointer event: %d at x: %d, y: %d", args->type, x, y);
 
-    if (!d->inputs || (x >= 0 && x < d->width && y >= 0 && y < d->height)) {
-        gint dx;
-        gint dy;
-        switch (d->mouse_mode) {
-        case SPICE_MOUSE_MODE_CLIENT:
-            //__android_log_write(ANDROID_LOG_DEBUG, TAG, "spice mouse mode client");
-            spice_inputs_position(d->inputs, x, y, d->channel_id, d->mouse_button_mask);
-            break;
-        case SPICE_MOUSE_MODE_SERVER:
-            //__android_log_write(ANDROID_LOG_DEBUG, TAG, "spice mouse mode server");
-            dx = d->mouse_last_x != -1 ? x - d->mouse_last_x : 0;
-            dy = d->mouse_last_y != -1 ? y - d->mouse_last_y : 0;
-            spice_inputs_motion(d->inputs, dx, dy, d->mouse_button_mask);
-            d->mouse_last_x = x;
-            d->mouse_last_y = y;
-            break;
-        default:
-            g_warn_if_reached();
-            break;
-        }
+    if (d->inputs) {
+        if (args->absolute)
+            spice_inputs_position(d->inputs, args->x, args->y, d->channel_id,
+                    d->mouse_button_mask);
+        else
+            spice_inputs_motion(d->inputs, args->x, args->y,
+                    d->mouse_button_mask);
     }
+
     g_slice_free(struct pointer_event_args, args);
     return false;
 }
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpicePointerEvent(JNIEnv * env, jobject obj, jlong context, jint x, jint y) {
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpicePointerEvent(JNIEnv * env, jobject obj, jlong context, jboolean absolute, jint x, jint y) {
     struct pointer_event_args *args = g_slice_new(struct pointer_event_args);
     args->ctx = (struct spice_context *) context;
+    args->absolute = absolute;
     args->x = x;
     args->y = y;
     g_idle_add_full(G_PRIORITY_DEFAULT, do_pointer_event, args, NULL);

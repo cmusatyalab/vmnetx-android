@@ -34,8 +34,6 @@ public class RelativeMouseHandler extends GestureHandler {
      */
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        RemotePointer p = canvas.getPointer();
-        
         // TODO: This is a workaround for Android 4.2
         boolean twoFingers = false;
         if (e1 != null)
@@ -79,11 +77,10 @@ public class RelativeMouseHandler extends GestureHandler {
         distanceX = sensitivity * distanceX / displayDensity;
         distanceY = sensitivity * distanceY / displayDensity;
         
-        // Compute the absolute new mouse position on the remote site.
-        int newRemoteX = (int) (p.getX() + getDelta(-distanceX));
-        int newRemoteY = (int) (p.getY() + getDelta(-distanceY));
-        p.processPointerEvent(newRemoteX, newRemoteY);
-        canvas.panToMouse();
+        // Submit the motion event.
+        int dx = (int) getDelta(-distanceX);
+        int dy = (int) getDelta(-distanceY);
+        canvas.getPointer().processMotionEvent(dx, dy);
         return true;
     }
 
@@ -96,29 +93,23 @@ public class RelativeMouseHandler extends GestureHandler {
     public boolean onDown(MotionEvent e) {
         return true;
     }
-    
-    protected int getX (MotionEvent e) {
-        RemotePointer p = canvas.getPointer();
-        if (dragModeButton != 0) {
-            float distanceX = e.getX() - dragX;
-            dragX = e.getX();
-            // Compute the absolute new X coordinate on the remote site.
-            return (int) (p.getX() + getDelta(distanceX));
-        }
-        dragX = e.getX();
-        return p.getX();
+
+    @Override
+    protected boolean handleMouseActions(MotionEvent e) {
+        // We can't generate motion events directly from the mouse because
+        // Android presents the mouse as an absolute device whose motion
+        // stops at the screen edge.  Respect scroll events, but otherwise
+        // treat mouse events the same as touch events: the mouse button
+        // must be down to engage the virtual touchpad.
+        if (e.getActionMasked() == MotionEvent.ACTION_SCROLL)
+            return super.handleMouseActions(e);
+        return false;
     }
 
-    protected int getY (MotionEvent e) {
-        RemotePointer p = canvas.getPointer();
-        if (dragModeButton != 0) {
-            float distanceY = e.getY() - dragY;
-            dragY = e.getY();
-            // Compute the absolute new Y coordinate on the remote site.
-            return (int) (p.getY() + getDelta(distanceY));
-        }
-        dragY = e.getY();
-        return p.getY();
+    @Override
+    protected boolean updatePosition(int x, int y) {
+        // no position to update
+        return true;
     }
 
     private float getDelta(float distance) {

@@ -130,6 +130,23 @@ abstract public class GestureHandler
     }
 
     /**
+     * Update the current mouse position from the specified MotionEvent.
+     */
+    protected boolean updatePosition(MotionEvent e) {
+        return updatePosition(getX(e), getY(e));
+    }
+
+    /**
+     * Update the current mouse position to the specified coordinates.
+     */
+    protected boolean updatePosition(int x, int y) {
+        if (!canvas.getPointer().processPointerEvent(x, y))
+            return false;
+        canvas.panToMouse();
+        return true;
+    }
+
+    /**
      * Handles actions performed by a mouse.
      * @param e touch or generic motion event
      * @return
@@ -160,8 +177,7 @@ abstract public class GestureHandler
         // Mouse was moved OR as reported, some external mice trigger
         // this when a mouse button is pressed as well
         case MotionEvent.ACTION_HOVER_MOVE:
-            canvas.panToMouse();
-            if (!p.processPointerEvent(x, y))
+            if (!updatePosition(x, y))
                 return false;
             return p.processButtonEvent(e.getDeviceId(), e.getButtonState());
 
@@ -189,11 +205,10 @@ abstract public class GestureHandler
     public boolean onSingleTapConfirmed(MotionEvent e) {
         RemotePointer p  = canvas.getPointer();
         final int deviceID = e.getDeviceId();
-        p.processPointerEvent(getX(e), getY(e));
+        updatePosition(e);
         p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
         p.processButtonEvent(deviceID, 0);
-        canvas.panToMouse();
         return true;
     }
 
@@ -206,7 +221,7 @@ abstract public class GestureHandler
     public boolean onDoubleTap (MotionEvent e) {
         RemotePointer p  = canvas.getPointer();
         final int deviceID = e.getDeviceId();
-        p.processPointerEvent(getX(e), getY(e));
+        updatePosition(e);
         p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
         p.processButtonEvent(deviceID, 0);
@@ -214,7 +229,6 @@ abstract public class GestureHandler
         p.processButtonEvent(deviceID, MotionEvent.BUTTON_PRIMARY);
         SystemClock.sleep(50);
         p.processButtonEvent(deviceID, 0);
-        canvas.panToMouse();
         return true;
     }
 
@@ -233,7 +247,7 @@ abstract public class GestureHandler
         
         Utils.performLongPressHaptic(canvas);
         dragModeButton = MotionEvent.BUTTON_PRIMARY;
-        p.processPointerEvent(getX(e), getY(e));
+        updatePosition(e);
         p.processButtonEvent(e.getDeviceId(), MotionEvent.BUTTON_PRIMARY);
     }
 
@@ -297,7 +311,7 @@ abstract public class GestureHandler
             case MotionEvent.ACTION_UP:
                 // If any drag mode was going on, end it and send a mouse up event.
                 if (endDragModeAndScrolling()) {
-                    if (!p.processPointerEvent(getX(e), getY(e)))
+                    if (!updatePosition(e))
                         return false;
                     return p.processButtonEvent(deviceID, 0);
                 }
@@ -311,8 +325,7 @@ abstract public class GestureHandler
                     dragY = e.getY();
                     return true;
                 } else if (dragModeButton != 0) {
-                    canvas.panToMouse();
-                    if (!p.processPointerEvent(getX(e), getY(e)))
+                    if (!updatePosition(e))
                         return false;
                     return p.processButtonEvent(deviceID, dragModeButton);
                 } else if (inSwiping) {
@@ -349,7 +362,7 @@ abstract public class GestureHandler
                     // finger is down, we treat it as a middle mouse click. We ignore the lifting of the
                     // second index when the third index has gone down
                     // to prevent inadvertent right-clicks when a middle click has been performed.
-                    p.processPointerEvent(getX(e), getY(e));
+                    updatePosition(e);
                     p.processButtonEvent(deviceID, MotionEvent.BUTTON_SECONDARY);
                     // Enter right-drag mode.
                     dragModeButton = MotionEvent.BUTTON_SECONDARY;
@@ -368,7 +381,7 @@ abstract public class GestureHandler
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 if (!inSwiping && !inScaling && numPointersSeen <= 3) {
-                    p.processPointerEvent(getX(e), getY(e));
+                    updatePosition(e);
                     p.processButtonEvent(deviceID, MotionEvent.BUTTON_TERTIARY);
                     // Enter middle-drag mode.
                     dragModeButton = MotionEvent.BUTTON_TERTIARY;

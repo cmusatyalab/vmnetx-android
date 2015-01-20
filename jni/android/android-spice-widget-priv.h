@@ -57,10 +57,6 @@ struct _SpiceDisplayPrivate {
     SpiceCursorChannel      *cursor;
     SpiceInputsChannel      *inputs;
 
-    enum SpiceMouseMode     mouse_mode;
-    bool                    mouse_have_pointer;
-    int                     mouse_last_x;
-    int                     mouse_last_y;
     int                     mouse_button_mask;
 
     uint32_t                key_state[512 / 32];
