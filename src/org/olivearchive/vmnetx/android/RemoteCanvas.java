@@ -489,7 +489,8 @@ public class RemoteCanvas extends ImageView {
         if (bitmapData != null) {
             bitmapData.moveCursor(pointer.getX(), pointer.getY());
             Rect r = bitmapData.getCursorRect();
-            reDraw(r.left, r.top, r.width(), r.height());
+            if (r != null)
+                reDraw(r.left, r.top, r.width(), r.height());
         }
     }
     
@@ -524,8 +525,10 @@ public class RemoteCanvas extends ImageView {
             }
             // Redraw the cursor.
             Rect r = bitmapData.getCursorRect();
-            reDraw(r.left, r.top, r.width(), r.height());
-            reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
+            if (r != null)
+                reDraw(r.left, r.top, r.width(), r.height());
+            if (prevR != null)
+                reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
         }
     };
 

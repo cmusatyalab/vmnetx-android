@@ -45,7 +45,6 @@ class BitmapDrawable extends DrawableContainer {
         cursorRect = new Rect();
         // Try to free up some memory.
         System.gc();
-        clearSoftCursor();
 
         paint = new Paint();
         setFilteringEnabled(true);
@@ -59,7 +58,9 @@ class BitmapDrawable extends DrawableContainer {
         try {
             synchronized (data.mbitmap) {
                 canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, paint);
-                canvas.drawBitmap(softCursor, cursorRect.left, cursorRect.top, paint);
+                if (softCursor != null)
+                    canvas.drawBitmap(softCursor, cursorRect.left,
+                            cursorRect.top, paint);
             }
         } catch (Throwable e) { }
     }
@@ -69,7 +70,10 @@ class BitmapDrawable extends DrawableContainer {
     }
 
     public Rect getCursorRect() {
-        return cursorRect;
+        if (softCursor != null)
+            return cursorRect;
+        else
+            return null;
     }
 
     private void setCursorRect(int x, int y, int w, int h) {
@@ -98,8 +102,9 @@ class BitmapDrawable extends DrawableContainer {
     }
 
     void clearSoftCursor() {
-        int pixels[] = new int[1];
-        setSoftCursor(pixels, 1, 1, 0, 0);
+        if (softCursor != null)
+            softCursor.recycle();
+        softCursor = null;
     }
 
     /* (non-Javadoc)
