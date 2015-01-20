@@ -689,6 +689,9 @@ public class RemoteCanvas extends ImageView {
 
     void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.d(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
+        if (bitmapData == null)
+            return;
+
         synchronized (bitmapData.mbitmap) {
             spice.updateBitmap(bitmapData.mbitmap, x, y, width, height);
         }
