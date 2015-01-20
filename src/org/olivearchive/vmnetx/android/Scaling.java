@@ -50,6 +50,15 @@ public class Scaling {
         return scaling;
     }
 
+    private void setScale(RemoteCanvas canvas, float scale) {
+        scaling = scale;
+        matrix.reset();
+        matrix.preTranslate(canvasXOffset, canvasYOffset);
+        matrix.postScale(scaling, scaling);
+        canvas.setImageMatrix(matrix);
+        canvas.scrollToAbsolute(true);
+    }
+
     /**
      * Update state from canvas
      * @param activity
@@ -64,14 +73,10 @@ public class Scaling {
         minimumScale = canvas.getMinimumScale();
         if (zoomedOut) {
             // We were fully zoomed out; stay that way
-            scaling = minimumScale;
+            setScale(canvas, minimumScale);
         } else {
-            scaling = Math.max(scaling, minimumScale);
+            setScale(canvas, Math.max(scaling, minimumScale));
         }
-        resetMatrix();
-        matrix.postScale(scaling, scaling);
-        canvas.setImageMatrix(matrix);
-        resolveZoom(canvas);
     }
 
     /**
@@ -118,30 +123,11 @@ public class Scaling {
                 canvas.displayShortToastMessage(R.string.snap_one_to_one);
         }
 
-        resetMatrix();
-        scaling = newScale;
-        matrix.postScale(scaling, scaling);
-        canvas.setImageMatrix(matrix);
-        resolveZoom(canvas);
+        setScale(canvas, newScale);
 
         // Only if we have actually scaled do we pan.
         if (oldScale != newScale) {
             canvas.pan((int)(newXPan - xPan), (int)(newYPan - yPan));
         }
-    }
-
-    /**
-     * Call after scaling and matrix have been changed to resolve scrolling
-     * @param activity
-     */
-    private void resolveZoom(RemoteCanvas canvas)
-    {
-        canvas.scrollToAbsolute(true);
-    }
-
-    private void resetMatrix()
-    {
-        matrix.reset();
-        matrix.preTranslate(canvasXOffset, canvasYOffset);
     }
 }
