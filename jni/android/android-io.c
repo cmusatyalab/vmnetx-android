@@ -17,6 +17,9 @@
  * USA.
  */
 
+/* JNI functions related to input (keyboard, mouse), and output (display). */
+/***************************************************************************/
+
 #include <endian.h>
 #include <jni.h>
 #include <android/bitmap.h>
@@ -97,10 +100,48 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
+struct redraw_args {
+    struct spice_context *ctx;
+    // what we really want is a semaphore or completion
+    GMutex lock;
+    GCond cond;
+    bool done;
+};
 
-/* JNI functions related to input (keyboard, mouse), and output (display). */
-/***************************************************************************/
+static gboolean do_redraw(void *data) {
+    struct redraw_args *args = data;
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
 
+    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Forcing full invalidate");
+    uiCallbackInvalidate(args->ctx, 0, 0, d->width, d->height);
+
+    g_mutex_lock(&args->lock);
+    args->done = true;
+    g_cond_broadcast(&args->cond);
+    g_mutex_unlock(&args->lock);
+    // do not free struct!
+    return false;
+}
+
+// Invoke an OnGraphicsUpdate callback from the main loop thread and block
+// until it has completed.
+JNIEXPORT void JNICALL
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceForceRedraw (JNIEnv* env, jobject obj, jlong context) {
+    struct redraw_args args;
+    args.ctx = (struct spice_context *) context;
+    g_mutex_init(&args.lock);
+    g_cond_init(&args.cond);
+    args.done = false;
+    g_idle_add_full(G_PRIORITY_DEFAULT, do_redraw, &args, NULL);
+
+    g_mutex_lock(&args.lock);
+    while (!args.done)
+        g_cond_wait(&args.cond, &args.lock);
+    g_mutex_unlock(&args.lock);
+
+    g_cond_clear(&args.cond);
+    g_mutex_clear(&args.lock);
+}
 
 JNIEXPORT void JNICALL
 Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, jobject obj, jlong context, jint x, jint y) {

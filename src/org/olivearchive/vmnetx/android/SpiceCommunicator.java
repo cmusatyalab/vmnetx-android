@@ -22,6 +22,7 @@ public class SpiceCommunicator {
     private native void SpiceScrollEvent (long context, int button, int count);
     private native void SpiceKeyEvent (long context, boolean keyDown, int virtualKeyCode);
     private native void SpiceUpdateBitmap (long context, Bitmap bitmap, int x, int y, int w, int h);
+    private native void SpiceForceRedraw (long context);
     private native void SpiceRequestResolution (long context, int x, int y);
     private native void SpiceSetFd (long cookie, int fd);
     
@@ -110,6 +111,10 @@ public class SpiceCommunicator {
         SpiceUpdateBitmap(context, bitmap, x, y, w, h);
     }
     
+    public void redraw() {
+        SpiceForceRedraw(context);
+    }
+
     /* Callbacks from jni */
     private void OnGetFd(long cookie) {
         new ConnectThread(cookie).start();
