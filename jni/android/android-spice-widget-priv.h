@@ -37,16 +37,10 @@ struct _SpiceDisplayPrivate {
     gint                    channel_id;
     gint                    monitor_id;
 
-    /* options */
-
-    /* state */
     enum SpiceSurfaceFmt    format;
     gint                    width, height, stride;
-    gint                    shmid;
     gpointer                data_origin; /* the original display image data */
     gpointer                data; /* converted if necessary to 32 bits */
-
-    gint                    ww, wh, mx, my;
 
     bool                    convert;
 

@@ -255,7 +255,6 @@ static void primary_create(SpiceChannel *channel, gint format, gint width, gint 
 
     d->format = format;
     d->stride = stride;
-    d->shmid = shmid;
     d->width = width;
     d->height = height;
     d->data_origin = d->data = imgdata;
@@ -272,7 +271,6 @@ static void primary_destroy(SpiceChannel *channel, gpointer data) {
     d->width  = 0;
     d->height = 0;
     d->stride = 0;
-    d->shmid  = 0;
     d->data   = 0;
     d->data_origin = 0;
 }
