@@ -115,14 +115,14 @@ public class SpiceCommunicator {
         new ConnectThread(cookie).start();
     }
 
-    private void OnSettingsChanged(int inst, int width, int height, int bpp) {
+    private void OnSettingsChanged(int width, int height, int bpp) {
         this.width = width;
         this.height = height;
         canvas.OnSettingsChanged(width, height, bpp);
         isInNormalProtocol = true;
     }
 
-    private void OnGraphicsUpdate(int inst, int x, int y, int width, int height) {
+    private void OnGraphicsUpdate(int x, int y, int width, int height) {
         canvas.OnGraphicsUpdate(x, y, width, height);
     }
 

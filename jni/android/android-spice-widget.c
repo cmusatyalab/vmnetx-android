@@ -260,7 +260,7 @@ static void primary_create(SpiceChannel *channel, gint format, gint width, gint 
     d->height = height;
     d->data_origin = d->data = imgdata;
 
-    uiCallbackSettingsChanged(d->ctx, 0, width, height, 4);
+    uiCallbackSettingsChanged(d->ctx, width, height, 4);
 }
 
 static void primary_destroy(SpiceChannel *channel, gpointer data) {

@@ -318,13 +318,13 @@ void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel) {
 void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gint h) {
     // Tell the UI that it needs to send in the bitmap to be updated and to redraw.
     assert_on_main_loop_thread();
-    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_graphics_update, 0, x, y, w, h);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_graphics_update, x, y, w, h);
 }
 
-void uiCallbackSettingsChanged (struct spice_context *ctx, gint instance, gint width, gint height, gint bpp) {
+void uiCallbackSettingsChanged (struct spice_context *ctx, gint width, gint height, gint bpp) {
     // Ask for a new bitmap from the UI.
     assert_on_main_loop_thread();
-    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_settings_changed, instance, width, height, bpp);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_settings_changed, width, height, bpp);
 }
 
 void uiCallbackMouseMode (struct spice_context *ctx, bool absolute_mouse) {
