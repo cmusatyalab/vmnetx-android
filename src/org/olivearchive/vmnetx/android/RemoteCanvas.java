@@ -64,7 +64,7 @@ public class RemoteCanvas extends ImageView {
     private final static String TAG = "RemoteCanvas";
     private final static Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
     
-    public Scaling scaling;
+    public final Scaling scaling = new Scaling(this);
     
     // Connection parameters
     private ConnectionBean connection;
@@ -141,7 +141,6 @@ public class RemoteCanvas extends ImageView {
     void initializeCanvas(ConnectionBean bean, final Runnable setModes) {
         this.setModes = setModes;
         connection = bean;
-        scaling = new Scaling(this);
 
         // Startup the connection thread with a progress dialog
         pd = new ProgressDialog(getContext());
@@ -318,7 +317,6 @@ public class RemoteCanvas extends ImageView {
 
         setModes         = null;
         connection       = null;
-        scaling          = null;
         screenMessage    = null;
         spice            = null;
         endpoint         = null;
@@ -541,8 +539,6 @@ public class RemoteCanvas extends ImageView {
     }
     
     public float getScale() {
-        if (scaling == null)
-            return 1;
         return scaling.getScale();
     }
     
