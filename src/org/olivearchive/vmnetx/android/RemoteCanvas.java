@@ -513,7 +513,9 @@ public class RemoteCanvas extends ImageView {
             if (spice == null || bitmapData == null)
                 return;
 
-            Rect prevR = new Rect(bitmapData.getCursorRect());
+            Rect prevR = bitmapData.getCursorRect();
+            if (prevR != null)
+                prevR = new Rect(prevR);
             synchronized (this) {
                 if (!cursorVisible)
                     bitmapData.clearSoftCursor();
