@@ -258,6 +258,10 @@ static void primary_create(SpiceChannel *channel, gint format, gint width, gint 
     d->width = width;
     d->height = height;
     d->data_origin = d->data = imgdata;
+    d->convert = (format == SPICE_SURFACE_FMT_16_555 ||
+            format == SPICE_SURFACE_FMT_16_565);
+    if (d->convert)
+        d->data = g_malloc0(height * stride);
 
     uiCallbackSettingsChanged(d->ctx, width, height, 4);
 }
@@ -266,7 +270,8 @@ static void primary_destroy(SpiceChannel *channel, gpointer data) {
     SpiceDisplay *display = SPICE_DISPLAY(data);
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
 
-    //spicex_image_destroy(display);
+    if (d->convert)
+        g_free(d->data);
     d->format = 0;
     d->width  = 0;
     d->height = 0;
