@@ -25,7 +25,7 @@ public class RemoteKeyboard {
         int keyCode = evt.getKeyCode();
         //android.util.Log.d(TAG, evt.toString() + " " + keyCode);
 
-        if (spice != null && spice.isInNormalProtocol()) {
+        if (spice.isInNormalProtocol()) {
             boolean down = (evt.getAction() == KeyEvent.ACTION_DOWN) ||
                            (evt.getAction() == KeyEvent.ACTION_MULTIPLE);
             int modifier = keyCodeToModifierMask(keyCode);

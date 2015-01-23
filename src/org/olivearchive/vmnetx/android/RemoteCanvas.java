@@ -311,9 +311,7 @@ public class RemoteCanvas extends ImageView {
     private void onDestroy() {
         Log.v(TAG, "Cleaning up resources");
         
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-        }
+        handler.removeCallbacksAndMessages(null);
 
         setModes         = null;
         connection       = null;
@@ -780,7 +778,7 @@ public class RemoteCanvas extends ImageView {
     /** 
      * Handler for connection events.
      */
-    public Handler handler = new Handler() {
+    private final Handler handler = new Handler() {
         private void showProtocolErrorAndQuit(String error) {
             showFatalMessageAndQuit(getContext().getString(R.string.error_protocol) + " " + error);
         }

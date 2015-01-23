@@ -35,7 +35,7 @@ public class RemotePointer {
     }
 
     public boolean processPointerEvent(int x, int y) {
-        if (spice != null && spice.isInNormalProtocol()) {
+        if (spice.isInNormalProtocol()) {
             canvas.invalidateMousePosition();
             mouseX = x;
             mouseY = y;
@@ -52,7 +52,7 @@ public class RemotePointer {
     }
 
     public boolean processMotionEvent(int dx, int dy) {
-        if (spice != null && spice.isInNormalProtocol()) {
+        if (spice.isInNormalProtocol()) {
             spice.writeMotionEvent(dx, dy);
             return true;
         }
@@ -61,7 +61,7 @@ public class RemotePointer {
 
     public boolean processButtonEvent(int deviceID, int buttonState) {
         buttons.getDeviceState(deviceID).set(buttonState);
-        if (spice != null && spice.isInNormalProtocol()) {
+        if (spice.isInNormalProtocol()) {
             spice.updateButtons(buttons.getModifiers());
             return true;
         }
@@ -69,7 +69,7 @@ public class RemotePointer {
     }
 
     public boolean processScrollEvent(int button, int count) {
-        if (spice != null && spice.isInNormalProtocol()) {
+        if (spice.isInNormalProtocol()) {
             spice.writeScrollEvent(button, count);
             return true;
         }
