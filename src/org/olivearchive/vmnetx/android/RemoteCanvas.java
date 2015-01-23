@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2013-2014 Carnegie Mellon University
  * Copyright (C) 2012 Iordan Iordanov
- * Copyright (C) 2010 Michael A. MacDonald
+ * Copyright (C) 2009-2010 Michael A. MacDonald
  * Copyright (C) 2004 Horizon Wimba.  All Rights Reserved.
  * Copyright (C) 2001-2003 HorizonLive.com, Inc.  All Rights Reserved.
  * Copyright (C) 2001,2002 Constantin Kaplinsky.  All Rights Reserved.
@@ -62,6 +62,7 @@ import org.olivearchive.vmnetx.android.protocol.ControlConnectionProcessor;
 
 public class RemoteCanvas extends ImageView {
     private final static String TAG = "RemoteCanvas";
+    private final static Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
     
     public Scaling scaling;
     
@@ -84,7 +85,8 @@ public class RemoteCanvas extends ImageView {
     private RemoteKeyboard keyboard;
     
     // Internal bitmap data
-    private final BitmapData bitmapData = new BitmapData();
+    private Bitmap bitmap;
+    private final BitmapDrawable drawable = new BitmapDrawable(this);
 
     // Mouse cursor
     private int[] cursor;
@@ -121,7 +123,7 @@ public class RemoteCanvas extends ImageView {
      */
     public RemoteCanvas(final Context context, AttributeSet attrs) {
         super(context, attrs);
-        bitmapData.setImageDrawable(RemoteCanvas.this);
+        setImageDrawable(drawable);
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
@@ -447,7 +449,7 @@ public class RemoteCanvas extends ImageView {
     
     
     /**
-     * Causes a redraw of the bitmapData to happen at the indicated coordinates.
+     * Causes a redraw of the bitmap to happen at the indicated coordinates.
      */
     private void reDraw(int x, int y, int w, int h) {
         float scale = getScale();
@@ -463,8 +465,8 @@ public class RemoteCanvas extends ImageView {
      * Invalidates (to redraw) the location of the remote pointer.
      */
     public void invalidateMousePosition() {
-        bitmapData.moveCursor(pointer.getX(), pointer.getY());
-        Rect r = bitmapData.getCursorRect();
+        drawable.moveCursor(pointer.getX(), pointer.getY());
+        Rect r = drawable.getCursorRect();
         if (r != null)
             reDraw(r.left, r.top, r.width(), r.height());
     }
@@ -479,7 +481,7 @@ public class RemoteCanvas extends ImageView {
         int [] tempPixels = new int[w*h];
         bm.getPixels(tempPixels, 0, w, 0, 0, w, h);
         // Set softCursor to whatever the resource is.
-        bitmapData.setSoftCursor(tempPixels, w, h, 0, 0);
+        drawable.setSoftCursor(tempPixels, w, h, 0, 0);
         bm.recycle();
     }
     
@@ -488,20 +490,20 @@ public class RemoteCanvas extends ImageView {
             if (spice == null)
                 return;
 
-            Rect prevR = bitmapData.getCursorRect();
+            Rect prevR = drawable.getCursorRect();
             if (prevR != null)
                 prevR = new Rect(prevR);
             synchronized (this) {
                 if (!cursorVisible)
-                    bitmapData.clearSoftCursor();
+                    drawable.clearSoftCursor();
                 else if (cursor != null)
-                    bitmapData.setSoftCursor(cursor, cursorWidth,
-                            cursorHeight, hotX, hotY);
+                    drawable.setSoftCursor(cursor, cursorWidth, cursorHeight,
+                            hotX, hotY);
                 else
                     setDefaultSoftCursor();
             }
             // Redraw the cursor.
-            Rect r = bitmapData.getCursorRect();
+            Rect r = drawable.getCursorRect();
             if (r != null)
                 reDraw(r.left, r.top, r.width(), r.height());
             if (prevR != null)
@@ -523,9 +525,13 @@ public class RemoteCanvas extends ImageView {
     }
 
     public void setFilteringEnabled(boolean enabled) {
-        bitmapData.setFilteringEnabled(enabled);
+        drawable.setFilteringEnabled(enabled);
     }
     
+    Bitmap getBitmap() {
+        return bitmap;
+    }
+
     public RemotePointer getPointer() {
         return pointer;
     }
@@ -549,11 +555,17 @@ public class RemoteCanvas extends ImageView {
     }
     
     public int getImageWidth() {
-        return spice.framebufferWidth();
+        if (bitmap != null)
+            return bitmap.getWidth();
+        else
+            return 1;
     }
     
     public int getImageHeight() {
-        return spice.framebufferHeight();
+        if (bitmap != null)
+            return bitmap.getHeight();
+        else
+            return 1;
     }
     
     public int getCenteredXOffset() {
@@ -642,10 +654,20 @@ public class RemoteCanvas extends ImageView {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                try {
-                    bitmapData.setDimensions(width, height);
-                } catch (Throwable e) {
-                    showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
+                if (bitmap != null) {
+                    try {
+                        bitmap.reconfigure(width, height, cfg);
+                    } catch (IllegalArgumentException e) {
+                        bitmap = null;
+                    }
+                }
+                if (bitmap == null) {
+                    try {
+                        bitmap = Bitmap.createBitmap(width, height, cfg);
+                        bitmap.setHasAlpha(false);
+                    } catch (Throwable e) {
+                        showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
+                    }
                 }
                 spice.redraw();
             }
@@ -665,8 +687,11 @@ public class RemoteCanvas extends ImageView {
     void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.d(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
 
-        synchronized (bitmapData.mbitmap) {
-            spice.updateBitmap(bitmapData.mbitmap, x, y, width, height);
+        if (bitmap == null)
+            return;
+
+        synchronized (bitmap) {
+            spice.updateBitmap(bitmap, x, y, width, height);
         }
         
         reDraw(x, y, width, height);

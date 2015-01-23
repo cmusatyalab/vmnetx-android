@@ -31,17 +31,15 @@ import android.graphics.drawable.DrawableContainer;
  * @author Michael A. MacDonald
  */
 class BitmapDrawable extends DrawableContainer {
+    private final RemoteCanvas canvas;
+    private final Paint paint = new Paint();
     private final Rect cursorRect = new Rect();
 
     private Bitmap softCursor;
-    private BitmapData data;
-
     private int hotX, hotY;
 
-    private final Paint paint = new Paint();
-
-    BitmapDrawable(BitmapData data) {
-        this.data = data;
+    BitmapDrawable(RemoteCanvas canvas) {
+        this.canvas = canvas;
         setFilteringEnabled(true);
     }
 
@@ -51,11 +49,14 @@ class BitmapDrawable extends DrawableContainer {
     @Override
     public void draw(Canvas canvas) {
         try {
-            synchronized (data.mbitmap) {
-                canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, paint);
-                if (softCursor != null)
-                    canvas.drawBitmap(softCursor, cursorRect.left,
-                            cursorRect.top, paint);
+            Bitmap bitmap = this.canvas.getBitmap();
+            if (bitmap != null) {
+                synchronized (bitmap) {
+                    canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint);
+                    if (softCursor != null)
+                        canvas.drawBitmap(softCursor, cursorRect.left,
+                                cursorRect.top, paint);
+                }
             }
         } catch (Throwable e) { }
     }
@@ -107,7 +108,7 @@ class BitmapDrawable extends DrawableContainer {
      */
     @Override
     public int getIntrinsicHeight() {
-        return data.getHeight();
+        return canvas.getImageHeight();
     }
 
     /* (non-Javadoc)
@@ -115,7 +116,7 @@ class BitmapDrawable extends DrawableContainer {
      */
     @Override
     public int getIntrinsicWidth() {
-        return data.getWidth();
+        return canvas.getImageWidth();
     }
 
     /* (non-Javadoc)
