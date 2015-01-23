@@ -112,7 +112,7 @@ class BitmapDrawable extends DrawableContainer {
      */
     @Override
     public int getIntrinsicHeight() {
-        return data.framebufferheight;
+        return data.getHeight();
     }
 
     /* (non-Javadoc)
@@ -120,7 +120,7 @@ class BitmapDrawable extends DrawableContainer {
      */
     @Override
     public int getIntrinsicWidth() {
-        return data.framebufferwidth;
+        return data.getWidth();
     }
 
     /* (non-Javadoc)

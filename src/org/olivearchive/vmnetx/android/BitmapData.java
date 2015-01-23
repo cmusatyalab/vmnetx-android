@@ -32,29 +32,11 @@ import android.widget.ImageView;
 class BitmapData {
     static private final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
 
-    private final SpiceCommunicator spice;
-
-    int framebufferwidth;
-    int framebufferheight;
-    int bitmapwidth;
-    int bitmapheight;
     Bitmap mbitmap;
     private BitmapDrawable drawable;
 
-    BitmapData(SpiceCommunicator s) {
-        spice = s;
-        framebufferwidth  = spice.framebufferWidth();
-        framebufferheight = spice.framebufferHeight();
+    BitmapData() {
         drawable = createDrawable();
-
-        bitmapwidth = framebufferwidth;
-        bitmapheight = framebufferheight;
-        // To please createBitmap, we ensure the size it at least 1x1.
-        if (bitmapwidth  == 0) bitmapwidth  = 1;
-        if (bitmapheight == 0) bitmapheight = 1;
-
-        mbitmap = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
-        mbitmap.setHasAlpha(false);
     }
 
     void moveCursor(int x, int y) {
@@ -107,18 +89,17 @@ class BitmapData {
      * This method is called when the framebuffer has changed size and reinitializes the
      * necessary data structures to support that change.
      */
-    void frameBufferSizeChanged() {
-        framebufferwidth = spice.framebufferWidth();
-        framebufferheight = spice.framebufferHeight();
-        android.util.Log.i("CBM", "bitmapsize changed = ("+bitmapwidth+","+bitmapheight+")");
-        if ( bitmapwidth < framebufferwidth || bitmapheight < framebufferheight ) {
-            dispose();
-            // Try to free up some memory.
-            System.gc();
-            bitmapwidth  = framebufferwidth;
-            bitmapheight = framebufferheight;
-            mbitmap      = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
-            drawable     = createDrawable();
+    void setDimensions(int width, int height) {
+        if (mbitmap != null) {
+            try {
+                mbitmap.reconfigure(width, height, cfg);
+            } catch (IllegalArgumentException e) {
+                mbitmap = null;
+            }
+        }
+        if (mbitmap == null) {
+            mbitmap = Bitmap.createBitmap(width, height, cfg);
+            mbitmap.setHasAlpha(false);
         }
     }
     
@@ -134,20 +115,12 @@ class BitmapData {
             mbitmap.recycle();
         mbitmap      = null;
     }
-    
-    int fbWidth() {
-        return framebufferwidth;
+
+    int getWidth() {
+        return mbitmap.getWidth();
     }
 
-    int fbHeight() {
-        return framebufferheight;
-    }
-    
-    int bmWidth() {
-        return bitmapwidth;
-    }
-
-    int bmHeight() {
-        return bitmapheight;
+    int getHeight() {
+        return mbitmap.getHeight();
     }
 }

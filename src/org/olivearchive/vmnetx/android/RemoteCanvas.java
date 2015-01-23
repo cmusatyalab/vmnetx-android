@@ -652,7 +652,7 @@ public class RemoteCanvas extends ImageView {
     //  desktop size and updates.
     //////////////////////////////////////////////////////////////////////////////////
     
-    void OnSettingsChanged(int width, int height, int bpp) {
+    void OnSettingsChanged(final int width, final int height, int bpp) {
         android.util.Log.d(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
         // We need to initialize the communicator and remote keyboard and mouse now.
@@ -670,8 +670,8 @@ public class RemoteCanvas extends ImageView {
             public void run() {
                 disposeDrawable();
                 try {
-                    // TODO: Use frameBufferSizeChanged instead.
-                    bitmapData = new BitmapData(spice);
+                    bitmapData = new BitmapData();
+                    bitmapData.setDimensions(width, height);
                 } catch (Throwable e) {
                     showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
                 }
