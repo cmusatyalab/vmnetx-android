@@ -33,7 +33,6 @@ class BitmapData {
     static private final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
 
     private final SpiceCommunicator spice;
-    private final RemoteCanvas canvas;
 
     int framebufferwidth;
     int framebufferheight;
@@ -42,9 +41,8 @@ class BitmapData {
     Bitmap mbitmap;
     private BitmapDrawable drawable;
 
-    BitmapData(SpiceCommunicator s, RemoteCanvas c) {
+    BitmapData(SpiceCommunicator s) {
         spice = s;
-        canvas = c;
         framebufferwidth  = spice.framebufferWidth();
         framebufferheight = spice.framebufferHeight();
         drawable = createDrawable();
@@ -79,15 +77,6 @@ class BitmapData {
             return drawable.getCursorRect();
         else // Return an empty new rectangle if drawable is null.
             return new Rect();
-    }
-
-    /**
-     * 
-     * @return The smallest scale supported by the implementation; the scale at which
-     * the bitmap would be smaller than the screen
-     */
-    float getMinimumScale() {
-        return Math.min((float)canvas.getWidth()/bitmapwidth, (float)canvas.getHeight()/bitmapheight);
     }
 
     /**

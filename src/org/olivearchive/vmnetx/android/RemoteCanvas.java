@@ -590,11 +590,12 @@ public class RemoteCanvas extends ImageView {
         return (int) shiftY;
     }
     
+    /**
+     * @return The scale at which the bitmap would be smaller than the screen
+     */
     public float getMinimumScale() {
-        if (bitmapData != null) {
-            return bitmapData.getMinimumScale();
-        } else
-            return 1.f;
+        return Math.min((float) getWidth() / getImageWidth(),
+                (float) getHeight() / getImageHeight());
     }
     
     public float getDisplayDensity() {
@@ -670,7 +671,7 @@ public class RemoteCanvas extends ImageView {
                 disposeDrawable();
                 try {
                     // TODO: Use frameBufferSizeChanged instead.
-                    bitmapData = new BitmapData(spice, RemoteCanvas.this);
+                    bitmapData = new BitmapData(spice);
                 } catch (Throwable e) {
                     showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
                 }
