@@ -33,40 +33,22 @@ class BitmapData {
     static private final Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
 
     Bitmap mbitmap;
-    private BitmapDrawable drawable;
-
-    BitmapData() {
-        drawable = createDrawable();
-    }
+    private final BitmapDrawable drawable = new BitmapDrawable(this);
 
     void moveCursor(int x, int y) {
-        if (drawable != null)
-            drawable.moveCursor(x, y);
+        drawable.moveCursor(x, y);
     }
 
     void setSoftCursor(int[] newSoftCursorPixels, int w, int h, int hX, int hY) {
-        if (drawable != null)
-            drawable.setSoftCursor(newSoftCursorPixels, w, h, hX, hY);
+        drawable.setSoftCursor(newSoftCursorPixels, w, h, hX, hY);
     }
 
     void clearSoftCursor() {
-        if (drawable != null)
-            drawable.clearSoftCursor();
+        drawable.clearSoftCursor();
     }
 
     Rect getCursorRect() {
-        if (drawable != null)
-            return drawable.getCursorRect();
-        else // Return an empty new rectangle if drawable is null.
-            return new Rect();
-    }
-
-    /**
-     * Create drawable appropriate for this data
-     * @return drawable
-     */
-    private BitmapDrawable createDrawable() {
-        return new BitmapDrawable(this);
+        return drawable.getCursorRect();
     }
 
     /**
@@ -79,8 +61,7 @@ class BitmapData {
     }
 
     void setFilteringEnabled(boolean enabled) {
-        if (drawable != null)
-            drawable.setFilteringEnabled(enabled);
+        drawable.setFilteringEnabled(enabled);
     }
 
     /**
@@ -103,24 +84,17 @@ class BitmapData {
         }
     }
     
-    /**
-     * Release resources
-     */
-    void dispose() {
-        if (drawable != null)
-            drawable.dispose();
-        drawable = null;
-
-        if (mbitmap != null)
-            mbitmap.recycle();
-        mbitmap      = null;
-    }
-
     int getWidth() {
-        return mbitmap.getWidth();
+        if (mbitmap != null)
+            return mbitmap.getWidth();
+        else
+            return 1;
     }
 
     int getHeight() {
-        return mbitmap.getHeight();
+        if (mbitmap != null)
+            return mbitmap.getHeight();
+        else
+            return 1;
     }
 }

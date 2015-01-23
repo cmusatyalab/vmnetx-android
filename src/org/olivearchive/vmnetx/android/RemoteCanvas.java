@@ -84,7 +84,7 @@ public class RemoteCanvas extends ImageView {
     private RemoteKeyboard keyboard;
     
     // Internal bitmap data
-    private BitmapData bitmapData;
+    private final BitmapData bitmapData = new BitmapData();
 
     // Mouse cursor
     private int[] cursor;
@@ -121,6 +121,7 @@ public class RemoteCanvas extends ImageView {
      */
     public RemoteCanvas(final Context context, AttributeSet attrs) {
         super(context, attrs);
+        bitmapData.setImageDrawable(RemoteCanvas.this);
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
@@ -200,7 +201,6 @@ public class RemoteCanvas extends ImageView {
                             pd.dismiss();
                         
                         if (e instanceof OutOfMemoryError) {
-                            disposeDrawable ();
                             showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
                         } else {
                             String error = getContext().getString(R.string.error_connection_failed);
@@ -249,17 +249,6 @@ public class RemoteCanvas extends ImageView {
                 Utils.showFatalErrorMessage(getContext(), error);
             }
         });
-    }
-    
-    
-    /**
-     * Disposes of the old drawable which holds the remote desktop data.
-     */
-    private void disposeDrawable () {
-        if (bitmapData != null)
-            bitmapData.dispose();
-        bitmapData = null;
-        System.gc();
     }
     
     
@@ -332,8 +321,6 @@ public class RemoteCanvas extends ImageView {
         spice            = null;
         endpoint         = null;
         controlConn      = null;
-        
-        disposeDrawable ();
     }
     
     /*
@@ -449,17 +436,7 @@ public class RemoteCanvas extends ImageView {
         scrollToAbsolute(false);
     }
 
-    /**
-     * This runnable sets the drawable (contained in bitmapData) for the RemoteCanvas (ImageView).
-     */
-    private final Runnable drawableSetter = new Runnable() {
-        public void run() {
-            if (bitmapData != null)
-                bitmapData.setImageDrawable(RemoteCanvas.this);
-            }
-    };
-    
-    
+
     /**
      * This runnable displays a message on the screen.
      */
@@ -486,12 +463,10 @@ public class RemoteCanvas extends ImageView {
      * Invalidates (to redraw) the location of the remote pointer.
      */
     public void invalidateMousePosition() {
-        if (bitmapData != null) {
-            bitmapData.moveCursor(pointer.getX(), pointer.getY());
-            Rect r = bitmapData.getCursorRect();
-            if (r != null)
-                reDraw(r.left, r.top, r.width(), r.height());
-        }
+        bitmapData.moveCursor(pointer.getX(), pointer.getY());
+        Rect r = bitmapData.getCursorRect();
+        if (r != null)
+            reDraw(r.left, r.top, r.width(), r.height());
     }
     
     /**
@@ -510,7 +485,7 @@ public class RemoteCanvas extends ImageView {
     
     private final Runnable configureCursor = new Runnable() {
         public void run() {
-            if (spice == null || bitmapData == null)
+            if (spice == null)
                 return;
 
             Rect prevR = bitmapData.getCursorRect();
@@ -548,8 +523,7 @@ public class RemoteCanvas extends ImageView {
     }
 
     public void setFilteringEnabled(boolean enabled) {
-        if (bitmapData != null)
-            bitmapData.setFilteringEnabled(enabled);
+        bitmapData.setFilteringEnabled(enabled);
     }
     
     public RemotePointer getPointer() {
@@ -668,9 +642,7 @@ public class RemoteCanvas extends ImageView {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                disposeDrawable();
                 try {
-                    bitmapData = new BitmapData();
                     bitmapData.setDimensions(width, height);
                 } catch (Throwable e) {
                     showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
@@ -682,8 +654,7 @@ public class RemoteCanvas extends ImageView {
         // Re-initialize cursor.
         handler.post(configureCursor);
 
-        // Set the drawable for the canvas, now that we have it (re)initialized.
-        handler.post(drawableSetter);
+        // Update activity state.
         handler.post(setModes);
         
         // Notify that we have a connection.
@@ -693,8 +664,6 @@ public class RemoteCanvas extends ImageView {
 
     void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.d(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
-        if (bitmapData == null)
-            return;
 
         synchronized (bitmapData.mbitmap) {
             spice.updateBitmap(bitmapData.mbitmap, x, y, width, height);

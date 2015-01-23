@@ -31,22 +31,17 @@ import android.graphics.drawable.DrawableContainer;
  * @author Michael A. MacDonald
  */
 class BitmapDrawable extends DrawableContainer {
-    private final Rect cursorRect;
+    private final Rect cursorRect = new Rect();
 
     private Bitmap softCursor;
     private BitmapData data;
 
     private int hotX, hotY;
 
-    private final Paint paint;
+    private final Paint paint = new Paint();
 
     BitmapDrawable(BitmapData data) {
         this.data = data;
-        cursorRect = new Rect();
-        // Try to free up some memory.
-        System.gc();
-
-        paint = new Paint();
         setFilteringEnabled(true);
     }
 
@@ -137,11 +132,5 @@ class BitmapDrawable extends DrawableContainer {
     @Override
     public boolean isStateful() {
         return false;
-    }
-
-    void dispose() {
-        if (softCursor != null)
-            softCursor.recycle();
-        softCursor = null;
     }
 }
