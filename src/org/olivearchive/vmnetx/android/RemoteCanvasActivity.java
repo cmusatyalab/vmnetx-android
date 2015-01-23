@@ -269,7 +269,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         // NullPointerException which the caller will swallow
         updateTitle();
 
-        canvas.scaling.updateForCanvas(canvas);
+        canvas.scaling.update();
 
         boolean absoluteMouse = canvas.getAbsoluteMouse();
         if (absoluteMouse &&

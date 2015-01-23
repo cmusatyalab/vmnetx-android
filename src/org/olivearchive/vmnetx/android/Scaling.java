@@ -31,15 +31,16 @@ import android.widget.ImageView;
 public class Scaling {
     static final String TAG = "Scaling";
 
-    private final Matrix matrix;
+    private final RemoteCanvas canvas;
+    private final Matrix matrix = new Matrix();
+
     private int canvasXOffset;
     private int canvasYOffset;
-    private float scaling;
+    private float scaling = 1;
     private float minimumScale;
 
-    public Scaling() {
-        matrix = new Matrix();
-        scaling = 1;
+    public Scaling(RemoteCanvas canvas) {
+        this.canvas = canvas;
     }
 
     /**
@@ -50,7 +51,7 @@ public class Scaling {
         return scaling;
     }
 
-    private void setScale(RemoteCanvas canvas, float scale) {
+    private void setScale(float scale) {
         scaling = scale;
         matrix.reset();
         matrix.preTranslate(canvasXOffset, canvasYOffset);
@@ -63,7 +64,7 @@ public class Scaling {
      * Update state from canvas
      * @param activity
      */
-    void updateForCanvas(RemoteCanvas canvas) {
+    void update() {
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
         canvas.computeShiftFromFullToView();
         canvasXOffset = -canvas.getCenteredXOffset();
@@ -73,9 +74,9 @@ public class Scaling {
         minimumScale = canvas.getMinimumScale();
         if (zoomedOut) {
             // We were fully zoomed out; stay that way
-            setScale(canvas, minimumScale);
+            setScale(minimumScale);
         } else {
-            setScale(canvas, Math.max(scaling, minimumScale));
+            setScale(Math.max(scaling, minimumScale));
         }
     }
 
@@ -86,7 +87,7 @@ public class Scaling {
      * @param fx Focus X of center of scale change
      * @param fy Focus Y of center of scale change
      */
-    public void adjust(RemoteCanvasActivity activity, float scaleFactor, float fx, float fy) {
+    public void adjust(float scaleFactor, float fx, float fy) {
         float oldScale;
         float newScale = scaleFactor * scaling;
         if (scaleFactor < 1)
@@ -104,7 +105,6 @@ public class Scaling {
             }
         }
 
-        RemoteCanvas canvas = activity.getCanvas();
         // ax is the absolute x of the focus
         int xPan = canvas.getAbsoluteX();
         float ax = (fx / scaling) + xPan;
@@ -123,7 +123,7 @@ public class Scaling {
                 canvas.displayShortToastMessage(R.string.snap_one_to_one);
         }
 
-        setScale(canvas, newScale);
+        setScale(newScale);
 
         // Only if we have actually scaled do we pan.
         if (oldScale != newScale) {
