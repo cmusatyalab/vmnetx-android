@@ -663,6 +663,7 @@ public class RemoteCanvas extends ImageView {
                         showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
                     }
                 }
+                scaling.update();
                 spice.redraw();
             }
         });
