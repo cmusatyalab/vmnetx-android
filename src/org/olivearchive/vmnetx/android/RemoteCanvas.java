@@ -96,7 +96,7 @@ public class RemoteCanvas extends ImageView {
     // Progress dialog shown at connection time.
     private ProgressDialog pd;
     
-    private Runnable setModes;
+    private Runnable updateActivity;
     
     /*
      * Position of the top left portion of the <i>visible</i> part of the screen, in
@@ -136,10 +136,10 @@ public class RemoteCanvas extends ImageView {
      * Create a view showing a remote desktop connection
      * @param context Containing context (activity)
      * @param bean Connection settings
-     * @param setModes Callback to run on UI thread after connection is set up
+     * @param updateActivity Callback to run on UI thread after connection is set up
      */
-    void initializeCanvas(ConnectionBean bean, final Runnable setModes) {
-        this.setModes = setModes;
+    void initializeCanvas(ConnectionBean bean, final Runnable updateActivity) {
+        this.updateActivity = updateActivity;
         connection = bean;
 
         // Startup the connection thread with a progress dialog
@@ -313,7 +313,7 @@ public class RemoteCanvas extends ImageView {
         
         handler.removeCallbacksAndMessages(null);
 
-        setModes         = null;
+        updateActivity   = null;
         connection       = null;
         screenMessage    = null;
         spice            = null;
@@ -672,7 +672,7 @@ public class RemoteCanvas extends ImageView {
         handler.post(configureCursor);
 
         // Update activity state.
-        handler.post(setModes);
+        handler.post(updateActivity);
         
         // Notify that we have a connection.
         spiceUpdateReceived = true;
@@ -693,7 +693,7 @@ public class RemoteCanvas extends ImageView {
     }
 
     void OnMouseMode() {
-        handler.post(setModes);
+        handler.post(updateActivity);
     }
 
     void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
@@ -845,7 +845,7 @@ public class RemoteCanvas extends ImageView {
                 pinger.start();
 
                 // Update window title
-                post(setModes);
+                post(updateActivity);
 
                 // If the VM is in a stable state, synthesize a state transition.
                 switch (vmState) {

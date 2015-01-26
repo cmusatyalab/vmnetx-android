@@ -163,7 +163,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
     
         canvas.initializeCanvas(connection, new Runnable() {
             public void run() {
-                try { setModes(); } catch (NullPointerException e) { }
+                try { updateActivity(); } catch (NullPointerException e) { }
             }
         });
         
@@ -262,9 +262,9 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
     }
 
     /**
-     * Set up scaling and input modes
+     * Refresh callback from RemoteActivity.
      */
-    void setModes() {
+    private void updateActivity() {
         // Update VM name first, since the later methods may throw
         // NullPointerException which the caller will swallow
         updateTitle();
