@@ -465,7 +465,7 @@ abstract public class GestureHandler
             if (consumed) {
                 inScaling = true;
                 //android.util.Log.i(TAG,"Adjust scaling " + detector.getScaleFactor());
-                canvas.scaling.adjust(detector.getScaleFactor(), xCurrentFocus, yCurrentFocus);
+                canvas.adjustScale(detector.getScaleFactor(), xCurrentFocus, yCurrentFocus);
             }
         }
         return consumed;

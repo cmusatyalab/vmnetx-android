@@ -37,6 +37,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -63,8 +64,6 @@ import org.olivearchive.vmnetx.android.protocol.ControlConnectionProcessor;
 public class RemoteCanvas extends ImageView {
     private final static String TAG = "RemoteCanvas";
     private final static Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
-    
-    public final Scaling scaling = new Scaling(this);
     
     // Connection parameters
     private ConnectionBean connection;
@@ -98,6 +97,11 @@ public class RemoteCanvas extends ImageView {
     
     private Runnable updateActivity;
     
+    // Bitmap scaling
+    private final Matrix matrix = new Matrix();
+    private float scaling = 1;
+    private float minimumScale;
+
     /*
      * Position of the top left portion of the <i>visible</i> part of the screen, in
      * full-frame coordinates
@@ -124,6 +128,7 @@ public class RemoteCanvas extends ImageView {
     public RemoteCanvas(final Context context, AttributeSet attrs) {
         super(context, attrs);
         setImageDrawable(drawable);
+        setScaleType(ImageView.ScaleType.MATRIX);
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
@@ -321,38 +326,85 @@ public class RemoteCanvas extends ImageView {
         controlConn      = null;
     }
     
-    /*
-     * f(x,s) is a function that returns the coordinate in screen/scroll space corresponding
-     * to the coordinate x in full-frame space with scaling s.
-     * 
-     * This function returns the difference between f(x,s1) and f(x,s2)
-     * 
-     * f(x,s) = (x - i/2) * s + ((i - w)/2)) * s
-     *        = s (x - i/2 + i/2 + w/2)
-     *        = s (x + w/2)
-     * 
-     * 
-     * f(x,s) = (x - ((i - w)/2)) * s
-     * @param oldscaling
-     * @param scaling
-     * @param imageDim
-     * @param windowDim
-     * @param offset
-     * @return
-     */
-    
     /**
-     * Computes the X and Y offset for converting coordinates from full-frame coordinates to view coordinates.
+     * Update scaling from framebuffer size
      */
-    public void computeShiftFromFullToView () {
+    private void updateScale() {
+        // Compute the X and Y offset for converting coordinates from
+        // full-frame coordinates to view coordinates
         shiftX = (spice.framebufferWidth()  - getWidth())  / 2;
         shiftY = (spice.framebufferHeight() - getHeight()) / 2;
+
+        boolean zoomedOut = (scaling <= minimumScale);
+        minimumScale = computeMinimumScale();
+        if (zoomedOut) {
+            // We were fully zoomed out; stay that way
+            setScale(minimumScale);
+        } else {
+            setScale(Math.max(scaling, minimumScale));
+        }
+    }
+
+    /**
+     * Change the scaling and focus dynamically, as from a detected scale gesture
+     * @param scaleFactor Factor by which to adjust scaling
+     * @param fx Focus X of center of scale change
+     * @param fy Focus Y of center of scale change
+     */
+    public void adjustScale(float scaleFactor, float fx, float fy) {
+        float oldScale;
+        float newScale = scaleFactor * scaling;
+        if (scaleFactor < 1) {
+            if (newScale < minimumScale)
+                newScale = minimumScale;
+        } else {
+            if (newScale > 4)
+                newScale = 4;
+        }
+
+        // ax is the absolute x of the focus
+        int xPan = getAbsoluteX();
+        float ax = (fx / scaling) + xPan;
+        float newXPan = (scaling * xPan - scaling * ax + newScale * ax) /
+                newScale;
+        int yPan = getAbsoluteY();
+        float ay = (fy / scaling) + yPan;
+        float newYPan = (scaling * yPan - scaling * ay + newScale * ay) /
+                newScale;
+
+        // Here we do snapping to 1:1. If we are approaching scale = 1, we
+        // snap to it.
+        oldScale = scaling;
+        if ((newScale > 0.90f && newScale < 1.00f) ||
+            (newScale > 1.00f && newScale < 1.10f)) {
+            newScale = 1.f;
+            // Only if oldScale is outside the snap region, do we inform the
+            // user.
+            if (oldScale < 0.90f || oldScale > 1.10f)
+                displayShortToastMessage(R.string.snap_one_to_one);
+        }
+
+        setScale(newScale);
+
+        // Only if we have actually scaled do we pan.
+        if (oldScale != newScale) {
+            pan((int) (newXPan - xPan), (int) (newYPan - yPan));
+        }
     }
     
+    private void setScale(float scale) {
+        scaling = scale;
+        matrix.reset();
+        matrix.preTranslate((int) -shiftX, (int) -shiftY);
+        matrix.postScale(scaling, scaling);
+        setImageMatrix(matrix);
+        scrollToAbsolute(true);
+    }
+
     /**
      * Change to Canvas's scroll position to match the absoluteXPosition
      */
-    void scrollToAbsolute(boolean force) {
+    private void scrollToAbsolute(boolean force) {
         // Clamp to bounds of desktop image
         absoluteXPosition = Math.max(absoluteXPosition, 0);
         absoluteYPosition = Math.max(absoluteYPosition, 0);
@@ -369,9 +421,8 @@ public class RemoteCanvas extends ImageView {
         if (force ||
                 absoluteXPosition != prevAbsoluteXPosition ||
                 absoluteYPosition != prevAbsoluteYPosition) {
-            float scale = getScale();
-            scrollTo((int)((absoluteXPosition - shiftX) * scale),
-                     (int)((absoluteYPosition - shiftY) * scale));
+            scrollTo((int)((absoluteXPosition - shiftX) * scaling),
+                     (int)((absoluteYPosition - shiftY) * scaling));
             prevAbsoluteXPosition = absoluteXPosition;
             prevAbsoluteYPosition = absoluteYPosition;
         }
@@ -428,9 +479,8 @@ public class RemoteCanvas extends ImageView {
      * @param dY
      */
     public void pan(int dX, int dY) {
-        double scale = getScale();
-        absoluteXPosition += (double) dX / scale;
-        absoluteYPosition += (double) dY / scale;
+        absoluteXPosition += (double) dX / scaling;
+        absoluteYPosition += (double) dY / scaling;
         scrollToAbsolute(false);
     }
 
@@ -448,12 +498,14 @@ public class RemoteCanvas extends ImageView {
      * Causes a redraw of the bitmap to happen at the indicated coordinates.
      */
     private void reDraw(int x, int y, int w, int h) {
-        float scale = getScale();
         float shiftedX = x-shiftX;
         float shiftedY = y-shiftY;
         // Make the box slightly larger to avoid artifacts due to truncation errors.
-        postInvalidate ((int)((shiftedX-1)*scale),   (int)((shiftedY-1)*scale),
-                        (int)((shiftedX+w+1)*scale), (int)((shiftedY+h+1)*scale));
+        postInvalidate(
+            (int) ((shiftedX - 1) * scaling),
+            (int) ((shiftedY - 1) * scaling),
+            (int) ((shiftedX + w + 1) * scaling),
+            (int) ((shiftedY + h + 1) * scaling));
     }
     
     
@@ -537,15 +589,15 @@ public class RemoteCanvas extends ImageView {
     }
     
     public float getScale() {
-        return scaling.getScale();
+        return scaling;
     }
     
     public int getVisibleWidth() {
-        return (int)((double)getWidth() / getScale() + 0.5);
+        return (int)((double) getWidth() / scaling + 0.5);
     }
     
     public int getVisibleHeight() {
-        return (int)((double)getHeight() / getScale() + 0.5);
+        return (int)((double) getHeight() / scaling + 0.5);
     }
     
     public int getImageWidth() {
@@ -562,18 +614,10 @@ public class RemoteCanvas extends ImageView {
             return 1;
     }
     
-    public int getCenteredXOffset() {
-        return (int) shiftX;
-    }
-    
-    public int getCenteredYOffset() {
-        return (int) shiftY;
-    }
-    
     /**
      * @return The scale at which the bitmap would be smaller than the screen
      */
-    public float getMinimumScale() {
+    private float computeMinimumScale() {
         return Math.min((float) getWidth() / getImageWidth(),
                 (float) getHeight() / getImageHeight());
     }
@@ -622,7 +666,7 @@ public class RemoteCanvas extends ImageView {
             }
             if (spice != null) {
                 // Ensure the view position is sane
-                scaling.update();
+                updateScale();
             }
         }
     }
@@ -663,7 +707,7 @@ public class RemoteCanvas extends ImageView {
                         showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
                     }
                 }
-                scaling.update();
+                updateScale();
                 spice.redraw();
             }
         });
