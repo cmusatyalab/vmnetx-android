@@ -59,6 +59,11 @@ public class Viewport {
     private float scaling = 1;
     private float minimumScale;
 
+    // Mouse cursor
+    private Bitmap softCursor;
+    private final Rect cursorRect = new Rect();
+    private int hotX, hotY;
+
     // Position of the top-left portion of the visible part of the screen,
     // in full-frame coordinates
     private int absoluteXPosition;
@@ -72,11 +77,6 @@ public class Viewport {
     private float shiftY;
 
     private class BitmapDrawable extends DrawableContainer {
-        private final Rect cursorRect = new Rect();
-
-        private Bitmap softCursor;
-        private int hotX, hotY;
-
         /* (non-Javadoc)
          * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
          */
@@ -92,44 +92,6 @@ public class Viewport {
                     }
                 }
             } catch (Throwable e) { }
-        }
-
-        public Rect getCursorRect() {
-            if (softCursor != null)
-                return cursorRect;
-            else
-                return null;
-        }
-
-        private void setCursorRect(int x, int y, int w, int h) {
-            cursorRect.left   = x-hotX;
-            cursorRect.right  = cursorRect.left + w;
-            cursorRect.top    = y-hotY;
-            cursorRect.bottom = cursorRect.top + h;
-        }
-
-        void moveCursor(int x, int y) {
-            setCursorRect(x, y, cursorRect.width(), cursorRect.height());
-        }
-
-        void setSoftCursor(int[] newSoftCursorPixels, int w, int h, int hX, int hY) {
-            Bitmap oldSoftCursor = softCursor;
-            int x = cursorRect.left + hotX;
-            int y = cursorRect.top + hotY;
-
-            softCursor = Bitmap.createBitmap(newSoftCursorPixels, w, h,
-                    Bitmap.Config.ARGB_8888);
-            hotX = hX;
-            hotY = hY;
-            setCursorRect(x, y, w, h);
-            if (oldSoftCursor != null)
-                oldSoftCursor.recycle();
-        }
-
-        void clearSoftCursor() {
-            if (softCursor != null)
-                softCursor.recycle();
-            softCursor = null;
         }
 
         /* (non-Javadoc)
@@ -345,15 +307,32 @@ public class Viewport {
      */
     public void invalidateMousePosition() {
         RemotePointer pointer = canvas.getPointer();
-        drawable.moveCursor(pointer.getX(), pointer.getY());
-        Rect r = drawable.getCursorRect();
-        if (r != null)
-            reDraw(r.left, r.top, r.width(), r.height());
+        setCursorRect(pointer.getX(), pointer.getY(),
+                cursorRect.width(), cursorRect.height());
+        if (softCursor != null)
+            reDraw(cursorRect.left, cursorRect.top, cursorRect.width(),
+                    cursorRect.height());
     }
 
-    /**
-     * Initializes the data structure which holds the remote pointer data.
-     */
+    private void setCursorRect(int x, int y, int w, int h) {
+        cursorRect.left   = x - hotX;
+        cursorRect.right  = cursorRect.left + w;
+        cursorRect.top    = y - hotY;
+        cursorRect.bottom = cursorRect.top + h;
+    }
+
+    private void setSoftCursor(int[] newSoftCursorPixels, int w, int h,
+            int hX, int hY) {
+        int x = cursorRect.left + hotX;
+        int y = cursorRect.top + hotY;
+
+        softCursor = Bitmap.createBitmap(newSoftCursorPixels, w, h,
+                Bitmap.Config.ARGB_8888);
+        hotX = hX;
+        hotY = hY;
+        setCursorRect(x, y, w, h);
+    }
+
     private void setDefaultSoftCursor() {
         Bitmap bm = BitmapFactory.decodeResource(canvas.getResources(),
                 R.drawable.cursor);
@@ -362,8 +341,7 @@ public class Viewport {
         int [] tempPixels = new int[w*h];
         bm.getPixels(tempPixels, 0, w, 0, 0, w, h);
         // Set softCursor to whatever the resource is.
-        drawable.setSoftCursor(tempPixels, w, h, 0, 0);
-        bm.recycle();
+        setSoftCursor(tempPixels, w, h, 0, 0);
     }
 
     public void setFilteringEnabled(boolean enabled) {
@@ -459,23 +437,24 @@ public class Viewport {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Rect prevR = drawable.getCursorRect();
-                if (prevR != null)
-                    prevR = new Rect(prevR);
+                Rect prevRect = null;
+                if (softCursor != null)
+                    prevRect = new Rect(cursorRect);
 
                 if (!shown)
-                    drawable.clearSoftCursor();
+                    softCursor = null;
                 else if (bitmap != null)
-                    drawable.setSoftCursor(bitmap, w, h, hx, hy);
+                    setSoftCursor(bitmap, w, h, hx, hy);
                 else
                     setDefaultSoftCursor();
 
                 // Redraw the cursor.
-                Rect r = drawable.getCursorRect();
-                if (r != null)
-                    reDraw(r.left, r.top, r.width(), r.height());
-                if (prevR != null)
-                    reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
+                if (softCursor != null)
+                    reDraw(cursorRect.left, cursorRect.top,
+                            cursorRect.width(), cursorRect.height());
+                if (prevRect != null)
+                    reDraw(prevRect.left, prevRect.top, prevRect.width(),
+                            prevRect.height());
             }
         });
     }
