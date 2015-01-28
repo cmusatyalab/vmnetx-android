@@ -80,6 +80,7 @@ public class RemoteCanvas extends ImageView {
     // The remote pointer and keyboard
     private RemotePointer pointer;
     private RemoteKeyboard keyboard;
+    private boolean absoluteMouse;
     
     // Progress dialog shown at connection time.
     private ProgressDialog pd;
@@ -335,7 +336,7 @@ public class RemoteCanvas extends ImageView {
     }
     
     public boolean getAbsoluteMouse() {
-        return spice.getAbsoluteMouse();
+        return absoluteMouse;
     }
 
     public String getVMName() {
@@ -399,7 +400,7 @@ public class RemoteCanvas extends ImageView {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (spice.getAbsoluteMouse()) {
+                    if (absoluteMouse) {
                         pointer.processPointerEvent(width / 2, height / 2);
                     }
                 }
@@ -411,7 +412,13 @@ public class RemoteCanvas extends ImageView {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 
-    void OnMouseMode() {
+    void OnMouseMode(final boolean absoluteMouse) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                RemoteCanvas.this.absoluteMouse = absoluteMouse;
+            }
+        });
         handler.post(updateActivity);
     }
 

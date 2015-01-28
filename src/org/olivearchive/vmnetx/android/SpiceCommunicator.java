@@ -39,8 +39,6 @@ public class SpiceCommunicator {
     private final ConnectionBean connection;
     private final long context;
 
-    private boolean wantAbsoluteMouse = false;
-
     private boolean isInNormalProtocol = false;
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionBean connection) {
@@ -127,10 +125,7 @@ public class SpiceCommunicator {
     }
 
     private void OnMouseMode(boolean absoluteMouse) {
-        synchronized (this) {
-            wantAbsoluteMouse = absoluteMouse;
-        }
-        canvas.OnMouseMode();
+        canvas.OnMouseMode(absoluteMouse);
     }
 
     private void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
@@ -144,10 +139,6 @@ public class SpiceCommunicator {
 
     public boolean isInNormalProtocol() {
         return isInNormalProtocol;
-    }
-
-    public synchronized boolean getAbsoluteMouse() {
-        return wantAbsoluteMouse;
     }
 
     public void writePointerEvent(int x, int y) {
