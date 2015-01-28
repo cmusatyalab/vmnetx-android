@@ -31,15 +31,15 @@ import android.graphics.drawable.DrawableContainer;
  * @author Michael A. MacDonald
  */
 class BitmapDrawable extends DrawableContainer {
-    private final RemoteCanvas canvas;
+    private final Viewport viewport;
     private final Paint paint = new Paint();
     private final Rect cursorRect = new Rect();
 
     private Bitmap softCursor;
     private int hotX, hotY;
 
-    BitmapDrawable(RemoteCanvas canvas) {
-        this.canvas = canvas;
+    BitmapDrawable(Viewport viewport) {
+        this.viewport = viewport;
         setFilteringEnabled(true);
     }
 
@@ -49,7 +49,7 @@ class BitmapDrawable extends DrawableContainer {
     @Override
     public void draw(Canvas canvas) {
         try {
-            Bitmap bitmap = this.canvas.getBitmap();
+            Bitmap bitmap = viewport.getBitmap();
             if (bitmap != null) {
                 synchronized (bitmap) {
                     canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint);
@@ -108,7 +108,7 @@ class BitmapDrawable extends DrawableContainer {
      */
     @Override
     public int getIntrinsicHeight() {
-        return canvas.getImageHeight();
+        return viewport.getImageHeight();
     }
 
     /* (non-Javadoc)
@@ -116,7 +116,7 @@ class BitmapDrawable extends DrawableContainer {
      */
     @Override
     public int getIntrinsicWidth() {
-        return canvas.getImageWidth();
+        return viewport.getImageWidth();
     }
 
     /* (non-Javadoc)

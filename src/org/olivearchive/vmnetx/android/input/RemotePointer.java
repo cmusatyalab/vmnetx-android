@@ -2,6 +2,7 @@ package org.olivearchive.vmnetx.android.input;
 
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
+import org.olivearchive.vmnetx.android.Viewport;
 
 public class RemotePointer {
     //private static final String TAG = "RemotePointer";
@@ -36,14 +37,15 @@ public class RemotePointer {
 
     public boolean processPointerEvent(int x, int y) {
         if (spice.isInNormalProtocol()) {
-            canvas.invalidateMousePosition();
+            Viewport viewport = canvas.getViewport();
+            viewport.invalidateMousePosition();
             mouseX = x;
             mouseY = y;
             if ( mouseX < 0) mouseX=0;
             else if ( mouseX >= spice.framebufferWidth())  mouseX = spice.framebufferWidth()  - 1;
             if ( mouseY < 0) mouseY=0;
             else if ( mouseY >= spice.framebufferHeight()) mouseY = spice.framebufferHeight() - 1;
-            canvas.invalidateMousePosition();
+            viewport.invalidateMousePosition();
 
             spice.writePointerEvent(mouseX, mouseY);
             return true;

@@ -29,6 +29,7 @@ import android.view.ScaleGestureDetector.OnScaleGestureListener;
 import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 import org.olivearchive.vmnetx.android.Utils;
+import org.olivearchive.vmnetx.android.Viewport;
 
 /**
  * An input handler that uses GestureDetector to detect standard gestures
@@ -116,8 +117,9 @@ abstract public class GestureHandler
      * @return the appropriate X coordinate.
      */
     protected int getX (MotionEvent e) {
-        float scale = canvas.getScale();
-        return (int)(canvas.getAbsoluteX() + e.getX() / scale);
+        Viewport viewport = canvas.getViewport();
+        float scale = viewport.getScale();
+        return (int) (viewport.getAbsoluteX() + e.getX() / scale);
     }
 
     /**
@@ -125,8 +127,9 @@ abstract public class GestureHandler
      * @return the appropriate Y coordinate.
      */
     protected int getY (MotionEvent e) {
-        float scale = canvas.getScale();
-        return (int)(canvas.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
+        Viewport viewport = canvas.getViewport();
+        float scale = viewport.getScale();
+        return (int) (viewport.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
     }
 
     /**
@@ -142,7 +145,7 @@ abstract public class GestureHandler
     protected boolean updatePosition(int x, int y) {
         if (!canvas.getPointer().processPointerEvent(x, y))
             return false;
-        canvas.panToMouse();
+        canvas.getViewport().panToMouse();
         return true;
     }
 
@@ -162,10 +165,11 @@ abstract public class GestureHandler
                 return false;
         }
 
+        Viewport viewport = canvas.getViewport();
         RemotePointer p  = canvas.getPointer();
-        float scale = canvas.getScale();
-        int x = (int)(canvas.getAbsoluteX() +  e.getX()                         / scale);
-        int y = (int)(canvas.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
+        float scale = viewport.getScale();
+        int x = (int) (viewport.getAbsoluteX() +  e.getX()                         / scale);
+        int y = (int) (viewport.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
 
         switch (e.getActionMasked()) {
         // First mouse button pressed
@@ -278,6 +282,7 @@ abstract public class GestureHandler
         final int index      = e.getActionIndex();
         final int deviceID   = e.getDeviceId();
         final int pointerID  = e.getPointerId(index);
+        Viewport viewport = canvas.getViewport();
         RemotePointer p = canvas.getPointer();
         
         // Handle and consume actions performed by a (e.g. USB or bluetooth) mouse.
@@ -286,7 +291,7 @@ abstract public class GestureHandler
 
         if (action == MotionEvent.ACTION_UP) {
             // Turn filtering back on and invalidate to make things pretty.
-            canvas.setFilteringEnabled(true);
+            viewport.setFilteringEnabled(true);
             canvas.invalidate();
         }
 
@@ -304,7 +309,7 @@ abstract public class GestureHandler
                 // Cancel drag mode and scrolling.
                 endDragModeAndScrolling();
                 // If we are manipulating the desktop, turn off bitmap filtering for faster response.
-                canvas.setFilteringEnabled(false);
+                viewport.setFilteringEnabled(false);
                 dragX = e.getX();
                 dragY = e.getY();
                 break;
@@ -319,8 +324,8 @@ abstract public class GestureHandler
             case MotionEvent.ACTION_MOVE:
                 // Send scroll up/down events if swiping is happening.
                 if (panMode) {
-                    float scale = canvas.getScale();
-                    canvas.pan(-(int)((e.getX() - dragX)*scale), -(int)((e.getY() - dragY)*scale));
+                    float scale = viewport.getScale();
+                    viewport.pan(-(int)((e.getX() - dragX)*scale), -(int)((e.getY() - dragY)*scale));
                     dragX = e.getX();
                     dragY = e.getY();
                     return true;
@@ -411,8 +416,8 @@ abstract public class GestureHandler
      */
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-
         boolean consumed = true;
+        Viewport viewport = canvas.getViewport();
 
         // Get the current focus.
         xCurrentFocus = detector.getFocusX();
@@ -465,7 +470,7 @@ abstract public class GestureHandler
             if (consumed) {
                 inScaling = true;
                 //android.util.Log.i(TAG,"Adjust scaling " + detector.getScaleFactor());
-                canvas.adjustScale(detector.getScaleFactor(), xCurrentFocus, yCurrentFocus);
+                viewport.adjustScale(detector.getScaleFactor(), xCurrentFocus, yCurrentFocus);
             }
         }
         return consumed;

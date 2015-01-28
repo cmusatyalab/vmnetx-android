@@ -123,12 +123,12 @@ public class SpiceCommunicator {
     private void OnSettingsChanged(int width, int height, int bpp) {
         this.width = width;
         this.height = height;
-        canvas.OnSettingsChanged(width, height, bpp);
+        canvas.OnSettingsChanged(width, height);
         isInNormalProtocol = true;
     }
 
     private void OnGraphicsUpdate(int x, int y, int width, int height) {
-        canvas.OnGraphicsUpdate(x, y, width, height);
+        canvas.getViewport().OnGraphicsUpdate(x, y, width, height);
     }
 
     private void OnMouseMode(boolean absoluteMouse) {
@@ -140,7 +140,7 @@ public class SpiceCommunicator {
 
     private void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
             int hotX, int hotY) {
-        canvas.OnCursorConfig(shown, bitmap, w, h, hotX, hotY);
+        canvas.getViewport().OnCursorConfig(shown, bitmap, w, h, hotX, hotY);
     }
 
     private void OnDisconnect() {

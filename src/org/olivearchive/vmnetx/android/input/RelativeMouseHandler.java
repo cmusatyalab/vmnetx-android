@@ -114,7 +114,8 @@ public class RelativeMouseHandler extends GestureHandler {
 
     private float getDelta(float distance) {
         // Compute the relative movement offset on the remote screen.
-        float delta = (float) (distance * Math.cbrt(canvas.getScale()));
+        float delta = (float) (distance *
+                Math.cbrt(canvas.getViewport().getScale()));
         return fineCtrlScale(delta);
     }
 

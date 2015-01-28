@@ -37,7 +37,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,9 +51,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.graphics.BitmapFactory;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
 
 import org.olivearchive.vmnetx.android.input.RemoteKeyboard;
 import org.olivearchive.vmnetx.android.input.RemotePointer;
@@ -63,7 +59,6 @@ import org.olivearchive.vmnetx.android.protocol.ControlConnectionProcessor;
 
 public class RemoteCanvas extends ImageView {
     private final static String TAG = "RemoteCanvas";
-    private final static Bitmap.Config cfg = Bitmap.Config.ARGB_8888;
     
     // Connection parameters
     private ConnectionBean connection;
@@ -79,43 +74,18 @@ public class RemoteCanvas extends ImageView {
     
     private boolean maintainConnection = true;
     
+    // The viewport
+    private Viewport viewport;
+
     // The remote pointer and keyboard
     private RemotePointer pointer;
     private RemoteKeyboard keyboard;
-    
-    // Internal bitmap data
-    private Bitmap bitmap;
-    private final BitmapDrawable drawable = new BitmapDrawable(this);
-
-    // Mouse cursor
-    private int[] cursor;
-    private boolean cursorVisible;
-    private int cursorWidth, cursorHeight, hotX, hotY;
     
     // Progress dialog shown at connection time.
     private ProgressDialog pd;
     
     private Runnable updateActivity;
     
-    // Bitmap scaling
-    private final Matrix matrix = new Matrix();
-    private float scaling = 1;
-    private float minimumScale;
-
-    /*
-     * Position of the top left portion of the <i>visible</i> part of the screen, in
-     * full-frame coordinates
-     */
-    private int absoluteXPosition = 0;
-    private int absoluteYPosition = 0;
-    private int prevAbsoluteXPosition = -1;
-    private int prevAbsoluteYPosition = -1;
-    
-    /*
-     * How much to shift coordinates over when converting from full to view coordinates.
-     */
-    private float shiftX = 0, shiftY = 0;
-
     private final float displayDensity;
     
     private boolean spiceUpdateReceived = false;
@@ -127,8 +97,6 @@ public class RemoteCanvas extends ImageView {
      */
     public RemoteCanvas(final Context context, AttributeSet attrs) {
         super(context, attrs);
-        setImageDrawable(drawable);
-        setScaleType(ImageView.ScaleType.MATRIX);
         
         final Display display = ((Activity)context).getWindow().getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
@@ -195,6 +163,7 @@ public class RemoteCanvas extends ImageView {
             public void run() {
                 try {
                     spice = new SpiceCommunicator (getContext(), RemoteCanvas.this, handler, connection);
+                    viewport = new Viewport(spice, RemoteCanvas.this, handler);
                     pointer = new RemotePointer (spice, RemoteCanvas.this);
                     keyboard = new RemoteKeyboard (spice, handler);
                     spice.connect();
@@ -321,170 +290,12 @@ public class RemoteCanvas extends ImageView {
         updateActivity   = null;
         connection       = null;
         screenMessage    = null;
+        viewport         = null;
         spice            = null;
         endpoint         = null;
         controlConn      = null;
     }
     
-    /**
-     * Update scaling from framebuffer size
-     */
-    private void updateScale() {
-        // Compute the X and Y offset for converting coordinates from
-        // full-frame coordinates to view coordinates
-        shiftX = (spice.framebufferWidth()  - getWidth())  / 2;
-        shiftY = (spice.framebufferHeight() - getHeight()) / 2;
-
-        boolean zoomedOut = (scaling <= minimumScale);
-        minimumScale = computeMinimumScale();
-        if (zoomedOut) {
-            // We were fully zoomed out; stay that way
-            setScale(minimumScale);
-        } else {
-            setScale(Math.max(scaling, minimumScale));
-        }
-    }
-
-    /**
-     * Change the scaling and focus dynamically, as from a detected scale gesture
-     * @param scaleFactor Factor by which to adjust scaling
-     * @param fx Focus X of center of scale change
-     * @param fy Focus Y of center of scale change
-     */
-    public void adjustScale(float scaleFactor, float fx, float fy) {
-        float oldScale;
-        float newScale = scaleFactor * scaling;
-        if (scaleFactor < 1) {
-            if (newScale < minimumScale)
-                newScale = minimumScale;
-        } else {
-            if (newScale > 4)
-                newScale = 4;
-        }
-
-        // ax is the absolute x of the focus
-        int xPan = getAbsoluteX();
-        float ax = (fx / scaling) + xPan;
-        float newXPan = (scaling * xPan - scaling * ax + newScale * ax) /
-                newScale;
-        int yPan = getAbsoluteY();
-        float ay = (fy / scaling) + yPan;
-        float newYPan = (scaling * yPan - scaling * ay + newScale * ay) /
-                newScale;
-
-        // Here we do snapping to 1:1. If we are approaching scale = 1, we
-        // snap to it.
-        oldScale = scaling;
-        if ((newScale > 0.90f && newScale < 1.00f) ||
-            (newScale > 1.00f && newScale < 1.10f)) {
-            newScale = 1.f;
-            // Only if oldScale is outside the snap region, do we inform the
-            // user.
-            if (oldScale < 0.90f || oldScale > 1.10f)
-                displayShortToastMessage(R.string.snap_one_to_one);
-        }
-
-        setScale(newScale);
-
-        // Only if we have actually scaled do we pan.
-        if (oldScale != newScale) {
-            pan((int) (newXPan - xPan), (int) (newYPan - yPan));
-        }
-    }
-    
-    private void setScale(float scale) {
-        scaling = scale;
-        matrix.reset();
-        matrix.preTranslate((int) -shiftX, (int) -shiftY);
-        matrix.postScale(scaling, scaling);
-        setImageMatrix(matrix);
-        scrollToAbsolute(true);
-    }
-
-    /**
-     * Change to Canvas's scroll position to match the absoluteXPosition
-     */
-    private void scrollToAbsolute(boolean force) {
-        // Clamp to bounds of desktop image
-        absoluteXPosition = Math.max(absoluteXPosition, 0);
-        absoluteYPosition = Math.max(absoluteYPosition, 0);
-        absoluteXPosition = Math.min(absoluteXPosition,
-                getImageWidth() - getVisibleWidth());
-        absoluteYPosition = Math.min(absoluteYPosition,
-                getImageHeight() - getVisibleHeight());
-        // If image is smaller than the canvas, center the image
-        if (absoluteXPosition < 0)
-            absoluteXPosition /= 2;
-        if (absoluteYPosition < 0)
-            absoluteYPosition /= 2;
-
-        if (force ||
-                absoluteXPosition != prevAbsoluteXPosition ||
-                absoluteYPosition != prevAbsoluteYPosition) {
-            scrollTo((int)((absoluteXPosition - shiftX) * scaling),
-                     (int)((absoluteYPosition - shiftY) * scaling));
-            prevAbsoluteXPosition = absoluteXPosition;
-            prevAbsoluteYPosition = absoluteYPosition;
-        }
-    }
-    
-    
-    /**
-     * Make sure mouse is visible on displayable part of screen
-     */
-    public void panToMouse() {
-        if (spice == null)
-            return;
-        
-        int x = pointer.getX();
-        int y = pointer.getY();
-        int w = getVisibleWidth();
-        int h = getVisibleHeight();
-        int iw = getImageWidth();
-        int ih = getImageHeight();
-        int wthresh = 30;
-        int hthresh = 30;
-        
-        // Don't pan in a certain direction if dimension scaled is already less
-        // than the dimension of the visible part of the screen.
-        if (spice.framebufferWidth() > getVisibleWidth()) {
-            if (x - absoluteXPosition >= w - wthresh) {
-                absoluteXPosition = x - (w - wthresh);
-                if (absoluteXPosition + w > iw)
-                    absoluteXPosition = iw - w;
-            } else if (x < absoluteXPosition + wthresh) {
-                absoluteXPosition = x - wthresh;
-                if (absoluteXPosition < 0)
-                    absoluteXPosition = 0;
-            }
-        }
-        if (spice.framebufferHeight() > getVisibleHeight()) {
-            if (y - absoluteYPosition >= h - hthresh) {
-                absoluteYPosition = y - (h - hthresh);
-                if (absoluteYPosition + h > ih)
-                    absoluteYPosition = ih - h;
-            } else if (y < absoluteYPosition + hthresh) {
-                absoluteYPosition = y - hthresh;
-                if (absoluteYPosition < 0)
-                    absoluteYPosition = 0;
-            }
-        }
-        
-        scrollToAbsolute(false);
-    }
-    
-    /**
-     * Pan by a number of pixels (relative pan)
-     * @param dX
-     * @param dY
-     */
-    public void pan(int dX, int dY) {
-        absoluteXPosition += (double) dX / scaling;
-        absoluteYPosition += (double) dY / scaling;
-        scrollToAbsolute(false);
-    }
-
-
     /**
      * This runnable displays a message on the screen.
      */
@@ -494,71 +305,6 @@ public class RemoteCanvas extends ImageView {
     };
     
     
-    /**
-     * Causes a redraw of the bitmap to happen at the indicated coordinates.
-     */
-    private void reDraw(int x, int y, int w, int h) {
-        float shiftedX = x-shiftX;
-        float shiftedY = y-shiftY;
-        // Make the box slightly larger to avoid artifacts due to truncation errors.
-        postInvalidate(
-            (int) ((shiftedX - 1) * scaling),
-            (int) ((shiftedY - 1) * scaling),
-            (int) ((shiftedX + w + 1) * scaling),
-            (int) ((shiftedY + h + 1) * scaling));
-    }
-    
-    
-    /**
-     * Invalidates (to redraw) the location of the remote pointer.
-     */
-    public void invalidateMousePosition() {
-        drawable.moveCursor(pointer.getX(), pointer.getY());
-        Rect r = drawable.getCursorRect();
-        if (r != null)
-            reDraw(r.left, r.top, r.width(), r.height());
-    }
-    
-    /**
-     * Initializes the data structure which holds the remote pointer data.
-     */
-    private void setDefaultSoftCursor() {
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.cursor);
-        int w = bm.getWidth();
-        int h = bm.getHeight();
-        int [] tempPixels = new int[w*h];
-        bm.getPixels(tempPixels, 0, w, 0, 0, w, h);
-        // Set softCursor to whatever the resource is.
-        drawable.setSoftCursor(tempPixels, w, h, 0, 0);
-        bm.recycle();
-    }
-    
-    private final Runnable configureCursor = new Runnable() {
-        public void run() {
-            if (spice == null)
-                return;
-
-            Rect prevR = drawable.getCursorRect();
-            if (prevR != null)
-                prevR = new Rect(prevR);
-            synchronized (this) {
-                if (!cursorVisible)
-                    drawable.clearSoftCursor();
-                else if (cursor != null)
-                    drawable.setSoftCursor(cursor, cursorWidth, cursorHeight,
-                            hotX, hotY);
-                else
-                    setDefaultSoftCursor();
-            }
-            // Redraw the cursor.
-            Rect r = drawable.getCursorRect();
-            if (r != null)
-                reDraw(r.left, r.top, r.width(), r.height());
-            if (prevR != null)
-                reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
-        }
-    };
-
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         outAttrs.actionLabel = null;
@@ -572,12 +318,8 @@ public class RemoteCanvas extends ImageView {
         return new BaseInputConnection(this, false);
     }
 
-    public void setFilteringEnabled(boolean enabled) {
-        drawable.setFilteringEnabled(enabled);
-    }
-    
-    Bitmap getBitmap() {
-        return bitmap;
+    public Viewport getViewport() {
+        return viewport;
     }
 
     public RemotePointer getPointer() {
@@ -588,50 +330,8 @@ public class RemoteCanvas extends ImageView {
         return keyboard;
     }
     
-    public float getScale() {
-        return scaling;
-    }
-    
-    public int getVisibleWidth() {
-        return (int)((double) getWidth() / scaling + 0.5);
-    }
-    
-    public int getVisibleHeight() {
-        return (int)((double) getHeight() / scaling + 0.5);
-    }
-    
-    public int getImageWidth() {
-        if (bitmap != null)
-            return bitmap.getWidth();
-        else
-            return 1;
-    }
-    
-    public int getImageHeight() {
-        if (bitmap != null)
-            return bitmap.getHeight();
-        else
-            return 1;
-    }
-    
-    /**
-     * @return The scale at which the bitmap would be smaller than the screen
-     */
-    private float computeMinimumScale() {
-        return Math.min((float) getWidth() / getImageWidth(),
-                (float) getHeight() / getImageHeight());
-    }
-    
     public float getDisplayDensity() {
         return displayDensity;
-    }
-    
-    public int getAbsoluteX () {
-        return absoluteXPosition;
-    }
-    
-    public int getAbsoluteY () {
-        return absoluteYPosition;
     }
     
     public boolean getAbsoluteMouse() {
@@ -664,9 +364,9 @@ public class RemoteCanvas extends ImageView {
             synchronized (this) {
                 this.notify();
             }
-            if (spice != null) {
+            if (viewport != null) {
                 // Ensure the view position is sane
-                updateScale();
+                viewport.updateScale();
             }
         }
     }
@@ -676,7 +376,7 @@ public class RemoteCanvas extends ImageView {
     //  desktop size and updates.
     //////////////////////////////////////////////////////////////////////////////////
     
-    void OnSettingsChanged(final int width, final int height, int bpp) {
+    void OnSettingsChanged(int width, int height) {
         android.util.Log.d(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
         // We need to initialize the communicator and remote keyboard and mouse now.
@@ -688,32 +388,8 @@ public class RemoteCanvas extends ImageView {
             spice.requestResolution(remoteWidth, remoteHeight);
         }
 
-        // Recreate bitmap.
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (bitmap != null) {
-                    try {
-                        bitmap.reconfigure(width, height, cfg);
-                    } catch (IllegalArgumentException e) {
-                        bitmap = null;
-                    }
-                }
-                if (bitmap == null) {
-                    try {
-                        bitmap = Bitmap.createBitmap(width, height, cfg);
-                        bitmap.setHasAlpha(false);
-                    } catch (Throwable e) {
-                        showFatalMessageAndQuit(getContext().getString(R.string.error_out_of_memory));
-                    }
-                }
-                updateScale();
-                spice.redraw();
-            }
-        });
-        
-        // Re-initialize cursor.
-        handler.post(configureCursor);
+        // Notify viewport.
+        viewport.OnSettingsChanged(width, height);
 
         // Update activity state.
         handler.post(updateActivity);
@@ -723,34 +399,8 @@ public class RemoteCanvas extends ImageView {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_SUCCESS);
     }
 
-    void OnGraphicsUpdate(int x, int y, int width, int height) {
-        //android.util.Log.d(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
-
-        if (bitmap == null)
-            return;
-
-        synchronized (bitmap) {
-            spice.updateBitmap(bitmap, x, y, width, height);
-        }
-        
-        reDraw(x, y, width, height);
-    }
-
     void OnMouseMode() {
         handler.post(updateActivity);
-    }
-
-    void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
-            int hx, int hy) {
-        synchronized (this) {
-            cursorVisible = shown;
-            cursor = bitmap;
-            cursorWidth = w;
-            cursorHeight = h;
-            hotX = hx;
-            hotY = hy;
-        }
-        handler.post(configureCursor);
     }
 
     private void wantVMState(int wanted) {
