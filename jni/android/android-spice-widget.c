@@ -263,7 +263,7 @@ static void primary_create(SpiceChannel *channel, gint format, gint width, gint 
     if (d->convert)
         d->data = g_malloc0(height * stride);
 
-    uiCallbackSettingsChanged(d->ctx, width, height, 4);
+    uiCallbackSettingsChanged(d->ctx, width, height);
 }
 
 static void primary_destroy(SpiceChannel *channel, gpointer data) {

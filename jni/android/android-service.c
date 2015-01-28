@@ -79,7 +79,7 @@ static gpointer start_main_loop(gpointer data) {
     // Get method IDs for callback methods
     jclass cls                = (*env)->FindClass(env, "org/olivearchive/vmnetx/android/SpiceCommunicator");
     thr->jni_get_fd           = (*env)->GetMethodID(env, cls, "OnGetFd", "(J)V");
-    thr->jni_settings_changed = (*env)->GetMethodID(env, cls, "OnSettingsChanged", "(III)V");
+    thr->jni_settings_changed = (*env)->GetMethodID(env, cls, "OnSettingsChanged", "(II)V");
     thr->jni_graphics_update  = (*env)->GetMethodID(env, cls, "OnGraphicsUpdate", "(IIII)V");
     thr->jni_mouse_mode       = (*env)->GetMethodID(env, cls, "OnMouseMode", "(Z)V");
     thr->jni_cursor_config    = (*env)->GetMethodID(env, cls, "OnCursorConfig", "(Z[IIIII)V");

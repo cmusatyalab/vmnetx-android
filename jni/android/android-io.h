@@ -26,7 +26,7 @@ void _assert_on_main_loop_thread(const char *caller);
 /* These can only be called from the thread running the glib main loop. */
 void uiCallbackGetFd (struct spice_context *ctx, SpiceChannel *channel);
 void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gint h);
-void uiCallbackSettingsChanged (struct spice_context *ctx, gint width, gint height, gint bpp);
+void uiCallbackSettingsChanged (struct spice_context *ctx, gint width, gint height);
 void uiCallbackMouseMode (struct spice_context *ctx, bool absolute_mouse);
 void uiCallbackCursorConfig (struct spice_context *ctx, bool shown, uint32_t *bitmap, int w, int h, int hot_x, int hot_y);
 void uiCallbackDisconnect (struct spice_context *ctx);

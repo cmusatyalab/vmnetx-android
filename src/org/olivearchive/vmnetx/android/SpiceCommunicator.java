@@ -120,7 +120,7 @@ public class SpiceCommunicator {
         new ConnectThread(cookie).start();
     }
 
-    private void OnSettingsChanged(int width, int height, int bpp) {
+    private void OnSettingsChanged(int width, int height) {
         this.width = width;
         this.height = height;
         canvas.OnSettingsChanged(width, height);

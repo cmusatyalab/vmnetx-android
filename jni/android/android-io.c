@@ -362,10 +362,10 @@ void uiCallbackInvalidate (struct spice_context *ctx, gint x, gint y, gint w, gi
     (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_graphics_update, x, y, w, h);
 }
 
-void uiCallbackSettingsChanged (struct spice_context *ctx, gint width, gint height, gint bpp) {
+void uiCallbackSettingsChanged (struct spice_context *ctx, gint width, gint height) {
     // Ask for a new bitmap from the UI.
     assert_on_main_loop_thread();
-    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_settings_changed, width, height, bpp);
+    (*ctx->thr->jenv)->CallVoidMethod(ctx->thr->jenv, ctx->jni_connector, ctx->thr->jni_settings_changed, width, height);
 }
 
 void uiCallbackMouseMode (struct spice_context *ctx, bool absolute_mouse) {
