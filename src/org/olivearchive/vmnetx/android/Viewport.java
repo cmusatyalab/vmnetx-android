@@ -127,10 +127,10 @@ public class Viewport {
         }
     }
 
-    Viewport(SpiceCommunicator spice, RemoteCanvas canvas, Handler handler) {
+    Viewport(SpiceCommunicator spice, RemoteCanvas canvas) {
         this.spice = spice;
         this.canvas = canvas;
-        this.handler = handler;
+        this.handler = new Handler();
         setFilteringEnabled(true);
     }
 

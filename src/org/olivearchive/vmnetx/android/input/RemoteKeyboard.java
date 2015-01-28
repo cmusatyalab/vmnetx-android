@@ -1,6 +1,5 @@
 package org.olivearchive.vmnetx.android.input;
 
-import android.os.Handler;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import org.olivearchive.vmnetx.android.SpiceCommunicator;
@@ -14,9 +13,9 @@ public class RemoteKeyboard {
     // State of the on-screen modifier key buttons
     private final ModifierState.DeviceState onScreenButtons;
 
-    public RemoteKeyboard (SpiceCommunicator s, Handler h) {
+    public RemoteKeyboard(SpiceCommunicator s) {
         spice = s;
-        keyRepeater = new KeyRepeater (this, h);
+        keyRepeater = new KeyRepeater(this);
         modifiers = new ModifierState();
         onScreenButtons = modifiers.getOnScreenButtonState();
     }

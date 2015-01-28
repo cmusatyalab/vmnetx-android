@@ -160,35 +160,31 @@ public class RemoteCanvas extends ImageView {
      * Starts a SPICE connection using libspice.
      */
     private void startSpiceConnection() {
-        new Thread() {
-            public void run() {
-                try {
-                    spice = new SpiceCommunicator (getContext(), RemoteCanvas.this, handler, connection);
-                    viewport = new Viewport(spice, RemoteCanvas.this, handler);
-                    pointer = new RemotePointer (spice, RemoteCanvas.this);
-                    keyboard = new RemoteKeyboard (spice, handler);
-                    spice.connect();
-                } catch (Throwable e) {
-                    if (maintainConnection) {
-                        Log.e(TAG, e.toString());
-                        e.printStackTrace();
-                        // Ensure we dismiss the progress dialog before we finish
-                        if (pd.isShowing())
-                            pd.dismiss();
-                        
-                        if (e instanceof OutOfMemoryError) {
-                            showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
-                        } else {
-                            String error = getContext().getString(R.string.error_connection_failed);
-                            if (e.getMessage() != null) {
-                                error = error + "<br>" + e.getLocalizedMessage();
-                            }
-                            showFatalMessageAndQuit(error);
-                        }
+        try {
+            spice = new SpiceCommunicator(getContext(), this, handler, connection);
+            viewport = new Viewport(spice, this);
+            pointer = new RemotePointer(spice, this);
+            keyboard = new RemoteKeyboard(spice);
+            spice.connect();
+        } catch (Throwable e) {
+            if (maintainConnection) {
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+                // Ensure we dismiss the progress dialog before we finish
+                if (pd.isShowing())
+                    pd.dismiss();
+
+                if (e instanceof OutOfMemoryError) {
+                    showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
+                } else {
+                    String error = getContext().getString(R.string.error_connection_failed);
+                    if (e.getMessage() != null) {
+                        error = error + "<br>" + e.getLocalizedMessage();
                     }
+                    showFatalMessageAndQuit(error);
                 }
             }
-        }.start();
+        }
     }
     
     

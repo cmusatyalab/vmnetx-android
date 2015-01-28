@@ -13,9 +13,9 @@ class KeyRepeater implements Runnable {
     private KeyEvent event = null;
     private boolean starting = false;
     
-    public KeyRepeater (RemoteKeyboard keyboard, Handler handler) {
+    public KeyRepeater(RemoteKeyboard keyboard) {
         this.keyboard = keyboard;
-        this.handler = handler;
+        this.handler = new Handler();
     }
     
     public void start (KeyEvent event) {
