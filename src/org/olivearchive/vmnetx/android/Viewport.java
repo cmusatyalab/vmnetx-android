@@ -27,8 +27,12 @@ package org.olivearchive.vmnetx.android;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.DrawableContainer;
 import android.os.Handler;
 import android.widget.ImageView;
 
@@ -70,6 +74,112 @@ public class Viewport {
     // coordinates
     private float shiftX;
     private float shiftY;
+
+    private class BitmapDrawable extends DrawableContainer {
+        private final Viewport viewport;
+        private final Paint paint = new Paint();
+        private final Rect cursorRect = new Rect();
+
+        private Bitmap softCursor;
+        private int hotX, hotY;
+
+        private BitmapDrawable(Viewport viewport) {
+            this.viewport = viewport;
+            setFilteringEnabled(true);
+        }
+
+        /* (non-Javadoc)
+         * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
+         */
+        @Override
+        public void draw(Canvas canvas) {
+            try {
+                Bitmap bitmap = viewport.getBitmap();
+                if (bitmap != null) {
+                    synchronized (bitmap) {
+                        canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint);
+                        if (softCursor != null)
+                            canvas.drawBitmap(softCursor, cursorRect.left,
+                                    cursorRect.top, paint);
+                    }
+                }
+            } catch (Throwable e) { }
+        }
+
+        void setFilteringEnabled(boolean enabled) {
+            paint.setFilterBitmap(enabled);
+        }
+
+        public Rect getCursorRect() {
+            if (softCursor != null)
+                return cursorRect;
+            else
+                return null;
+        }
+
+        private void setCursorRect(int x, int y, int w, int h) {
+            cursorRect.left   = x-hotX;
+            cursorRect.right  = cursorRect.left + w;
+            cursorRect.top    = y-hotY;
+            cursorRect.bottom = cursorRect.top + h;
+        }
+
+        void moveCursor(int x, int y) {
+            setCursorRect(x, y, cursorRect.width(), cursorRect.height());
+        }
+
+        void setSoftCursor(int[] newSoftCursorPixels, int w, int h, int hX, int hY) {
+            Bitmap oldSoftCursor = softCursor;
+            int x = cursorRect.left + hotX;
+            int y = cursorRect.top + hotY;
+
+            softCursor = Bitmap.createBitmap(newSoftCursorPixels, w, h,
+                    Bitmap.Config.ARGB_8888);
+            hotX = hX;
+            hotY = hY;
+            setCursorRect(x, y, w, h);
+            if (oldSoftCursor != null)
+                oldSoftCursor.recycle();
+        }
+
+        void clearSoftCursor() {
+            if (softCursor != null)
+                softCursor.recycle();
+            softCursor = null;
+        }
+
+        /* (non-Javadoc)
+         * @see android.graphics.drawable.DrawableContainer#getIntrinsicHeight()
+         */
+        @Override
+        public int getIntrinsicHeight() {
+            return viewport.getImageHeight();
+        }
+
+        /* (non-Javadoc)
+         * @see android.graphics.drawable.DrawableContainer#getIntrinsicWidth()
+         */
+        @Override
+        public int getIntrinsicWidth() {
+            return viewport.getImageWidth();
+        }
+
+        /* (non-Javadoc)
+         * @see android.graphics.drawable.DrawableContainer#getOpacity()
+         */
+        @Override
+        public int getOpacity() {
+            return PixelFormat.OPAQUE;
+        }
+
+        /* (non-Javadoc)
+         * @see android.graphics.drawable.DrawableContainer#isStateful()
+         */
+        @Override
+        public boolean isStateful() {
+            return false;
+        }
+    }
 
     Viewport(SpiceCommunicator spice, RemoteCanvas canvas, Handler handler) {
         this.spice = spice;
