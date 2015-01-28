@@ -49,7 +49,8 @@ public class Viewport {
 
     // Bitmap data
     private Bitmap bitmap;
-    private final BitmapDrawable drawable = new BitmapDrawable(this);
+    private final Paint paint = new Paint();
+    private final BitmapDrawable drawable = new BitmapDrawable();
     private int imageWidth = 1;
     private int imageHeight = 1;
 
@@ -76,17 +77,10 @@ public class Viewport {
     private float shiftY;
 
     private class BitmapDrawable extends DrawableContainer {
-        private final Viewport viewport;
-        private final Paint paint = new Paint();
         private final Rect cursorRect = new Rect();
 
         private Bitmap softCursor;
         private int hotX, hotY;
-
-        private BitmapDrawable(Viewport viewport) {
-            this.viewport = viewport;
-            setFilteringEnabled(true);
-        }
 
         /* (non-Javadoc)
          * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
@@ -94,7 +88,6 @@ public class Viewport {
         @Override
         public void draw(Canvas canvas) {
             try {
-                Bitmap bitmap = viewport.getBitmap();
                 if (bitmap != null) {
                     synchronized (bitmap) {
                         canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint);
@@ -104,10 +97,6 @@ public class Viewport {
                     }
                 }
             } catch (Throwable e) { }
-        }
-
-        void setFilteringEnabled(boolean enabled) {
-            paint.setFilterBitmap(enabled);
         }
 
         public Rect getCursorRect() {
@@ -153,7 +142,7 @@ public class Viewport {
          */
         @Override
         public int getIntrinsicHeight() {
-            return viewport.getImageHeight();
+            return imageHeight;
         }
 
         /* (non-Javadoc)
@@ -161,7 +150,7 @@ public class Viewport {
          */
         @Override
         public int getIntrinsicWidth() {
-            return viewport.getImageWidth();
+            return imageWidth;
         }
 
         /* (non-Javadoc)
@@ -185,6 +174,7 @@ public class Viewport {
         this.spice = spice;
         this.canvas = canvas;
         this.handler = handler;
+        setFilteringEnabled(true);
     }
 
     /**
@@ -411,11 +401,7 @@ public class Viewport {
     };
 
     public void setFilteringEnabled(boolean enabled) {
-        drawable.setFilteringEnabled(enabled);
-    }
-
-    Bitmap getBitmap() {
-        return bitmap;
+        paint.setFilterBitmap(enabled);
     }
 
     public float getScale() {
