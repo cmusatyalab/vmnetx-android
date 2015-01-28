@@ -59,11 +59,6 @@ public class Viewport {
     private float scaling = 1;
     private float minimumScale;
 
-    // Mouse cursor
-    private int[] cursor;
-    private boolean cursorVisible;
-    private int cursorWidth, cursorHeight, hotX, hotY;
-
     // Position of the top-left portion of the visible part of the screen,
     // in full-frame coordinates
     private int absoluteXPosition;
@@ -371,29 +366,6 @@ public class Viewport {
         bm.recycle();
     }
 
-    private final Runnable configureCursor = new Runnable() {
-        public void run() {
-            Rect prevR = drawable.getCursorRect();
-            if (prevR != null)
-                prevR = new Rect(prevR);
-            synchronized (this) {
-                if (!cursorVisible)
-                    drawable.clearSoftCursor();
-                else if (cursor != null)
-                    drawable.setSoftCursor(cursor, cursorWidth, cursorHeight,
-                            hotX, hotY);
-                else
-                    setDefaultSoftCursor();
-            }
-            // Redraw the cursor.
-            Rect r = drawable.getCursorRect();
-            if (r != null)
-                reDraw(r.left, r.top, r.width(), r.height());
-            if (prevR != null)
-                reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
-        }
-    };
-
     public void setFilteringEnabled(boolean enabled) {
         paint.setFilterBitmap(enabled);
     }
@@ -467,9 +439,6 @@ public class Viewport {
                 spice.redraw();
             }
         });
-
-        // Re-initialize cursor.
-        handler.post(configureCursor);
     }
 
     void OnGraphicsUpdate(int x, int y, int width, int height) {
@@ -485,16 +454,29 @@ public class Viewport {
         reDraw(x, y, width, height);
     }
 
-    void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
-            int hx, int hy) {
-        synchronized (this) {
-            cursorVisible = shown;
-            cursor = bitmap;
-            cursorWidth = w;
-            cursorHeight = h;
-            hotX = hx;
-            hotY = hy;
-        }
-        handler.post(configureCursor);
+    void OnCursorConfig(final boolean shown, final int[] bitmap,
+            final int w, final int h, final int hx, final int hy) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Rect prevR = drawable.getCursorRect();
+                if (prevR != null)
+                    prevR = new Rect(prevR);
+
+                if (!shown)
+                    drawable.clearSoftCursor();
+                else if (bitmap != null)
+                    drawable.setSoftCursor(bitmap, w, h, hx, hy);
+                else
+                    setDefaultSoftCursor();
+
+                // Redraw the cursor.
+                Rect r = drawable.getCursorRect();
+                if (r != null)
+                    reDraw(r.left, r.top, r.width(), r.height());
+                if (prevR != null)
+                    reDraw(prevR.left, prevR.top, prevR.width(), prevR.height());
+            }
+        });
     }
 }
