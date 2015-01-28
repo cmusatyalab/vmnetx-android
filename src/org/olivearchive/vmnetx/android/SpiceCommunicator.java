@@ -39,9 +39,6 @@ public class SpiceCommunicator {
     private final ConnectionBean connection;
     private final long context;
 
-    private int width = 0;
-    private int height = 0;
-    
     private boolean wantAbsoluteMouse = false;
 
     private boolean isInNormalProtocol = false;
@@ -121,8 +118,6 @@ public class SpiceCommunicator {
     }
 
     private void OnSettingsChanged(int width, int height) {
-        this.width = width;
-        this.height = height;
         canvas.OnSettingsChanged(width, height);
         isInNormalProtocol = true;
     }
@@ -145,14 +140,6 @@ public class SpiceCommunicator {
 
     private void OnDisconnect() {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
-    }
-
-    public int framebufferWidth() {
-        return width;
-    }
-
-    public int framebufferHeight() {
-        return height;
     }
 
     public boolean isInNormalProtocol() {

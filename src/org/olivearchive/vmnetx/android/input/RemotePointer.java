@@ -39,10 +39,14 @@ public class RemotePointer {
             viewport.invalidateMousePosition();
             mouseX = x;
             mouseY = y;
-            if ( mouseX < 0) mouseX=0;
-            else if ( mouseX >= spice.framebufferWidth())  mouseX = spice.framebufferWidth()  - 1;
-            if ( mouseY < 0) mouseY=0;
-            else if ( mouseY >= spice.framebufferHeight()) mouseY = spice.framebufferHeight() - 1;
+            if (mouseX < 0)
+                mouseX = 0;
+            else if (mouseX >= viewport.getImageWidth())
+                mouseX = viewport.getImageWidth()  - 1;
+            if (mouseY < 0)
+                mouseY = 0;
+            else if (mouseY >= viewport.getImageHeight())
+                mouseY = viewport.getImageHeight() - 1;
             viewport.invalidateMousePosition();
 
             spice.writePointerEvent(mouseX, mouseY);

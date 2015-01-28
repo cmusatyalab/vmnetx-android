@@ -46,6 +46,8 @@ public class Viewport {
     // Bitmap data
     private Bitmap bitmap;
     private final BitmapDrawable drawable = new BitmapDrawable(this);
+    private int imageWidth = 1;
+    private int imageHeight = 1;
 
     // Bitmap scaling
     private final Matrix matrix = new Matrix();
@@ -81,8 +83,8 @@ public class Viewport {
     void updateScale() {
         // Compute the X and Y offset for converting coordinates from
         // full-frame coordinates to view coordinates
-        shiftX = (spice.framebufferWidth()  - canvas.getWidth())  / 2;
-        shiftY = (spice.framebufferHeight() - canvas.getHeight()) / 2;
+        shiftX = (imageWidth  - canvas.getWidth())  / 2;
+        shiftY = (imageHeight - canvas.getHeight()) / 2;
 
         boolean zoomedOut = (scaling <= minimumScale);
         minimumScale = computeMinimumScale();
@@ -159,9 +161,9 @@ public class Viewport {
         absoluteXPosition = Math.max(absoluteXPosition, 0);
         absoluteYPosition = Math.max(absoluteYPosition, 0);
         absoluteXPosition = Math.min(absoluteXPosition,
-                getImageWidth() - getVisibleWidth());
+                imageWidth - getVisibleWidth());
         absoluteYPosition = Math.min(absoluteYPosition,
-                getImageHeight() - getVisibleHeight());
+                imageHeight - getVisibleHeight());
         // If image is smaller than the canvas, center the image
         if (absoluteXPosition < 0)
             absoluteXPosition /= 2;
@@ -190,29 +192,27 @@ public class Viewport {
         int y = pointer.getY();
         int w = getVisibleWidth();
         int h = getVisibleHeight();
-        int iw = getImageWidth();
-        int ih = getImageHeight();
         int wthresh = 30;
         int hthresh = 30;
 
         // Don't pan in a certain direction if dimension scaled is already less
         // than the dimension of the visible part of the screen.
-        if (spice.framebufferWidth() > getVisibleWidth()) {
+        if (imageWidth > getVisibleWidth()) {
             if (x - absoluteXPosition >= w - wthresh) {
                 absoluteXPosition = x - (w - wthresh);
-                if (absoluteXPosition + w > iw)
-                    absoluteXPosition = iw - w;
+                if (absoluteXPosition + w > imageWidth)
+                    absoluteXPosition = imageWidth - w;
             } else if (x < absoluteXPosition + wthresh) {
                 absoluteXPosition = x - wthresh;
                 if (absoluteXPosition < 0)
                     absoluteXPosition = 0;
             }
         }
-        if (spice.framebufferHeight() > getVisibleHeight()) {
+        if (imageHeight > getVisibleHeight()) {
             if (y - absoluteYPosition >= h - hthresh) {
                 absoluteYPosition = y - (h - hthresh);
-                if (absoluteYPosition + h > ih)
-                    absoluteYPosition = ih - h;
+                if (absoluteYPosition + h > imageHeight)
+                    absoluteYPosition = imageHeight - h;
             } else if (y < absoluteYPosition + hthresh) {
                 absoluteYPosition = y - hthresh;
                 if (absoluteYPosition < 0)
@@ -321,17 +321,11 @@ public class Viewport {
     }
 
     public int getImageWidth() {
-        if (bitmap != null)
-            return bitmap.getWidth();
-        else
-            return 1;
+        return imageWidth;
     }
 
     public int getImageHeight() {
-        if (bitmap != null)
-            return bitmap.getHeight();
-        else
-            return 1;
+        return imageHeight;
     }
 
     public int getAbsoluteX () {
@@ -346,8 +340,8 @@ public class Viewport {
      * @return The scale at which the bitmap would be smaller than the screen
      */
     private float computeMinimumScale() {
-        return Math.min((float) canvas.getWidth() / getImageWidth(),
-                (float) canvas.getHeight() / getImageHeight());
+        return Math.min((float) canvas.getWidth() / imageWidth,
+                (float) canvas.getHeight() / imageHeight);
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -377,6 +371,8 @@ public class Viewport {
                 }
                 canvas.setImageDrawable(drawable);
                 canvas.setScaleType(ImageView.ScaleType.MATRIX);
+                imageWidth = width;
+                imageHeight = height;
                 updateScale();
                 spice.redraw();
             }
