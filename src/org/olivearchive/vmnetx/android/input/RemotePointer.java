@@ -21,8 +21,6 @@ public class RemotePointer {
 
     public RemotePointer (SpiceCommunicator s, RemoteCanvas c) {
         spice = s;
-        mouseX = spice.framebufferWidth()/2;
-        mouseY = spice.framebufferHeight()/2;
         canvas = c;
         buttons = new ModifierState();
     }

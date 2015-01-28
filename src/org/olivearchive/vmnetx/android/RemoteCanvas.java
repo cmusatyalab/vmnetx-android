@@ -376,7 +376,7 @@ public class RemoteCanvas extends ImageView {
     //  desktop size and updates.
     //////////////////////////////////////////////////////////////////////////////////
     
-    void OnSettingsChanged(int width, int height) {
+    void OnSettingsChanged(final int width, final int height) {
         android.util.Log.d(TAG, "onSettingsChanged called, wxh: " + width + "x" + height);
         
         // We need to initialize the communicator and remote keyboard and mouse now.
@@ -393,6 +393,18 @@ public class RemoteCanvas extends ImageView {
 
         // Update activity state.
         handler.post(updateActivity);
+
+        // Initialize pointer to center of screen.
+        if (!spiceUpdateReceived) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (spice.getAbsoluteMouse()) {
+                        pointer.processPointerEvent(width / 2, height / 2);
+                    }
+                }
+            });
+        }
         
         // Notify that we have a connection.
         spiceUpdateReceived = true;
