@@ -284,9 +284,6 @@ public class Viewport {
      * Make sure mouse is visible on displayable part of screen
      */
     public void panToMouse() {
-        if (spice == null)
-            return;
-
         RemotePointer pointer = canvas.getPointer();
         int x = pointer.getX();
         int y = pointer.getY();
@@ -376,9 +373,6 @@ public class Viewport {
 
     private final Runnable configureCursor = new Runnable() {
         public void run() {
-            if (spice == null)
-                return;
-
             Rect prevR = drawable.getCursorRect();
             if (prevR != null)
                 prevR = new Rect(prevR);
