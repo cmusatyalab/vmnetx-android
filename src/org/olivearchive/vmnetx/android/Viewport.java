@@ -289,10 +289,10 @@ public class Viewport {
     private void reDraw(int x, int y, int w, int h) {
         // Make the box slightly larger to avoid artifacts due to truncation errors.
         canvas.postInvalidate(
-            (int) ((x - 1) * scaling),
-            (int) ((y - 1) * scaling),
-            (int) ((x + w + 1) * scaling),
-            (int) ((y + h + 1) * scaling));
+            (int) ((x - absoluteXPosition - 1) * scaling),
+            (int) ((y - absoluteYPosition - 1) * scaling),
+            (int) ((x - absoluteXPosition + w + 1) * scaling),
+            (int) ((y - absoluteYPosition + h + 1) * scaling));
     }
 
     /**
