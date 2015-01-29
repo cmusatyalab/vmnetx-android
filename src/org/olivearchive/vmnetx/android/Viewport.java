@@ -68,6 +68,9 @@ public class Viewport {
     // in full-frame coordinates
     private int absoluteXPosition;
     private int absoluteYPosition;
+
+    // Last-state tracking for updateViewport()
+    private float prevScaling = -1;
     private int prevAbsoluteXPosition = -1;
     private int prevAbsoluteYPosition = -1;
 
@@ -195,13 +198,13 @@ public class Viewport {
 
     private void setScale(float scale) {
         scaling = scale;
-        scrollToAbsolute(true);
+        updateViewport();
     }
 
     /**
      * Change to Canvas's scroll position to match the absoluteXPosition
      */
-    private void scrollToAbsolute(boolean force) {
+    private void updateViewport() {
         // Clamp to bounds of desktop image
         absoluteXPosition = Math.max(absoluteXPosition, 0);
         absoluteYPosition = Math.max(absoluteYPosition, 0);
@@ -215,13 +218,15 @@ public class Viewport {
         if (absoluteYPosition < 0)
             absoluteYPosition /= 2;
 
-        if (force ||
+        if (scaling != prevScaling ||
                 absoluteXPosition != prevAbsoluteXPosition ||
                 absoluteYPosition != prevAbsoluteYPosition) {
             matrix.reset();
             matrix.preTranslate(-absoluteXPosition, -absoluteYPosition);
             matrix.postScale(scaling, scaling);
             canvas.setImageMatrix(matrix);
+
+            prevScaling = scaling;
             prevAbsoluteXPosition = absoluteXPosition;
             prevAbsoluteYPosition = absoluteYPosition;
         }
@@ -264,7 +269,7 @@ public class Viewport {
             }
         }
 
-        scrollToAbsolute(false);
+        updateViewport();
     }
 
     /**
@@ -275,7 +280,7 @@ public class Viewport {
     public void pan(int dX, int dY) {
         absoluteXPosition += (double) dX / scaling;
         absoluteYPosition += (double) dY / scaling;
-        scrollToAbsolute(false);
+        updateViewport();
     }
 
     /**
