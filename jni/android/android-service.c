@@ -32,10 +32,6 @@
 
 static GOnce main_loop_starter = G_ONCE_INIT;
 
-static void signal_handler(int signal, siginfo_t *info, void *reserved) {
-    kill(getpid(), SIGKILL);
-}
-
 static gpointer spice_main_loop(gpointer data) {
     struct spice_main_thread *thr = data;
 
@@ -164,15 +160,5 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientFreeContext (J
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM* vm, void* reserved) {
-    struct sigaction handler;
-    memset(&handler, 0, sizeof(handler));
-    handler.sa_sigaction = signal_handler;
-    handler.sa_flags = SA_SIGINFO;
-    sigaction(SIGILL, &handler, NULL);
-    sigaction(SIGABRT, &handler, NULL);
-    sigaction(SIGBUS, &handler, NULL);
-    sigaction(SIGFPE, &handler, NULL);
-    sigaction(SIGSEGV, &handler, NULL);
-    sigaction(SIGSTKFLT, &handler, NULL);
-    return(JNI_VERSION_1_6);
+    return JNI_VERSION_1_6;
 }
