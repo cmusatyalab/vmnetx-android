@@ -47,27 +47,29 @@ public class Viewport {
     private final SpiceCommunicator spice;
     private final Handler handler;
 
-    // Bitmap data
+    // Image bitmap
     private Bitmap bitmap;
     private final Paint paint = new Paint();
     private final BitmapDrawable drawable = new BitmapDrawable();
     private int imageWidth = 1;
     private int imageHeight = 1;
 
-    // Bitmap scaling
+    // Image transformation matrix for rendering
     private final Matrix matrix = new Matrix();
+
+    // Image scaling
     private float scaling = 1;
     private float minimumScale;
+
+    // The coordinates of the top-left image pixel visible in the view.
+    // May be negative due to letterboxing or pillarboxing.
+    private int absoluteXPosition;
+    private int absoluteYPosition;
 
     // Mouse cursor
     private Bitmap softCursor;
     private final Rect cursorRect = new Rect();
     private int hotX, hotY;
-
-    // Position of the top-left portion of the visible part of the screen,
-    // in full-frame coordinates
-    private int absoluteXPosition;
-    private int absoluteYPosition;
 
     // Last-state tracking for updateViewport()
     private float prevScaling = -1;
@@ -135,7 +137,7 @@ public class Viewport {
     }
 
     /**
-     * Update scaling from framebuffer size
+     * Update scaling for view and image sizes
      */
     void updateScale() {
         boolean zoomedOut = (scaling <= minimumScale);
@@ -196,13 +198,17 @@ public class Viewport {
         }
     }
 
+    /**
+     * Set new scaling
+     */
     private void setScale(float scale) {
         scaling = scale;
         updateViewport();
     }
 
     /**
-     * Change to Canvas's scroll position to match the absoluteXPosition
+     * Update image transformation matrix from absolute[XY]Position and
+     * scaling
      */
     private void updateViewport() {
         // Clamp to bounds of desktop image
@@ -233,7 +239,7 @@ public class Viewport {
     }
 
     /**
-     * Make sure mouse is visible on displayable part of screen
+     * Make sure mouse is visible within view
      */
     public void panToMouse() {
         RemotePointer pointer = canvas.getPointer();
@@ -284,10 +290,11 @@ public class Viewport {
     }
 
     /**
-     * Causes a redraw of the bitmap to happen at the indicated coordinates.
+     * Cause a redraw of the image at the indicated coordinates
      */
     private void reDraw(int x, int y, int w, int h) {
-        // Make the box slightly larger to avoid artifacts due to truncation errors.
+        // Make the box slightly larger to avoid artifacts due to truncation
+        // errors.
         canvas.postInvalidate(
             (int) ((x - absoluteXPosition - 1) * scaling),
             (int) ((y - absoluteYPosition - 1) * scaling),
@@ -374,7 +381,7 @@ public class Viewport {
     }
 
     /**
-     * @return The scale at which the bitmap would be smaller than the screen
+     * @return The scale at which the image would be smaller than the view
      */
     private float computeMinimumScale() {
         return Math.min((float) canvas.getWidth() / imageWidth,
