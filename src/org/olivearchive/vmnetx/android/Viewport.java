@@ -158,8 +158,8 @@ public class Viewport {
      * @param fy Focus Y of center of scale change
      */
     public void adjustScale(float scaleFactor, float fx, float fy) {
-        float oldScale;
-        float newScale = scaleFactor * scaling;
+        final float oldScale = scaling;
+        float newScale = scaleFactor * oldScale;
         if (scaleFactor < 1) {
             if (newScale < minimumScale)
                 newScale = minimumScale;
@@ -170,19 +170,17 @@ public class Viewport {
 
         // ax is the absolute x of the focus
         int xPan = visibleRegionX;
-        float ax = (fx / scaling) + xPan;
-        float newXPan = (scaling * xPan - scaling * ax + newScale * ax) /
+        float ax = (fx / oldScale) + xPan;
+        float newXPan = (oldScale * xPan - oldScale * ax + newScale * ax) /
                 newScale;
         int yPan = visibleRegionY;
-        float ay = (fy / scaling) + yPan;
-        float newYPan = (scaling * yPan - scaling * ay + newScale * ay) /
+        float ay = (fy / oldScale) + yPan;
+        float newYPan = (oldScale * yPan - oldScale * ay + newScale * ay) /
                 newScale;
 
         // Here we do snapping to 1:1. If we are approaching scale = 1, we
         // snap to it.
-        oldScale = scaling;
-        if ((newScale > 0.90f && newScale < 1.00f) ||
-            (newScale > 1.00f && newScale < 1.10f)) {
+        if (newScale > 0.90f && newScale < 1.10f) {
             newScale = 1.f;
             // Only if oldScale is outside the snap region, do we inform the
             // user.
