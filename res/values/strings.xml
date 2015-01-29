@@ -5,7 +5,7 @@
 <string name="disconnect_prompt">All changes will be lost.</string>
 <string name="disconnect_prompt_title">Really quit?</string>
 <string name="error_connection_type_not_supported">This connection type is not supported.</string>
-<string name="error_out_of_memory">Unable to allocate sufficient memory to draw remote screen. Try restarting the application, then restart your device. You can also try reducing the size of the remote desktop through the app settings.</string>
+<string name="error_out_of_memory">Unable to allocate sufficient memory to draw remote screen. Try restarting the application, then restart your device.</string>
 <string name="error_protocol">Remote server returned error:</string>
 <string name="error_connection_interrupted">Connection interrupted.</string>
 <string name="error_connection_failed">Connection failed.</string>
