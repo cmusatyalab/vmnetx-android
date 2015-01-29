@@ -169,11 +169,11 @@ public class Viewport {
         }
 
         // ax is the absolute x of the focus
-        int xPan = getAbsoluteX();
+        int xPan = absoluteXPosition;
         float ax = (fx / scaling) + xPan;
         float newXPan = (scaling * xPan - scaling * ax + newScale * ax) /
                 newScale;
-        int yPan = getAbsoluteY();
+        int yPan = absoluteYPosition;
         float ay = (fy / scaling) + yPan;
         float newYPan = (scaling * yPan - scaling * ay + newScale * ay) /
                 newScale;
@@ -372,12 +372,12 @@ public class Viewport {
         return imageHeight;
     }
 
-    public int getAbsoluteX () {
-        return absoluteXPosition;
+    public int viewToImageX(float viewX) {
+        return (int) (viewX / scaling + absoluteXPosition);
     }
 
-    public int getAbsoluteY () {
-        return absoluteYPosition;
+    public int viewToImageY(float viewY) {
+        return (int) (viewY / scaling + absoluteYPosition);
     }
 
     /**

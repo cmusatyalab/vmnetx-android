@@ -110,23 +110,20 @@ abstract public class GestureHandler
      * Function to get appropriate X coordinate from motion event for this input handler.
      * @return the appropriate X coordinate.
      */
-    protected int getX (MotionEvent e) {
-        Viewport viewport = canvas.getViewport();
-        float scale = viewport.getScale();
-        return (int) (viewport.getAbsoluteX() + e.getX() / scale);
+    protected int getX(MotionEvent e) {
+        return canvas.getViewport().viewToImageX(e.getX());
     }
 
     /**
      * Function to get appropriate Y coordinate from motion event for this input handler.
      * @return the appropriate Y coordinate.
      */
-    protected int getY (MotionEvent e) {
+    protected int getY(MotionEvent e) {
         int[] location = new int[2];
         canvas.getLocationOnScreen(location);
 
-        Viewport viewport = canvas.getViewport();
-        float scale = viewport.getScale();
-        return (int) (viewport.getAbsoluteY() + (e.getY() - (float) location[1]) / scale);
+        return canvas.getViewport().viewToImageY(e.getY() -
+                (float) location[1]);
     }
 
     /**
