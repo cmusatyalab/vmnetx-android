@@ -63,8 +63,8 @@ public class Viewport {
 
     // The coordinates of the top-left image pixel visible in the view.
     // May be negative due to letterboxing or pillarboxing.
-    private int absoluteXPosition;
-    private int absoluteYPosition;
+    private int visibleRegionX;
+    private int visibleRegionY;
 
     // Mouse cursor
     private Bitmap softCursor;
@@ -169,11 +169,11 @@ public class Viewport {
         }
 
         // ax is the absolute x of the focus
-        int xPan = absoluteXPosition;
+        int xPan = visibleRegionX;
         float ax = (fx / scaling) + xPan;
         float newXPan = (scaling * xPan - scaling * ax + newScale * ax) /
                 newScale;
-        int yPan = absoluteYPosition;
+        int yPan = visibleRegionY;
         float ay = (fy / scaling) + yPan;
         float newYPan = (scaling * yPan - scaling * ay + newScale * ay) /
                 newScale;
@@ -212,29 +212,29 @@ public class Viewport {
      */
     private void updateViewport() {
         // Clamp to bounds of desktop image
-        absoluteXPosition = Math.max(absoluteXPosition, 0);
-        absoluteYPosition = Math.max(absoluteYPosition, 0);
-        absoluteXPosition = Math.min(absoluteXPosition,
+        visibleRegionX = Math.max(visibleRegionX, 0);
+        visibleRegionY = Math.max(visibleRegionY, 0);
+        visibleRegionX = Math.min(visibleRegionX,
                 imageWidth - getVisibleWidth());
-        absoluteYPosition = Math.min(absoluteYPosition,
+        visibleRegionY = Math.min(visibleRegionY,
                 imageHeight - getVisibleHeight());
         // If image is smaller than the canvas, center the image
-        if (absoluteXPosition < 0)
-            absoluteXPosition /= 2;
-        if (absoluteYPosition < 0)
-            absoluteYPosition /= 2;
+        if (visibleRegionX < 0)
+            visibleRegionX /= 2;
+        if (visibleRegionY < 0)
+            visibleRegionY /= 2;
 
         if (scaling != prevScaling ||
-                absoluteXPosition != prevAbsoluteXPosition ||
-                absoluteYPosition != prevAbsoluteYPosition) {
+                visibleRegionX != prevAbsoluteXPosition ||
+                visibleRegionY != prevAbsoluteYPosition) {
             matrix.reset();
-            matrix.preTranslate(-absoluteXPosition, -absoluteYPosition);
+            matrix.preTranslate(-visibleRegionX, -visibleRegionY);
             matrix.postScale(scaling, scaling);
             canvas.setImageMatrix(matrix);
 
             prevScaling = scaling;
-            prevAbsoluteXPosition = absoluteXPosition;
-            prevAbsoluteYPosition = absoluteYPosition;
+            prevAbsoluteXPosition = visibleRegionX;
+            prevAbsoluteYPosition = visibleRegionY;
         }
     }
 
@@ -253,25 +253,25 @@ public class Viewport {
         // Don't pan in a certain direction if dimension scaled is already less
         // than the dimension of the visible part of the screen.
         if (imageWidth > getVisibleWidth()) {
-            if (x - absoluteXPosition >= w - wthresh) {
-                absoluteXPosition = x - (w - wthresh);
-                if (absoluteXPosition + w > imageWidth)
-                    absoluteXPosition = imageWidth - w;
-            } else if (x < absoluteXPosition + wthresh) {
-                absoluteXPosition = x - wthresh;
-                if (absoluteXPosition < 0)
-                    absoluteXPosition = 0;
+            if (x - visibleRegionX >= w - wthresh) {
+                visibleRegionX = x - (w - wthresh);
+                if (visibleRegionX + w > imageWidth)
+                    visibleRegionX = imageWidth - w;
+            } else if (x < visibleRegionX + wthresh) {
+                visibleRegionX = x - wthresh;
+                if (visibleRegionX < 0)
+                    visibleRegionX = 0;
             }
         }
         if (imageHeight > getVisibleHeight()) {
-            if (y - absoluteYPosition >= h - hthresh) {
-                absoluteYPosition = y - (h - hthresh);
-                if (absoluteYPosition + h > imageHeight)
-                    absoluteYPosition = imageHeight - h;
-            } else if (y < absoluteYPosition + hthresh) {
-                absoluteYPosition = y - hthresh;
-                if (absoluteYPosition < 0)
-                    absoluteYPosition = 0;
+            if (y - visibleRegionY >= h - hthresh) {
+                visibleRegionY = y - (h - hthresh);
+                if (visibleRegionY + h > imageHeight)
+                    visibleRegionY = imageHeight - h;
+            } else if (y < visibleRegionY + hthresh) {
+                visibleRegionY = y - hthresh;
+                if (visibleRegionY < 0)
+                    visibleRegionY = 0;
             }
         }
 
@@ -284,8 +284,8 @@ public class Viewport {
      * @param dY
      */
     public void pan(int dX, int dY) {
-        absoluteXPosition += (double) dX / scaling;
-        absoluteYPosition += (double) dY / scaling;
+        visibleRegionX += (double) dX / scaling;
+        visibleRegionY += (double) dY / scaling;
         updateViewport();
     }
 
@@ -296,10 +296,10 @@ public class Viewport {
         // Make the box slightly larger to avoid artifacts due to truncation
         // errors.
         canvas.postInvalidate(
-            (int) ((x - absoluteXPosition - 1) * scaling),
-            (int) ((y - absoluteYPosition - 1) * scaling),
-            (int) ((x - absoluteXPosition + w + 1) * scaling),
-            (int) ((y - absoluteYPosition + h + 1) * scaling));
+            (int) ((x - visibleRegionX - 1) * scaling),
+            (int) ((y - visibleRegionY - 1) * scaling),
+            (int) ((x - visibleRegionX + w + 1) * scaling),
+            (int) ((y - visibleRegionY + h + 1) * scaling));
     }
 
     /**
@@ -373,11 +373,11 @@ public class Viewport {
     }
 
     public int viewToImageX(float viewX) {
-        return (int) (viewX / scaling + absoluteXPosition);
+        return (int) (viewX / scaling + visibleRegionX);
     }
 
     public int viewToImageY(float viewY) {
-        return (int) (viewY / scaling + absoluteYPosition);
+        return (int) (viewY / scaling + visibleRegionY);
     }
 
     /**
