@@ -132,6 +132,8 @@ public class Viewport {
         this.canvas = canvas;
         this.handler = new Handler();
         setFilteringEnabled(true);
+        canvas.setImageDrawable(drawable);
+        canvas.setScaleType(ImageView.ScaleType.MATRIX);
     }
 
     /**
@@ -413,8 +415,6 @@ public class Viewport {
                         canvas.showFatalMessageAndQuit(canvas.getContext().getString(R.string.error_out_of_memory));
                     }
                 }
-                canvas.setImageDrawable(drawable);
-                canvas.setScaleType(ImageView.ScaleType.MATRIX);
                 imageWidth = width;
                 imageHeight = height;
                 updateScale();
