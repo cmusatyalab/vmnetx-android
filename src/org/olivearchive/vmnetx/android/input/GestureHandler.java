@@ -106,12 +106,6 @@ abstract public class GestureHandler
         displayDensity = canvas.getDisplayDensity();
     }
 
-    protected int getCanvasTop() {
-        int[] location = new int[2];
-        canvas.getLocationOnScreen(location);
-        return location[1];
-    }
-
     /**
      * Function to get appropriate X coordinate from motion event for this input handler.
      * @return the appropriate X coordinate.
@@ -127,9 +121,12 @@ abstract public class GestureHandler
      * @return the appropriate Y coordinate.
      */
     protected int getY (MotionEvent e) {
+        int[] location = new int[2];
+        canvas.getLocationOnScreen(location);
+
         Viewport viewport = canvas.getViewport();
         float scale = viewport.getScale();
-        return (int) (viewport.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
+        return (int) (viewport.getAbsoluteY() + (e.getY() - (float) location[1]) / scale);
     }
 
     /**
@@ -165,11 +162,9 @@ abstract public class GestureHandler
                 return false;
         }
 
-        Viewport viewport = canvas.getViewport();
         RemotePointer p  = canvas.getPointer();
-        float scale = viewport.getScale();
-        int x = (int) (viewport.getAbsoluteX() +  e.getX()                         / scale);
-        int y = (int) (viewport.getAbsoluteY() + (e.getY() - 1.f * getCanvasTop()) / scale);
+        int x = getX(e);
+        int y = getY(e);
 
         switch (e.getActionMasked()) {
         // First mouse button pressed
