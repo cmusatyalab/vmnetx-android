@@ -346,6 +346,10 @@ public class Viewport {
 
     public void setFilteringEnabled(boolean enabled) {
         paint.setFilterBitmap(enabled);
+        if (enabled) {
+            // Invalidate to make things pretty.
+            canvas.invalidate();
+        }
     }
 
     public float getScale() {

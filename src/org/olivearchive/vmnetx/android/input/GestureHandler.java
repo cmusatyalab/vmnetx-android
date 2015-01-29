@@ -290,9 +290,8 @@ abstract public class GestureHandler
             return true;
 
         if (action == MotionEvent.ACTION_UP) {
-            // Turn filtering back on and invalidate to make things pretty.
+            // Turn filtering back on.
             viewport.setFilteringEnabled(true);
-            canvas.invalidate();
         }
 
         switch (pointerID) {
