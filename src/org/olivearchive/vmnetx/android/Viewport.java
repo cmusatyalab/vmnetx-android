@@ -71,11 +71,6 @@ public class Viewport {
     private int prevAbsoluteXPosition = -1;
     private int prevAbsoluteYPosition = -1;
 
-    // How much to shift coordinates over when converting from full to view
-    // coordinates
-    private float shiftX;
-    private float shiftY;
-
     private class BitmapDrawable extends DrawableContainer {
         /* (non-Javadoc)
          * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
@@ -140,11 +135,6 @@ public class Viewport {
      * Update scaling from framebuffer size
      */
     void updateScale() {
-        // Compute the X and Y offset for converting coordinates from
-        // full-frame coordinates to view coordinates
-        shiftX = (imageWidth  - canvas.getWidth())  / 2;
-        shiftY = (imageHeight - canvas.getHeight()) / 2;
-
         boolean zoomedOut = (scaling <= minimumScale);
         minimumScale = computeMinimumScale();
         if (zoomedOut) {
@@ -206,7 +196,6 @@ public class Viewport {
     private void setScale(float scale) {
         scaling = scale;
         matrix.reset();
-        matrix.preTranslate((int) -shiftX, (int) -shiftY);
         matrix.postScale(scaling, scaling);
         canvas.setImageMatrix(matrix);
         scrollToAbsolute(true);
@@ -232,8 +221,8 @@ public class Viewport {
         if (force ||
                 absoluteXPosition != prevAbsoluteXPosition ||
                 absoluteYPosition != prevAbsoluteYPosition) {
-            canvas.scrollTo((int) ((absoluteXPosition - shiftX) * scaling),
-                     (int) ((absoluteYPosition - shiftY) * scaling));
+            canvas.scrollTo((int) (absoluteXPosition * scaling),
+                     (int) (absoluteYPosition * scaling));
             prevAbsoluteXPosition = absoluteXPosition;
             prevAbsoluteYPosition = absoluteYPosition;
         }
@@ -294,14 +283,12 @@ public class Viewport {
      * Causes a redraw of the bitmap to happen at the indicated coordinates.
      */
     private void reDraw(int x, int y, int w, int h) {
-        float shiftedX = x-shiftX;
-        float shiftedY = y-shiftY;
         // Make the box slightly larger to avoid artifacts due to truncation errors.
         canvas.postInvalidate(
-            (int) ((shiftedX - 1) * scaling),
-            (int) ((shiftedY - 1) * scaling),
-            (int) ((shiftedX + w + 1) * scaling),
-            (int) ((shiftedY + h + 1) * scaling));
+            (int) ((x - 1) * scaling),
+            (int) ((y - 1) * scaling),
+            (int) ((x + w + 1) * scaling),
+            (int) ((y + h + 1) * scaling));
     }
 
     /**
