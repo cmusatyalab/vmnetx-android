@@ -40,7 +40,7 @@ import org.olivearchive.vmnetx.android.input.RemotePointer;
 
 public class Viewport {
     @SuppressWarnings("unused")
-    private final static String TAG = "Display";
+    private final static String TAG = "Viewport";
     private final static Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
 
     private final RemoteCanvas canvas;
