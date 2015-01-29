@@ -327,7 +327,7 @@ public class Viewport {
         int y = cursorRect.top + hotY;
 
         softCursor = Bitmap.createBitmap(newSoftCursorPixels, w, h,
-                Bitmap.Config.ARGB_8888);
+                BITMAP_CONFIG);
         hotX = hX;
         hotY = hY;
         setCursorRect(x, y, w, h);
