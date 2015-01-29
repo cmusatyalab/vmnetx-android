@@ -195,9 +195,6 @@ public class Viewport {
 
     private void setScale(float scale) {
         scaling = scale;
-        matrix.reset();
-        matrix.postScale(scaling, scaling);
-        canvas.setImageMatrix(matrix);
         scrollToAbsolute(true);
     }
 
@@ -221,8 +218,10 @@ public class Viewport {
         if (force ||
                 absoluteXPosition != prevAbsoluteXPosition ||
                 absoluteYPosition != prevAbsoluteYPosition) {
-            canvas.scrollTo((int) (absoluteXPosition * scaling),
-                     (int) (absoluteYPosition * scaling));
+            matrix.reset();
+            matrix.preTranslate(-absoluteXPosition, -absoluteYPosition);
+            matrix.postScale(scaling, scaling);
+            canvas.setImageMatrix(matrix);
             prevAbsoluteXPosition = absoluteXPosition;
             prevAbsoluteYPosition = absoluteYPosition;
         }
