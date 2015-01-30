@@ -58,7 +58,7 @@ public class Viewport {
     private final Matrix matrix = new Matrix();
 
     // Image scaling
-    private float scaling = 1;
+    private float scaling;
     private float minimumScale;
 
     // The coordinates of the top-left image pixel visible in the view.
@@ -70,11 +70,6 @@ public class Viewport {
     private Bitmap softCursor;
     private final Rect cursorRect = new Rect();
     private int hotX, hotY;
-
-    // Last-state tracking for updateViewport()
-    private float prevScaling = -1;
-    private int prevAbsoluteXPosition = -1;
-    private int prevAbsoluteYPosition = -1;
 
     private class BitmapDrawable extends DrawableContainer {
         /* (non-Javadoc)
@@ -144,9 +139,9 @@ public class Viewport {
         minimumScale = computeMinimumScale();
         if (zoomedOut) {
             // We were fully zoomed out; stay that way
-            setScale(minimumScale);
+            updateViewport(minimumScale);
         } else {
-            setScale(Math.max(scaling, minimumScale));
+            updateViewport(Math.max(scaling, minimumScale));
         }
     }
 
@@ -188,7 +183,7 @@ public class Viewport {
                 canvas.displayShortToastMessage(R.string.snap_one_to_one);
         }
 
-        setScale(newScale);
+        updateViewport(newScale);
 
         // Only if we have actually scaled do we pan.
         if (oldScale != newScale) {
@@ -196,43 +191,39 @@ public class Viewport {
         }
     }
 
-    /**
-     * Set new scaling
-     */
-    private void setScale(float scale) {
-        scaling = scale;
-        updateViewport();
+    private void updateViewport(float scale) {
+        updateViewport(scale, visibleRegionX, visibleRegionY);
+    }
+
+    private void updateViewport(int regionX, int regionY) {
+        updateViewport(scaling, regionX, regionY);
     }
 
     /**
-     * Update image transformation matrix from absolute[XY]Position and
-     * scaling
+     * Update viewport parameters with new scaling and visibleRegion[XY]
      */
-    private void updateViewport() {
+    private void updateViewport(float scale, int regionX, int regionY) {
         // Clamp to bounds of desktop image
-        visibleRegionX = Math.max(visibleRegionX, 0);
-        visibleRegionY = Math.max(visibleRegionY, 0);
-        visibleRegionX = Math.min(visibleRegionX,
-                imageWidth - getVisibleWidth(scaling));
-        visibleRegionY = Math.min(visibleRegionY,
-                imageHeight - getVisibleHeight(scaling));
+        regionX = Math.max(regionX, 0);
+        regionY = Math.max(regionY, 0);
+        regionX = Math.min(regionX, imageWidth - getVisibleWidth(scale));
+        regionY = Math.min(regionY, imageHeight - getVisibleHeight(scale));
         // If image is smaller than the canvas, center the image
-        if (visibleRegionX < 0)
-            visibleRegionX /= 2;
-        if (visibleRegionY < 0)
-            visibleRegionY /= 2;
+        if (regionX < 0)
+            regionX /= 2;
+        if (regionY < 0)
+            regionY /= 2;
 
-        if (scaling != prevScaling ||
-                visibleRegionX != prevAbsoluteXPosition ||
-                visibleRegionY != prevAbsoluteYPosition) {
+        if (scale != scaling || regionX != visibleRegionX ||
+                regionY != visibleRegionY) {
+            scaling = scale;
+            visibleRegionX = regionX;
+            visibleRegionY = regionY;
+
             matrix.reset();
             matrix.preTranslate(-visibleRegionX, -visibleRegionY);
             matrix.postScale(scaling, scaling);
             canvas.setImageMatrix(matrix);
-
-            prevScaling = scaling;
-            prevAbsoluteXPosition = visibleRegionX;
-            prevAbsoluteYPosition = visibleRegionY;
         }
     }
 
@@ -247,33 +238,35 @@ public class Viewport {
         int h = getVisibleHeight(scaling);
         int wthresh = 30;
         int hthresh = 30;
+        int regionX = visibleRegionX;
+        int regionY = visibleRegionY;
 
         // Don't pan in a certain direction if dimension scaled is already less
         // than the dimension of the visible part of the screen.
         if (imageWidth > w) {
-            if (x - visibleRegionX >= w - wthresh) {
-                visibleRegionX = x - (w - wthresh);
-                if (visibleRegionX + w > imageWidth)
-                    visibleRegionX = imageWidth - w;
-            } else if (x < visibleRegionX + wthresh) {
-                visibleRegionX = x - wthresh;
-                if (visibleRegionX < 0)
-                    visibleRegionX = 0;
+            if (x - regionX >= w - wthresh) {
+                regionX = x - (w - wthresh);
+                if (regionX + w > imageWidth)
+                    regionX = imageWidth - w;
+            } else if (x < regionX + wthresh) {
+                regionX = x - wthresh;
+                if (regionX < 0)
+                    regionX = 0;
             }
         }
         if (imageHeight > h) {
-            if (y - visibleRegionY >= h - hthresh) {
-                visibleRegionY = y - (h - hthresh);
-                if (visibleRegionY + h > imageHeight)
-                    visibleRegionY = imageHeight - h;
-            } else if (y < visibleRegionY + hthresh) {
-                visibleRegionY = y - hthresh;
-                if (visibleRegionY < 0)
-                    visibleRegionY = 0;
+            if (y - regionY >= h - hthresh) {
+                regionY = y - (h - hthresh);
+                if (regionY + h > imageHeight)
+                    regionY = imageHeight - h;
+            } else if (y < regionY + hthresh) {
+                regionY = y - hthresh;
+                if (regionY < 0)
+                    regionY = 0;
             }
         }
 
-        updateViewport();
+        updateViewport(regionX, regionY);
     }
 
     /**
@@ -282,9 +275,10 @@ public class Viewport {
      * @param dY
      */
     public void pan(int dX, int dY) {
-        visibleRegionX += (double) dX / scaling;
-        visibleRegionY += (double) dY / scaling;
-        updateViewport();
+        updateViewport(
+            (int) (visibleRegionX + (double) dX / scaling),
+            (int) (visibleRegionY + (double) dY / scaling)
+        );
     }
 
     /**
