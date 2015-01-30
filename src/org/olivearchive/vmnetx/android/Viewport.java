@@ -153,8 +153,7 @@ public class Viewport {
      * @param fy Focus Y of center of scale change
      */
     public void adjustScale(float scaleFactor, float fx, float fy) {
-        final float oldScale = scaling;
-        float newScale = scaleFactor * oldScale;
+        float newScale = scaleFactor * scaling;
         if (scaleFactor < 1) {
             if (newScale < minimumScale)
                 newScale = minimumScale;
@@ -165,26 +164,26 @@ public class Viewport {
 
         // ax is the absolute x of the focus
         int xPan = visibleRegionX;
-        float ax = (fx / oldScale) + xPan;
-        float newXPan = (oldScale * xPan - oldScale * ax + newScale * ax) /
+        float ax = (fx / scaling) + xPan;
+        float newXPan = (scaling * xPan - scaling * ax + newScale * ax) /
                 newScale;
         int yPan = visibleRegionY;
-        float ay = (fy / oldScale) + yPan;
-        float newYPan = (oldScale * yPan - oldScale * ay + newScale * ay) /
+        float ay = (fy / scaling) + yPan;
+        float newYPan = (scaling * yPan - scaling * ay + newScale * ay) /
                 newScale;
 
         // Here we do snapping to 1:1. If we are approaching scale = 1, we
         // snap to it.
         if (newScale > 0.90f && newScale < 1.10f) {
             newScale = 1.f;
-            // Only if oldScale is outside the snap region, do we inform the
+            // Only if scaling is outside the snap region, do we inform the
             // user.
-            if (oldScale < 0.90f || oldScale > 1.10f)
+            if (scaling < 0.90f || scaling > 1.10f)
                 canvas.displayShortToastMessage(R.string.snap_one_to_one);
         }
 
         // Only pan if we are actually scaling.
-        if (oldScale != newScale) {
+        if (newScale != scaling) {
             pan(newScale, (int) (newXPan - xPan), (int) (newYPan - yPan));
         }
     }
