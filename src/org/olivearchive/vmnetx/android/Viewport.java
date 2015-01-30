@@ -183,11 +183,9 @@ public class Viewport {
                 canvas.displayShortToastMessage(R.string.snap_one_to_one);
         }
 
-        updateViewport(newScale);
-
-        // Only if we have actually scaled do we pan.
+        // Only pan if we are actually scaling.
         if (oldScale != newScale) {
-            pan((int) (newXPan - xPan), (int) (newYPan - yPan));
+            pan(newScale, (int) (newXPan - xPan), (int) (newYPan - yPan));
         }
     }
 
@@ -275,7 +273,15 @@ public class Viewport {
      * @param dY
      */
     public void pan(int dX, int dY) {
+        pan(scaling, dX, dY);
+    }
+
+    /**
+     * Atomically scale and pan.
+     */
+    private void pan(float scale, int dX, int dY) {
         updateViewport(
+            scale,
             (int) (visibleRegionX + (double) dX / scaling),
             (int) (visibleRegionY + (double) dY / scaling)
         );
