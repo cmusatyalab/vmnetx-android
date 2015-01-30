@@ -213,9 +213,9 @@ public class Viewport {
         visibleRegionX = Math.max(visibleRegionX, 0);
         visibleRegionY = Math.max(visibleRegionY, 0);
         visibleRegionX = Math.min(visibleRegionX,
-                imageWidth - getVisibleWidth());
+                imageWidth - getVisibleWidth(scaling));
         visibleRegionY = Math.min(visibleRegionY,
-                imageHeight - getVisibleHeight());
+                imageHeight - getVisibleHeight(scaling));
         // If image is smaller than the canvas, center the image
         if (visibleRegionX < 0)
             visibleRegionX /= 2;
@@ -243,14 +243,14 @@ public class Viewport {
         RemotePointer pointer = canvas.getPointer();
         int x = pointer.getX();
         int y = pointer.getY();
-        int w = getVisibleWidth();
-        int h = getVisibleHeight();
+        int w = getVisibleWidth(scaling);
+        int h = getVisibleHeight(scaling);
         int wthresh = 30;
         int hthresh = 30;
 
         // Don't pan in a certain direction if dimension scaled is already less
         // than the dimension of the visible part of the screen.
-        if (imageWidth > getVisibleWidth()) {
+        if (imageWidth > w) {
             if (x - visibleRegionX >= w - wthresh) {
                 visibleRegionX = x - (w - wthresh);
                 if (visibleRegionX + w > imageWidth)
@@ -261,7 +261,7 @@ public class Viewport {
                     visibleRegionX = 0;
             }
         }
-        if (imageHeight > getVisibleHeight()) {
+        if (imageHeight > h) {
             if (y - visibleRegionY >= h - hthresh) {
                 visibleRegionY = y - (h - hthresh);
                 if (visibleRegionY + h > imageHeight)
@@ -354,14 +354,6 @@ public class Viewport {
         return scaling;
     }
 
-    public int getVisibleWidth() {
-        return (int)((double) canvas.getWidth() / scaling + 0.5);
-    }
-
-    public int getVisibleHeight() {
-        return (int)((double) canvas.getHeight() / scaling + 0.5);
-    }
-
     public int getImageWidth() {
         return imageWidth;
     }
@@ -384,6 +376,14 @@ public class Viewport {
     private float computeMinimumScale() {
         return Math.min((float) canvas.getWidth() / imageWidth,
                 (float) canvas.getHeight() / imageHeight);
+    }
+
+    private int getVisibleWidth(float scale) {
+        return (int)((double) canvas.getWidth() / scale + 0.5);
+    }
+
+    private int getVisibleHeight(float scale) {
+        return (int)((double) canvas.getHeight() / scale + 0.5);
     }
 
     ///////////////////////////////////////////////////////////////////////
