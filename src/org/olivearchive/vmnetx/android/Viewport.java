@@ -65,6 +65,9 @@ public class Viewport {
     // May be negative due to letterboxing or pillarboxing.
     private int visibleRegionX;
     private int visibleRegionY;
+    // The dimensions of the visible region in image space.
+    private int visibleRegionWidth;
+    private int visibleRegionHeight;
 
     // Mouse cursor
     private Bitmap softCursor;
@@ -197,25 +200,35 @@ public class Viewport {
     }
 
     /**
-     * Update viewport parameters with new scaling and visibleRegion[XY]
+     * Update viewport parameters with new scaling and
+     * visibleRegionX/Y/Width/Height
      */
     private void updateViewport(float scale, int regionX, int regionY) {
+        // Calculate new region dimensions
+        int regionWidth = (int) ((double) canvas.getWidth() / scale + 0.5);
+        int regionHeight = (int) ((double) canvas.getHeight() / scale + 0.5);
+
         // Clamp to bounds of desktop image
         regionX = Math.max(regionX, 0);
         regionY = Math.max(regionY, 0);
-        regionX = Math.min(regionX, imageWidth - getVisibleWidth(scale));
-        regionY = Math.min(regionY, imageHeight - getVisibleHeight(scale));
+        regionX = Math.min(regionX, imageWidth - regionWidth);
+        regionY = Math.min(regionY, imageHeight - regionHeight);
         // If image is smaller than the canvas, center the image
         if (regionX < 0)
             regionX /= 2;
         if (regionY < 0)
             regionY /= 2;
 
-        if (scale != scaling || regionX != visibleRegionX ||
-                regionY != visibleRegionY) {
+        if (scale != scaling ||
+                regionX != visibleRegionX ||
+                regionY != visibleRegionY ||
+                regionWidth != visibleRegionWidth ||
+                regionHeight != visibleRegionHeight) {
             scaling = scale;
             visibleRegionX = regionX;
             visibleRegionY = regionY;
+            visibleRegionWidth = regionWidth;
+            visibleRegionHeight = regionHeight;
 
             matrix.reset();
             matrix.preTranslate(-visibleRegionX, -visibleRegionY);
@@ -231,8 +244,6 @@ public class Viewport {
         RemotePointer pointer = canvas.getPointer();
         int x = pointer.getX();
         int y = pointer.getY();
-        int w = getVisibleWidth(scaling);
-        int h = getVisibleHeight(scaling);
         int wthresh = 30;
         int hthresh = 30;
         int regionX = visibleRegionX;
@@ -240,22 +251,22 @@ public class Viewport {
 
         // Don't pan in a certain direction if dimension scaled is already less
         // than the dimension of the visible part of the screen.
-        if (imageWidth > w) {
-            if (x - regionX >= w - wthresh) {
-                regionX = x - (w - wthresh);
-                if (regionX + w > imageWidth)
-                    regionX = imageWidth - w;
+        if (imageWidth > visibleRegionWidth) {
+            if (x - regionX >= visibleRegionWidth - wthresh) {
+                regionX = x - (visibleRegionWidth - wthresh);
+                if (regionX + visibleRegionWidth > imageWidth)
+                    regionX = imageWidth - visibleRegionWidth;
             } else if (x < regionX + wthresh) {
                 regionX = x - wthresh;
                 if (regionX < 0)
                     regionX = 0;
             }
         }
-        if (imageHeight > h) {
-            if (y - regionY >= h - hthresh) {
-                regionY = y - (h - hthresh);
-                if (regionY + h > imageHeight)
-                    regionY = imageHeight - h;
+        if (imageHeight > visibleRegionHeight) {
+            if (y - regionY >= visibleRegionHeight - hthresh) {
+                regionY = y - (visibleRegionHeight - hthresh);
+                if (regionY + visibleRegionHeight > imageHeight)
+                    regionY = imageHeight - visibleRegionHeight;
             } else if (y < regionY + hthresh) {
                 regionY = y - hthresh;
                 if (regionY < 0)
@@ -375,14 +386,6 @@ public class Viewport {
     private float computeMinimumScale() {
         return Math.min((float) canvas.getWidth() / imageWidth,
                 (float) canvas.getHeight() / imageHeight);
-    }
-
-    private int getVisibleWidth(float scale) {
-        return (int)((double) canvas.getWidth() / scale + 0.5);
-    }
-
-    private int getVisibleHeight(float scale) {
-        return (int)((double) canvas.getHeight() / scale + 0.5);
     }
 
     ///////////////////////////////////////////////////////////////////////
