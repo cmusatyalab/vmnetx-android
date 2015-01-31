@@ -296,13 +296,6 @@ static void invalidate(SpiceChannel *channel,
 	}
 }
 
-static void mark(SpiceChannel *channel, gint mark, gpointer data) {
-    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "mark");
-    SpiceDisplay *display = data;
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
-    d->mark = mark;
-}
-
 static void disconnect_main(SpiceDisplay *display)
 {
 	SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
@@ -361,8 +354,6 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
                          G_CALLBACK(primary_destroy), display);
         g_signal_connect(channel, "display-invalidate",
                          G_CALLBACK(invalidate), display);
-        g_signal_connect(channel, "display-mark",
-                         G_CALLBACK(mark), display);
         spice_channel_connect(channel);
         return;
     }

@@ -54,7 +54,6 @@ struct _SpiceDisplayPrivate {
     int                     mouse_button_mask;
 
     uint32_t                key_state[512 / 32];
-    gint                    mark;
 };
 
 G_END_DECLS

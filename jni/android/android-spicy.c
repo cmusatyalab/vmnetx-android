@@ -168,9 +168,6 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
             return;
         SPICE_DEBUG("new display channel (#%d)", id);
         conn->wins[id] = create_spice_window(conn, channel, id);
-        //g_signal_connect(channel, "display-mark",
-        //                 G_CALLBACK(display_mark), conn->wins[id]);
-        //update_auto_usbredir_sensitive(conn);
     }
 
     if (SPICE_IS_INPUTS_CHANNEL(channel)) {
