@@ -1,4 +1,5 @@
 /**
+ * Copyright (C) 2014 Carnegie Mellon University
  * Copyright (C) 2013 Iordan Iordanov
  *
  * This is free software; you can redistribute it and/or modify

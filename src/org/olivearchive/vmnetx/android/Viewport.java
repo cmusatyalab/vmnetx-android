@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2013-2014 Carnegie Mellon University
+ * Copyright (C) 2013-2015 Carnegie Mellon University
  * Copyright (C) 2012 Iordan Iordanov
  * Copyright (C) 2009-2010 Michael A. MacDonald
  * Copyright (C) 2004 Horizon Wimba.  All Rights Reserved.

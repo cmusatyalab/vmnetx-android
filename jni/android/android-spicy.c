@@ -1,5 +1,5 @@
-/* -*- Mode: C; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /*
+   Copyright (C) 2014 Carnegie Mellon University
    Copyright (C) 2013 Iordan Iordanov
    Copyright (C) 2010 Red Hat, Inc.
 
