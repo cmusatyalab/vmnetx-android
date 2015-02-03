@@ -62,9 +62,6 @@ static gpointer start_main_loop(gpointer data) {
 
     // Initialize native libraries
     g_thread_init(NULL);
-    bindtextdomain(GETTEXT_PACKAGE, SPICE_GTK_LOCALEDIR);
-    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-    textdomain(GETTEXT_PACKAGE);
     g_type_init();
 
     // Get JVM reference

@@ -95,7 +95,6 @@ LOCAL_SRC_FILES := android/android-io.c \
 LOCAL_LDLIBS 	+= -ljnigraphics -llog -ldl -lstdc++ -lz
 
 LOCAL_CPPFLAGS 	+= -DG_LOG_DOMAIN=\"GSpice\" \
-                   -DSPICE_GTK_LOCALEDIR=\"/usr/local/share/locale\" \
                    -DHAVE_CONFIG_H -UHAVE_SYS_SHM_H \
                    -D_REENTRANT -DWITH_GST1AUDIO
 
