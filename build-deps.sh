@@ -293,6 +293,7 @@ setup() {
     build="deps/${abi}/build"
     root="$(pwd)/deps/${abi}/root"
     toolchain="$(pwd)/deps/${abi}/toolchain"
+    gst="$(pwd)/deps/${abi}/gstreamer"
     mkdir -p "${root}"
 
     fetch configguess
@@ -323,21 +324,20 @@ setup() {
 build() {
     # Build binaries
     # $1 = ABI
-    local package pkgstr gstpath
+    local package pkgstr
 
     # Set up build environment
     setup "$1"
     fetch configsub
 
     # Unpack GStreamer SDK
-    gstpath="deps/${abi}/gstreamer"
-    if [ ! -e "${gstpath}/lib/libglib-2.0.a" ] ; then
+    if [ ! -e "${gst}/lib/libglib-2.0.a" ] ; then
         pkgstr="gstreamer_$(echo ${abi} | tr -d -)"
         fetch "${pkgstr}"
         echo "Unpacking ${pkgstr}..."
-        rm -rf "${gstpath}"
-        mkdir -p "${gstpath}"
-        tar xf "$(tarpath ${pkgstr})" -C "${gstpath}"
+        rm -rf "${gst}"
+        mkdir -p "${gst}"
+        tar xf "$(tarpath ${pkgstr})" -C "${gst}"
     fi
 
     # Build
