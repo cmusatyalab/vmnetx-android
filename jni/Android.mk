@@ -107,7 +107,7 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_CFLAGS 	:=  $(LOCAL_CPPFLAGS) \
                    -std=gnu99 -Wall -Wno-sign-compare -Wno-deprecated-declarations -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wl,--no-undefined \
-                   -fPIC -DPIC -O3 -funroll-loops -ffast-math
+                   -fPIC -DPIC -O3 -funroll-loops
 
 LOCAL_EXPORT_CFLAGS += $(LOCAL_CFLAGS)
 LOCAL_EXPORT_LDLIBS += $(LOCAL_LDLIBS)
