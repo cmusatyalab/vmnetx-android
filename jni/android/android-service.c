@@ -60,10 +60,6 @@ static gpointer start_main_loop(gpointer data) {
     struct spice_main_thread *thr = g_slice_new0(struct spice_main_thread);
     GError *my_err = NULL;
 
-    // Initialize native libraries
-    g_thread_init(NULL);
-    g_type_init();
-
     // Get JVM reference
     if ((*env)->GetJavaVM(env, &thr->jvm) != JNI_OK) {
         __android_log_write(ANDROID_LOG_FATAL, TAG, "Couldn't obtain JVM reference");
