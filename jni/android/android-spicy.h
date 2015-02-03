@@ -18,9 +18,6 @@
 #ifndef _ANDROID_SPICY_H
 #define _ANDROID_SPICY_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include <glib/gi18n.h>
 
 #include <sys/stat.h>

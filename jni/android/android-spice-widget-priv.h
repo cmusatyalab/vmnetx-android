@@ -20,10 +20,6 @@
 
 G_BEGIN_DECLS
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "android-service.h"
 #include "android-spice-widget.h"
 #include "spice-common.h"

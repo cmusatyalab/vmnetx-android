@@ -19,9 +19,6 @@
 #include <math.h>
 #include <android/log.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "android-spice-widget.h"
 #include "android-spice-widget-priv.h"
 #include "android-io.h"
