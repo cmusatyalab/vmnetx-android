@@ -323,25 +323,22 @@ setup() {
 build() {
     # Build binaries
     # $1 = ABI
-    local package curabi pkgstr gstpath
+    local package pkgstr gstpath
 
     # Set up build environment
     setup "$1"
     fetch configsub
 
     # Unpack GStreamer SDK
-    for curabi in $abis
-    do
-        gstpath="deps/${curabi}/gstreamer"
-        if [ ! -e "${gstpath}/lib/libglib-2.0.a" ] ; then
-            pkgstr="gstreamer_$(echo ${curabi} | tr -d -)"
-            fetch "${pkgstr}"
-            echo "Unpacking ${pkgstr}..."
-            rm -rf "${gstpath}"
-            mkdir -p "${gstpath}"
-            tar xf "$(tarpath ${pkgstr})" -C "${gstpath}"
-        fi
-    done
+    gstpath="deps/${abi}/gstreamer"
+    if [ ! -e "${gstpath}/lib/libglib-2.0.a" ] ; then
+        pkgstr="gstreamer_$(echo ${abi} | tr -d -)"
+        fetch "${pkgstr}"
+        echo "Unpacking ${pkgstr}..."
+        rm -rf "${gstpath}"
+        mkdir -p "${gstpath}"
+        tar xf "$(tarpath ${pkgstr})" -C "${gstpath}"
+    fi
 
     # Build
     for package in $packages
