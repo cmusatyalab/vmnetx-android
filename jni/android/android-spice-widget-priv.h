@@ -27,7 +27,6 @@ G_BEGIN_DECLS
 
 #include "android-service.h"
 #include "android-spice-widget.h"
-#include "spice-gtk-session.h"
 
 #define SPICE_DISPLAY_GET_PRIVATE(obj)                                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), SPICE_TYPE_DISPLAY, SpiceDisplayPrivate))

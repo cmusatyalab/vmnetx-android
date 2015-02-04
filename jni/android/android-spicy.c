@@ -249,7 +249,6 @@ spice_connection *connection_new(struct spice_context *ctx)
     conn = g_new0(spice_connection, 1);
     conn->ctx = ctx;
     conn->session = spice_session_new();
-    //conn->gtk_session = spice_gtk_session_get(conn->session);
     g_signal_connect(conn->session, "channel-new",
                      G_CALLBACK(channel_new), conn);
     g_signal_connect(conn->session, "channel-destroy",

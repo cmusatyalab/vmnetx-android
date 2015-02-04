@@ -22,7 +22,6 @@
 #include "spice-client.h"
 
 #include "spice-util.h"
-#include "spice-gtk-session.h"
 #include "android-service.h"
 
 G_BEGIN_DECLS
