@@ -112,7 +112,7 @@ abstract public class GestureHandler
      * @return the appropriate X coordinate.
      */
     protected int getX(MotionEvent e) {
-        return canvas.getViewport().viewToImageX(e.getX());
+        return (int) canvas.getViewport().viewToImageX(e.getX());
     }
 
     /**
@@ -123,7 +123,7 @@ abstract public class GestureHandler
         int[] location = new int[2];
         canvas.getLocationOnScreen(location);
 
-        return canvas.getViewport().viewToImageY(e.getY() -
+        return (int) canvas.getViewport().viewToImageY(e.getY() -
                 (float) location[1]);
     }
 

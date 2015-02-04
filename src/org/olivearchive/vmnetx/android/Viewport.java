@@ -165,15 +165,13 @@ public class Viewport {
                 newScale = 4;
         }
 
-        // ax is the absolute x of the focus
-        int xPan = visibleRegionX;
-        float ax = (fx / scaling) + xPan;
-        float newXPan = (scaling * xPan - scaling * ax + newScale * ax) /
-                newScale;
-        int yPan = visibleRegionY;
-        float ay = (fy / scaling) + yPan;
-        float newYPan = (scaling * yPan - scaling * ay + newScale * ay) /
-                newScale;
+        // ix/iy are the image coordinates of the focus
+        float ix = viewToImageX(fx);
+        float newXPan = (scaling * visibleRegionX - scaling * ix +
+                newScale * ix) / newScale;
+        float iy = viewToImageY(fy);
+        float newYPan = (scaling * visibleRegionY - scaling * iy +
+                newScale * iy) / newScale;
 
         // Here we do snapping to 1:1. If we are approaching scale = 1, we
         // snap to it.
@@ -187,7 +185,8 @@ public class Viewport {
 
         // Only pan if we are actually scaling.
         if (newScale != scaling) {
-            pan(newScale, (int) (newXPan - xPan), (int) (newYPan - yPan));
+            pan(newScale, (int) (newXPan - visibleRegionX),
+                    (int) (newYPan - visibleRegionY));
         }
     }
 
@@ -290,11 +289,7 @@ public class Viewport {
      * Atomically scale and pan.
      */
     private void pan(float scale, int dX, int dY) {
-        updateViewport(
-            scale,
-            (int) (visibleRegionX + (double) dX / scaling),
-            (int) (visibleRegionY + (double) dY / scaling)
-        );
+        updateViewport(scale, (int) viewToImageX(dX), (int) viewToImageY(dY));
     }
 
     /**
@@ -372,12 +367,12 @@ public class Viewport {
         return imageHeight;
     }
 
-    public int viewToImageX(float viewX) {
-        return (int) (viewX / scaling + visibleRegionX);
+    public float viewToImageX(float viewX) {
+        return viewX / scaling + visibleRegionX;
     }
 
-    public int viewToImageY(float viewY) {
-        return (int) (viewY / scaling + visibleRegionY);
+    public float viewToImageY(float viewY) {
+        return viewY / scaling + visibleRegionY;
     }
 
     /**
