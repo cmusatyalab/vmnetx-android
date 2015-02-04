@@ -185,8 +185,9 @@ public class Viewport {
 
         // Only pan if we are actually scaling.
         if (newScale != scaling) {
-            pan(newScale, (int) (newXPan - visibleRegionX),
-                    (int) (newYPan - visibleRegionY));
+            updateViewport(newScale,
+                    (int) viewToImageX(newXPan - visibleRegionX),
+                    (int) viewToImageY(newYPan - visibleRegionY));
         }
     }
 
@@ -282,14 +283,8 @@ public class Viewport {
      * @param dY
      */
     public void pan(int dX, int dY) {
-        pan(scaling, dX, dY);
-    }
-
-    /**
-     * Atomically scale and pan.
-     */
-    private void pan(float scale, int dX, int dY) {
-        updateViewport(scale, (int) viewToImageX(dX), (int) viewToImageY(dY));
+        updateViewport(scaling, (int) viewToImageX(dX),
+                (int) viewToImageY(dY));
     }
 
     /**
