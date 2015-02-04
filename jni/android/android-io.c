@@ -27,6 +27,7 @@
 #include <android/input.h>
 #include <android/keycodes.h>
 #include <android/log.h>
+#include <stdlib.h>
 
 #include "android-spice-widget.h"
 #include "android-spice-widget-priv.h"

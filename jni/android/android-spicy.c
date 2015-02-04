@@ -20,12 +20,8 @@
 #include <android/log.h>
 
 #include <sys/stat.h>
-#define SPICY_C
-#include "glib-compat.h"
 #include "android-spice-widget.h"
 #include "spice-audio.h"
-#include "spice-common.h"
-#include "spice-cmdline.h"
 #include "android-io.h"
 #include "android-spicy.h"
 #include "android-service.h"
@@ -159,7 +155,7 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
     }
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
-        if (id >= SPICE_N_ELEMENTS(conn->wins))
+        if (id >= G_N_ELEMENTS(conn->wins))
             return;
         if (conn->wins[id] != NULL)
             return;
@@ -205,7 +201,7 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     }
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
-        if (id >= SPICE_N_ELEMENTS(conn->wins))
+        if (id >= G_N_ELEMENTS(conn->wins))
             return;
         if (conn->wins[id] == NULL)
             return;

@@ -20,9 +20,13 @@
 
 G_BEGIN_DECLS
 
+#include <stdbool.h>
+#include <stdint.h>
+#include <glib.h>
+#include <spice/protocol.h>
+
 #include "android-service.h"
 #include "android-spice-widget.h"
-#include "spice-common.h"
 #include "spice-gtk-session.h"
 
 #define SPICE_DISPLAY_GET_PRIVATE(obj)                                  \

@@ -22,6 +22,7 @@
 #include <android/bitmap.h>
 #include <android/log.h>
 #include <glib.h>
+#include <stdlib.h>
 
 #include "android-io.h"
 #include "android-service.h"

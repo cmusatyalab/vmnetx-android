@@ -18,6 +18,7 @@
  * USA.
  */
 
+#include <stdbool.h>
 #include "android-service.h"
 #include "android-spicy.h"
 

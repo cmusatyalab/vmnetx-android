@@ -21,10 +21,7 @@
 #include <glib/gi18n.h>
 
 #include <sys/stat.h>
-#include "glib-compat.h"
 #include "spice-audio.h"
-#include "spice-common.h"
-#include "spice-cmdline.h"
 #include "android-service.h"
 #include "android-spice-widget.h"
 

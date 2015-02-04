@@ -212,7 +212,7 @@ void send_key(SpiceDisplay *display, int scancode, int down)
     i = scancode / 32;
     b = scancode % 32;
     m = (1 << b);
-    g_return_if_fail(i < SPICE_N_ELEMENTS(d->key_state));
+    g_return_if_fail(i < G_N_ELEMENTS(d->key_state));
 
     if (down) {
         spice_inputs_key_press(d->inputs, scancode);
