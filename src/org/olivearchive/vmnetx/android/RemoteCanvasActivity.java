@@ -124,26 +124,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
             }
 
             String host = data.getHost();
-            // This should not happen according to Uri contract, but bug introduced in Froyo (2.2)
-            // has made this parsing of host necessary
-            int index = host.indexOf(':');
-            int port;
-            if (index != -1)
-            {
-                try
-                {
-                    port = Integer.parseInt(host.substring(index + 1));
-                }
-                catch (NumberFormatException nfe)
-                {
-                    port = -1;
-                }
-                host = host.substring(0,index);
-            }
-            else
-            {
-                port = data.getPort();
-            }
+            int port = data.getPort();
             connection.setAddress(host);
             if (port != -1)
                 connection.setPort(port);
