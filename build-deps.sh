@@ -23,7 +23,7 @@ set -eE
 
 platform="android-16"
 abis="armeabi-v7a x86"
-packages="configguess configsub jpeg celt openssl"
+packages="configguess configsub jpeg celt openssl spicegtk"
 
 # Package versions
 configsub_ver="bf654c7e"
@@ -31,6 +31,7 @@ configguess_ver="28d244f1"
 jpeg_ver="1.4.0"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
 openssl_ver="1.0.2"
+spicegtk_ver="0.27"
 gstreamer_ver="1.4.5"
 
 # Tarball URLs
@@ -39,6 +40,7 @@ configsub_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=c
 jpeg_url="http://prdownloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${jpeg_ver}.tar.gz"
 celt_url="http://downloads.xiph.org/releases/celt/celt-${celt_ver}.tar.gz"
 openssl_url="http://www.openssl.org/source/openssl-${openssl_ver}.tar.gz"
+spicegtk_url="http://www.spice-space.org/download/gtk/spice-gtk-${spicegtk_ver}.tar.bz2"
 gstreamer_armeabi_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-arm-release-${gstreamer_ver}.tar.bz2"
 gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-armv7-release-${gstreamer_ver}.tar.bz2"
 gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-release-${gstreamer_ver}.tar.bz2"
@@ -47,22 +49,26 @@ gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer
 jpeg_build="libjpeg-turbo-${jpeg_ver}"
 celt_build="celt-${celt_ver}"
 openssl_build="openssl-${openssl_ver}"
+spicegtk_build="spice-gtk-${spicegtk_ver}"
 
 # Installed libraries
 jpeg_artifacts="libjpeg.a"
 celt_artifacts="libcelt051.a"
 openssl_artifacts="libssl.a libcrypto.a"
+spicegtk_artifacts="libspice-client-glib-2.0.a"
 
 # Update-checking URLs
 jpeg_upurl="http://sourceforge.net/projects/libjpeg-turbo/files/"
 celt_upurl="http://downloads.xiph.org/releases/celt/"
 openssl_upurl="http://www.openssl.org/source/"
+spicegtk_upurl="http://www.spice-space.org/download/gtk/"
 gstreamer_upurl="http://gstreamer.freedesktop.org/data/pkg/android/"
 
 # Update-checking regexes
 jpeg_upregex="files/([0-9.]+)/"
 celt_upregex="celt-(0\.5\.1\.[0-9]+)\.tar"
 openssl_upregex="openssl-([0-9.]+[a-z]?)\.tar"
+spicegtk_upregex="spice-gtk-([0-9.]+)\.tar"
 gstreamer_upregex=">([0-9.]+)/<"
 
 expand() {
@@ -146,8 +152,8 @@ do_configure() {
             --enable-static \
             --disable-shared \
             --disable-dependency-tracking \
-            PKG_CONFIG=pkg-config \
-            PKG_CONFIG_LIBDIR="${root}/lib/pkgconfig" \
+            PKG_CONFIG="pkg-config --static" \
+            PKG_CONFIG_LIBDIR="${root}/lib/pkgconfig:${gst}/lib-fixed/pkgconfig" \
             PKG_CONFIG_PATH= \
             CPPFLAGS="${cppflags} -I${root}/include" \
             CFLAGS="${cflags}" \
@@ -175,7 +181,8 @@ build_one() {
     jpeg)
         cp "${basedir}/$(tarpath configsub)" .
         do_configure \
-                --without-turbojpeg
+                --without-turbojpeg \
+                --with-jpeg8
         make $parallel
         make install
         ;;
@@ -218,6 +225,21 @@ build_one() {
         make depend
         make
         make install_sw
+        ;;
+    spicegtk)
+        patch -p1 < "${basedir}/spice-no-gtk.patch"
+        patch -p1 < "${basedir}/spice-marshaller-sigbus.patch"
+        autoreconf -fi
+        do_configure \
+                --with-gtk=no \
+                --enable-dbus=no \
+                --enable-controller=no \
+                --with-audio=gstreamer1 \
+                LIBS="-lm"
+        make $parallel
+        make install
+        cd spice-common/spice-protocol
+        make install
         ;;
     esac
 
@@ -324,7 +346,7 @@ setup() {
 build() {
     # Build binaries
     # $1 = ABI
-    local package pkgstr
+    local package pkgstr origroot
 
     # Set up build environment
     setup "$1"
@@ -338,6 +360,18 @@ build() {
         rm -rf "${gst}"
         mkdir -p "${gst}"
         tar xf "$(tarpath ${pkgstr})" -C "${gst}"
+        # The .la files point to shared libraries that don't exist, so
+        # linking fails.  We can't delete the .la files outright because
+        # the GStreamer ndk-build glue depends on them.  Create a separate
+        # lib directory with no .la files.
+        cp -a "${gst}/lib" "${gst}/lib-fixed"
+        rm -f ${gst}/lib-fixed/*.la
+        # Fix paths in .pc files
+        origroot=$(grep '^prefix' "${gst}/lib/pkgconfig/gstreamer-1.0.pc" | \
+                sed -e 's/prefix=//')
+        sed -i -e "s|${origroot}/lib|${gst}/lib-fixed|g" \
+               -e "s|${origroot}|${gst}|g" \
+                ${gst}/lib-fixed/pkgconfig/*.pc
     fi
 
     # Build
