@@ -32,39 +32,28 @@ public class ConnectionInfo implements Comparable<ConnectionInfo>,
         Serializable {
     // for Serializable
     private static final long serialVersionUID = 1;
+    private static final int DEFAULT_PORT = 18923;
 
     private String address;
     private int port;
     private String token;
 
-    ConnectionInfo() {
-        setAddress("");
-        setPort(18923);
-        setToken("");
+    ConnectionInfo(String address, int port, String token) {
+        this.address = address != null ? address : "";
+        this.port = port > 0 ? port : DEFAULT_PORT;
+        this.token = token != null ? token : "";
     }
     
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
     public String getToken() {
         return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     @Override

@@ -115,24 +115,18 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         setVolumeControlStream(android.media.AudioManager.STREAM_MUSIC);
         
         if (connection == null) {
-            Intent i = getIntent();
-            connection = new ConnectionInfo();
-
-            Uri data = i.getData();
+            Uri data = getIntent().getData();
             if (data == null || !data.getScheme().equals("vmnetx")) {
                 Utils.showFatalErrorMessage(this, getString(R.string.error_connection_type_not_supported));
             }
 
-            String host = data.getHost();
-            int port = data.getPort();
-            connection.setAddress(host);
-            if (port != -1)
-                connection.setPort(port);
             String path = data.getPath();
             if (path != null) {
                 // drop leading '/'
-                connection.setToken(path.substring(1));
+                path = path.substring(1);
             }
+            connection = new ConnectionInfo(data.getHost(), data.getPort(),
+                    path);
         }
     }
 
