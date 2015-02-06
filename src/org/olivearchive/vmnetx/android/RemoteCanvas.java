@@ -61,7 +61,7 @@ public class RemoteCanvas extends ImageView {
     private final static String TAG = "RemoteCanvas";
     
     // Connection parameters
-    private ConnectionBean connection;
+    private ConnectionInfo connection;
 
     // VMNetX control connection
     private ControlConnectionProcessor controlConn;
@@ -109,12 +109,13 @@ public class RemoteCanvas extends ImageView {
     /**
      * Create a view showing a remote desktop connection
      * @param context Containing context (activity)
-     * @param bean Connection settings
+     * @param connection Connection settings
      * @param updateActivity Callback to run on UI thread after connection is set up
      */
-    void initializeCanvas(ConnectionBean bean, final Runnable updateActivity) {
+    void initializeCanvas(ConnectionInfo connection,
+            final Runnable updateActivity) {
         this.updateActivity = updateActivity;
-        connection = bean;
+        this.connection = connection;
 
         // Startup the connection thread with a progress dialog
         pd = new ProgressDialog(getContext());

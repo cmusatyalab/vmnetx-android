@@ -56,12 +56,12 @@ public class SpiceCommunicator {
     
     private final RemoteCanvas canvas;
     private final Handler handler;
-    private final ConnectionBean connection;
+    private final ConnectionInfo connection;
     private final long context;
 
     private boolean isInNormalProtocol = false;
 
-    public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionBean connection) {
+    public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionInfo connection) {
         this.canvas = canvas;
         this.handler = handler;
         this.connection = connection;

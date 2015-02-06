@@ -28,7 +28,8 @@ import java.io.Serializable;
  * @author Michael A. MacDonald
  *
  */
-public class ConnectionBean implements Comparable<ConnectionBean>, Serializable {
+public class ConnectionInfo implements Comparable<ConnectionInfo>,
+        Serializable {
     // for Serializable
     private static final long serialVersionUID = 1;
 
@@ -36,8 +37,7 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
     private int port;
     private String token;
 
-    ConnectionBean()
-    {
+    ConnectionInfo() {
         setAddress("");
         setPort(18923);
         setToken("");
@@ -76,7 +76,7 @@ public class ConnectionBean implements Comparable<ConnectionBean>, Serializable 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
-    public int compareTo(ConnectionBean another) {
+    public int compareTo(ConnectionInfo another) {
         int result = getAddress().compareTo(another.getAddress());
         if ( result == 0) {
             result = getPort() - another.getPort();

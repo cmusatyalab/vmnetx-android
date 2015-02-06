@@ -62,7 +62,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
 
     private RemoteCanvas canvas;
 
-    private ConnectionBean connection;
+    private ConnectionInfo connection;
 
     private MenuItem keyboardMenuItem;
 
@@ -76,7 +76,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         if (icicle != null)
-            connection = (ConnectionBean) icicle.getSerializable(CONNECTION_KEY);
+            connection = (ConnectionInfo) icicle.getSerializable(CONNECTION_KEY);
 
         initialize();
         continueConnecting();
@@ -116,7 +116,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         
         if (connection == null) {
             Intent i = getIntent();
-            connection = new ConnectionBean();
+            connection = new ConnectionInfo();
 
             Uri data = i.getData();
             if (data == null || !data.getScheme().equals("vmnetx")) {
