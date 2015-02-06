@@ -23,12 +23,11 @@ set -eE
 
 platform="android-16"
 abis="armeabi-v7a x86"
-packages="configguess configsub jpeg celt openssl spicegtk"
+packages="configguess configsub celt openssl spicegtk"
 
 # Package versions
 configsub_ver="bf654c7e"
 configguess_ver="28d244f1"
-jpeg_ver="1.4.0"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
 openssl_ver="1.0.2"
 spicegtk_ver="0.27"
@@ -37,7 +36,6 @@ gstreamer_ver="1.4.5"
 # Tarball URLs
 configguess_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=${configguess_ver}"
 configsub_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;h=${configsub_ver}"
-jpeg_url="http://prdownloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${jpeg_ver}.tar.gz"
 celt_url="http://downloads.xiph.org/releases/celt/celt-${celt_ver}.tar.gz"
 openssl_url="http://www.openssl.org/source/openssl-${openssl_ver}.tar.gz"
 spicegtk_url="http://www.spice-space.org/download/gtk/spice-gtk-${spicegtk_ver}.tar.bz2"
@@ -46,26 +44,22 @@ gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gs
 gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-release-${gstreamer_ver}.tar.bz2"
 
 # Unpacked source trees
-jpeg_build="libjpeg-turbo-${jpeg_ver}"
 celt_build="celt-${celt_ver}"
 openssl_build="openssl-${openssl_ver}"
 spicegtk_build="spice-gtk-${spicegtk_ver}"
 
 # Installed libraries
-jpeg_artifacts="libjpeg.a"
 celt_artifacts="libcelt051.a"
 openssl_artifacts="libssl.a libcrypto.a"
 spicegtk_artifacts="libspice-client-glib-2.0.a"
 
 # Update-checking URLs
-jpeg_upurl="http://sourceforge.net/projects/libjpeg-turbo/files/"
 celt_upurl="http://downloads.xiph.org/releases/celt/"
 openssl_upurl="http://www.openssl.org/source/"
 spicegtk_upurl="http://www.spice-space.org/download/gtk/"
 gstreamer_upurl="http://gstreamer.freedesktop.org/data/pkg/android/"
 
 # Update-checking regexes
-jpeg_upregex="files/([0-9.]+)/"
 celt_upregex="celt-(0\.5\.1\.[0-9]+)\.tar"
 openssl_upregex="openssl-([0-9.]+[a-z]?)\.tar"
 spicegtk_upregex="spice-gtk-([0-9.]+)\.tar"
@@ -155,10 +149,10 @@ do_configure() {
             PKG_CONFIG="pkg-config --static" \
             PKG_CONFIG_LIBDIR="${root}/lib/pkgconfig:${gst}/lib-fixed/pkgconfig" \
             PKG_CONFIG_PATH= \
-            CPPFLAGS="${cppflags} -I${root}/include" \
+            CPPFLAGS="${cppflags} -I${root}/include -I${gst}/include" \
             CFLAGS="${cflags}" \
             CXXFLAGS="${cxxflags}" \
-            LDFLAGS="${ldflags} -L${root}/lib" \
+            LDFLAGS="${ldflags} -L${root}/lib -L${gst}/lib-fixed" \
             "$@"
 }
 
@@ -178,14 +172,6 @@ build_one() {
     builddir="${build}/$(expand ${1}_build)"
     pushd "$builddir" >/dev/null
     case "$1" in
-    jpeg)
-        cp "${basedir}/$(tarpath configsub)" .
-        do_configure \
-                --without-turbojpeg \
-                --with-jpeg8
-        make $parallel
-        make install
-        ;;
     celt)
         cp "${basedir}/$(tarpath configsub)" .
         do_configure \
@@ -372,6 +358,20 @@ build() {
         sed -i -e "s|${origroot}/lib|${gst}/lib-fixed|g" \
                -e "s|${origroot}|${gst}|g" \
                 ${gst}/lib-fixed/pkgconfig/*.pc
+        # Add pkg-config file for libjpeg so Android.mk can ask for its
+        # symbols to be exposed in the gstreamer .so
+        cat > ${gst}/lib/pkgconfig/jpeg.pc <<EOF
+prefix=${origroot}
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: jpeg
+Description: JPEG library
+Version: 8
+Libs: -L\${libdir} -ljpeg
+Cflags: -I\${includedir}
+EOF
     fi
 
     # Build

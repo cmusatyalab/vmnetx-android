@@ -8,13 +8,6 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-# Move to GSTREAMER_EXTRA_DEPS in gst 1.5
-LOCAL_MODULE            := jpeg
-LOCAL_SRC_FILES         := $(PREBUILT_ROOT)/lib/libjpeg.a
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
-include $(PREBUILT_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
 LOCAL_MODULE            := libcrypto
 LOCAL_SRC_FILES         := $(PREBUILT_ROOT)/lib/libcrypto.a
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include
@@ -33,7 +26,7 @@ LOCAL_SRC_FILES         := $(PREBUILT_ROOT)/lib/libspice-client-glib-2.0.a
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/$(PREBUILT_ROOT)/include/spice-client-glib-2.0 \
                            $(LOCAL_PATH)/$(PREBUILT_ROOT)/include/spice-1
 LOCAL_SHARED_LIBRARIES  := gstreamer_android
-LOCAL_STATIC_LIBRARIES  := celt jpeg libssl
+LOCAL_STATIC_LIBRARIES  := celt libssl
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -42,7 +35,7 @@ GSTREAMER_NDK_BUILD_PATH  := $(GSTREAMER_ROOT)/share/gst-android/ndk-build/
 include $(GSTREAMER_NDK_BUILD_PATH)/plugins.mk
 GSTREAMER_PLUGINS         := $(GSTREAMER_PLUGINS_CORE) $(GSTREAMER_PLUGINS_SYS)
 G_IO_MODULES              := gnutls
-GSTREAMER_EXTRA_DEPS      := pixman-1 gstreamer-app-1.0 libsoup-2.4 libxml-2.0 glib-2.0 gthread-2.0 gobject-2.0 opus
+GSTREAMER_EXTRA_DEPS      := pixman-1 gstreamer-app-1.0 libsoup-2.4 libxml-2.0 glib-2.0 gthread-2.0 gobject-2.0 opus jpeg
 include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer-1.0.mk
 
 
