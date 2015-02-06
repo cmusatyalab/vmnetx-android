@@ -165,14 +165,6 @@ public class Viewport {
                 newScale = 4;
         }
 
-        // ix/iy are the image coordinates of the focus
-        float ix = viewToImageX(fx);
-        float newXPan = (scaling * visibleRegionX - scaling * ix +
-                newScale * ix) / newScale;
-        float iy = viewToImageY(fy);
-        float newYPan = (scaling * visibleRegionY - scaling * iy +
-                newScale * iy) / newScale;
-
         // Here we do snapping to 1:1. If we are approaching scale = 1, we
         // snap to it.
         if (newScale > 0.90f && newScale < 1.10f) {
@@ -185,9 +177,13 @@ public class Viewport {
 
         // Only pan if we are actually scaling.
         if (newScale != scaling) {
-            updateViewport(newScale,
-                    (int) viewToImageX(newXPan - visibleRegionX),
-                    (int) viewToImageY(newYPan - visibleRegionY));
+            int regionX = Math.round(visibleRegionX +
+                    ((1 - scaling / newScale) *
+                    (viewToImageX(fx) - visibleRegionX)));
+            int regionY = Math.round(visibleRegionY +
+                    ((1 - scaling / newScale) *
+                    (viewToImageY(fy) - visibleRegionY)));
+            updateViewport(newScale, regionX, regionY);
         }
     }
 
