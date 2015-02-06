@@ -49,11 +49,11 @@ include $(GSTREAMER_NDK_BUILD_PATH)/gstreamer-1.0.mk
 include $(CLEAR_VARS)
 LOCAL_MODULE    := spice
 
-LOCAL_SRC_FILES := android/android-io.c \
-                   android/android-service.c \
-                   android/android-socket.c \
-                   android/android-spice-widget.c \
-                   android/android-spicy.c
+LOCAL_SRC_FILES := android-io.c \
+                   android-service.c \
+                   android-socket.c \
+                   android-spice-widget.c \
+                   android-spicy.c
 
 LOCAL_LDLIBS 	+= -ljnigraphics -llog
 
