@@ -60,8 +60,8 @@ LOCAL_LDLIBS 	+= -ljnigraphics -llog
 LOCAL_CPPFLAGS  += -DG_LOG_DOMAIN=\"android-spice\"
 
 LOCAL_CFLAGS 	:=  $(LOCAL_CPPFLAGS) \
-                   -std=gnu99 -Wall -Wno-sign-compare -Wno-deprecated-declarations -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wl,--no-undefined \
-                   -fPIC -DPIC -O3 -funroll-loops
+                   -std=gnu99 -Wall -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Wl,--no-undefined \
+                   -O3 -funroll-loops
 
 LOCAL_EXPORT_CFLAGS += $(LOCAL_CFLAGS)
 LOCAL_EXPORT_LDLIBS += $(LOCAL_LDLIBS)
