@@ -33,8 +33,6 @@ typedef struct _SpiceWindowClass SpiceWindowClass;
 struct _SpiceWindow {
     GObject          object;
     spice_connection *conn;
-    gint             id;
-    gint             monitor_id;
     SpiceDisplay      *spice;
 };
 

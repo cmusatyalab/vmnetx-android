@@ -43,8 +43,6 @@ static SpiceWindow *create_spice_window(spice_connection *conn, SpiceChannel *ch
     SpiceWindow *win;
 
     win = g_new0 (SpiceWindow, 1);
-    win->id = id;
-    //win->monitor_id = monitor_id;
     win->conn = conn;
 
     win->spice = spice_display_new(conn->ctx, conn->session, id);
@@ -57,10 +55,7 @@ static void destroy_spice_window(SpiceWindow *win)
     if (win == NULL)
         return;
 
-    SPICE_DEBUG("destroy window (#%d:%d)", win->id, win->monitor_id);
-    //g_object_unref(win->ag);
-    //g_object_unref(win->ui);
-    //gtk_widget_destroy(win->toplevel);
+    SPICE_DEBUG("destroy window");
     g_object_unref(win);
 }
 
@@ -77,17 +72,8 @@ static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
                                gpointer data)
 {
     spice_connection *conn = data;
-    char password[64];
-    int rc = -1;
 
     switch (event) {
-    case SPICE_CHANNEL_OPENED:
-        g_message("main channel: opened");
-        //recent_add(conn->session);
-        break;
-    case SPICE_CHANNEL_SWITCHING:
-        g_message("main channel: switching host");
-        break;
     case SPICE_CHANNEL_CLOSED:
         /* this event is only sent if the channel was succesfully opened before */
         g_message("main channel: closed");
@@ -100,31 +86,13 @@ static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
     case SPICE_CHANNEL_ERROR_LINK:
     case SPICE_CHANNEL_ERROR_CONNECT:
         g_message("main channel: failed to connect");
-        //rc = connect_dialog(conn->session);
-        if (rc == 0) {
-            connection_connect(conn);
-        } else {
-            connection_disconnect(conn);
-        }
+        connection_disconnect(conn);
         break;
     case SPICE_CHANNEL_ERROR_AUTH:
         g_warning("main channel: auth failure (wrong password?)");
-        strcpy(password, "");
-        /* FIXME i18 */
-        //rc = ask_user(NULL, _("Authentication"),
-        //              _("Please enter the spice server password"),
-        //              password, sizeof(password), true);
-        if (rc == 0) {
-            g_object_set(conn->session, "password", password, NULL);
-            connection_connect(conn);
-        } else {
-            connection_disconnect(conn);
-        }
+        connection_disconnect(conn);
         break;
     default:
-        /* TODO: more sophisticated error handling */
-        g_warning("unknown main channel event: %d", event);
-        /* connection_disconnect(conn); */
         break;
     }
 }
@@ -146,12 +114,6 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
         conn->main = SPICE_MAIN_CHANNEL(channel);
         g_signal_connect(channel, "channel-event",
                          G_CALLBACK(main_channel_event), conn);
-        //g_signal_connect(channel, "main-mouse-update",
-        //                 G_CALLBACK(main_mouse_update), conn);
-        //g_signal_connect(channel, "main-agent-update",
-        //                 G_CALLBACK(main_agent_update), conn);
-        //main_mouse_update(channel, conn);
-        //main_agent_update(channel, conn);
     }
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
@@ -163,28 +125,10 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
         conn->wins[id] = create_spice_window(conn, channel, id);
     }
 
-    if (SPICE_IS_INPUTS_CHANNEL(channel)) {
-        SPICE_DEBUG("new inputs channel");
-        //g_signal_connect(channel, "inputs-modifiers",
-        //                 G_CALLBACK(inputs_modifiers), conn);
-    }
-
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
         SPICE_DEBUG("new audio channel");
         conn->audio = spice_audio_get(s, NULL);
     }
-
-    //if (SPICE_IS_USBREDIR_CHANNEL(channel)) {
-    //    update_auto_usbredir_sensitive(conn);
-    //}
-
-    //if (SPICE_IS_PORT_CHANNEL(channel)) {
-    //    g_signal_connect(channel, "notify::port-opened",
-    //                     G_CALLBACK(port_opened), conn);
-    //    g_signal_connect(channel, "port-data",
-    //                     G_CALLBACK(port_data), conn);
-    //    spice_channel_connect(channel);
-    //}
 }
 
 static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer data)
@@ -214,14 +158,6 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
         SPICE_DEBUG("zap audio channel");
     }
 
-    //if (SPICE_IS_USBREDIR_CHANNEL(channel)) {
-    //    update_auto_usbredir_sensitive(conn);
-    //}
-
-    //if (SPICE_IS_PORT_CHANNEL(channel)) {
-    //    if (SPICE_PORT_CHANNEL(channel) == stdin_port)
-    //        stdin_port = NULL;
-    //}
     conn->channels--;
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Number of channels: %d", conn->channels);
     if (conn->channels > 0) {
@@ -231,20 +167,9 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     connection_destroy(conn);
 }
 
-static void migration_state(GObject *session,
-                            GParamSpec *pspec, gpointer data)
-{
-    SpiceSessionMigration mig;
-
-    g_object_get(session, "migration-state", &mig, NULL);
-    if (mig == SPICE_SESSION_MIGRATION_SWITCHING)
-        g_message("migrating session");
-}
-
 spice_connection *connection_new(struct spice_context *ctx)
 {
     spice_connection *conn;
-    //SpiceUsbDeviceManager *manager;
 
     conn = g_new0(spice_connection, 1);
     conn->ctx = ctx;
@@ -253,16 +178,6 @@ spice_connection *connection_new(struct spice_context *ctx)
                      G_CALLBACK(channel_new), conn);
     g_signal_connect(conn->session, "channel-destroy",
                      G_CALLBACK(channel_destroy), conn);
-    g_signal_connect(conn->session, "notify::migration-state",
-                     G_CALLBACK(migration_state), conn);
-
-    //manager = spice_usb_device_manager_get(conn->session, NULL);
-    //if (manager) {
-    //    g_signal_connect(manager, "auto-connect-failed",
-    //                     G_CALLBACK(usb_connect_failed), NULL);
-    //    g_signal_connect(manager, "device-error",
-    //                     G_CALLBACK(usb_connect_failed), NULL);
-    //}
 
     ctx->connections++;
     SPICE_DEBUG("%s (%d)", __FUNCTION__, ctx->connections);
@@ -296,5 +211,3 @@ static void connection_destroy(spice_connection *conn)
         uiCallbackDisconnect(ctx);
     }
 }
-
-/* ------------------------------------------------------------------ */
