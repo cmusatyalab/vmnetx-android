@@ -59,7 +59,6 @@ static gpointer spice_main_loop(gpointer data) {
 static gpointer start_main_loop(gpointer data) {
     JNIEnv *env = data;
     struct spice_main_thread *thr = g_slice_new0(struct spice_main_thread);
-    GError *my_err = NULL;
 
     // Get JVM reference
     if ((*env)->GetJavaVM(env, &thr->jvm) != JNI_OK) {
@@ -77,10 +76,8 @@ static gpointer start_main_loop(gpointer data) {
     thr->jni_disconnect       = (*env)->GetMethodID(env, cls, "OnDisconnect", "()V");
 
     // Start thread
-    if (!g_thread_create(spice_main_loop, thr, false, &my_err)) {
-        __android_log_print(ANDROID_LOG_FATAL, TAG, "Couldn't start main loop thread: %s", my_err->message);
-        abort();
-    }
+    GThread *thread = g_thread_new("main loop", spice_main_loop, thr);
+    g_thread_unref(thread);
     return thr;
 }
 
