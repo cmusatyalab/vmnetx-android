@@ -21,7 +21,6 @@
 #include <glib/gi18n.h>
 
 #include <sys/stat.h>
-#include "spice-audio.h"
 #include "android-service.h"
 #include "android-spice-widget.h"
 
@@ -30,10 +29,8 @@ typedef struct spice_connection spice_connection;
 struct spice_connection {
     struct spice_context *ctx;
     SpiceSession     *session;
-    SpiceMainChannel *main;
     SpiceDisplay     *display;
     int              display_channel;
-    SpiceAudio       *audio;
     int              channels;
     int              disconnecting;
 };

@@ -44,21 +44,11 @@ static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
 
     switch (event) {
     case SPICE_CHANNEL_CLOSED:
-        /* this event is only sent if the channel was succesfully opened before */
-        g_message("main channel: closed");
-        connection_disconnect(conn);
-        break;
     case SPICE_CHANNEL_ERROR_IO:
-        connection_disconnect(conn);
-        break;
     case SPICE_CHANNEL_ERROR_TLS:
     case SPICE_CHANNEL_ERROR_LINK:
     case SPICE_CHANNEL_ERROR_CONNECT:
-        g_message("main channel: failed to connect");
-        connection_disconnect(conn);
-        break;
     case SPICE_CHANNEL_ERROR_AUTH:
-        g_warning("main channel: auth failure (wrong password?)");
         connection_disconnect(conn);
         break;
     default:
@@ -80,7 +70,6 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
 
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
         SPICE_DEBUG("new main channel");
-        conn->main = SPICE_MAIN_CHANNEL(channel);
         g_signal_connect(channel, "channel-event",
                          G_CALLBACK(main_channel_event), conn);
     }
@@ -96,7 +85,7 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
 
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
         SPICE_DEBUG("new audio channel");
-        conn->audio = spice_audio_get(s, NULL);
+        spice_audio_get(s, NULL);
     }
 }
 
@@ -108,20 +97,12 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     int id;
 
     g_object_get(channel, "channel-id", &id, NULL);
-    if (SPICE_IS_MAIN_CHANNEL(channel)) {
-        SPICE_DEBUG("zap main channel");
-        conn->main = NULL;
-    }
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
         if (conn->display && conn->display_channel == id) {
             SPICE_DEBUG("zap display channel (#%d)", id);
             conn->display = NULL;
         }
-    }
-
-    if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
-        SPICE_DEBUG("zap audio channel");
     }
 
     conn->channels--;
