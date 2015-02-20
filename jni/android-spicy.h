@@ -27,30 +27,12 @@
 
 typedef struct spice_connection spice_connection;
 
-typedef struct _SpiceWindow SpiceWindow;
-typedef struct _SpiceWindowClass SpiceWindowClass;
-
-struct _SpiceWindow {
-    GObject          object;
-    spice_connection *conn;
-    SpiceDisplay      *spice;
-};
-
-struct _SpiceWindowClass
-{
-  GObjectClass parent_class;
-};
-
-#define CHANNELID_MAX 4
-#define MONITORID_MAX 4
-
-// FIXME: turn this into an object, get rid of fixed wins array, use
-// signals to replace the various callback that iterate over wins array
 struct spice_connection {
     struct spice_context *ctx;
     SpiceSession     *session;
     SpiceMainChannel *main;
-    SpiceWindow     *wins[CHANNELID_MAX * MONITORID_MAX];
+    SpiceDisplay     *display;
+    int              display_channel;
     SpiceAudio       *audio;
     int              channels;
     int              disconnecting;
@@ -59,7 +41,5 @@ struct spice_connection {
 spice_connection *connection_new(struct spice_context *ctx);
 void connection_connect(spice_connection *conn);
 void connection_disconnect(spice_connection *conn);
-
-/* ------------------------------------------------------------------ */
 
 #endif /* _ANDROID_SPICY_H */

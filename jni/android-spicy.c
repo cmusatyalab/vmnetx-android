@@ -28,38 +28,7 @@
 
 #define TAG "vmnetx-spicy"
 
-G_DEFINE_TYPE (SpiceWindow, spice_window, G_TYPE_OBJECT);
-
 static void connection_destroy(spice_connection *conn);
-
-void spice_window_class_init (SpiceWindowClass *klass) {}
-
-void spice_window_init (SpiceWindow *self) {}
-
-/* ------------------------------------------------------------------ */
-
-static SpiceWindow *create_spice_window(spice_connection *conn, SpiceChannel *channel, int id)
-{
-    SpiceWindow *win;
-
-    win = g_new0 (SpiceWindow, 1);
-    win->conn = conn;
-
-    win->spice = spice_display_new(conn->ctx, conn->session, id);
-    conn->ctx->display = win->spice;
-    return win;
-}
-
-static void destroy_spice_window(SpiceWindow *win)
-{
-    if (win == NULL)
-        return;
-
-    SPICE_DEBUG("destroy window");
-    g_object_unref(win);
-}
-
-/* ------------------------------------------------------------------ */
 
 static void channel_open_fd(SpiceChannel *channel, gint with_tls,
                             gpointer data)
@@ -117,12 +86,12 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
     }
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
-        if (id >= G_N_ELEMENTS(conn->wins))
-            return;
-        if (conn->wins[id] != NULL)
+        if (conn->display != NULL)
             return;
         SPICE_DEBUG("new display channel (#%d)", id);
-        conn->wins[id] = create_spice_window(conn, channel, id);
+        conn->display = spice_display_new(conn->ctx, conn->session, id);
+        conn->display_channel = id;
+        conn->ctx->display = conn->display;
     }
 
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
@@ -145,13 +114,10 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     }
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
-        if (id >= G_N_ELEMENTS(conn->wins))
-            return;
-        if (conn->wins[id] == NULL)
-            return;
-        SPICE_DEBUG("zap display channel (#%d)", id);
-        destroy_spice_window(conn->wins[id]);
-        conn->wins[id] = NULL;
+        if (conn->display && conn->display_channel == id) {
+            SPICE_DEBUG("zap display channel (#%d)", id);
+            conn->display = NULL;
+        }
     }
 
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
