@@ -27,10 +27,10 @@
 #include <spice-audio.h>
 
 #include "android-io.h"
-#include "android-service.h"
+#include "android-spice.h"
 #include "android-spice-widget.h"
 
-#define TAG "vmnetx-service"
+#define TAG "vmnetx-spice"
 
 static GOnce main_loop_starter = G_ONCE_INIT;
 

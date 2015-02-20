@@ -25,7 +25,7 @@ G_BEGIN_DECLS
 #include <glib.h>
 #include <spice/protocol.h>
 
-#include "android-service.h"
+#include "android-spice.h"
 #include "android-spice-widget.h"
 
 #define SPICE_DISPLAY_GET_PRIVATE(obj)                                  \

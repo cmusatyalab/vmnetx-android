@@ -19,7 +19,7 @@
  */
 
 #include <stdbool.h>
-#include "android-service.h"
+#include "android-spice.h"
 
 void _assert_on_main_loop_thread(const char *caller);
 #define assert_on_main_loop_thread() _assert_on_main_loop_thread(__func__)

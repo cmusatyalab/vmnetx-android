@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014 Carnegie Mellon University
+ * Copyright (C) 2014-2015 Carnegie Mellon University
  * Copyright (C) 2013 Iordan Iordanov
  *
  * This is free software; you can redistribute it and/or modify
@@ -18,8 +18,8 @@
  * USA.
  */
 
-#ifndef ANDROID_SERVICE_H
-#define ANDROID_SERVICE_H
+#ifndef ANDROID_SPICE_H
+#define ANDROID_SPICE_H
 
 #include <stdbool.h>
 #include <jni.h>

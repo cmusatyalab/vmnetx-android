@@ -43,8 +43,8 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := spice
 
 LOCAL_SRC_FILES := android-io.c \
-                   android-service.c \
                    android-socket.c \
+                   android-spice.c \
                    android-spice-widget.c
 
 LOCAL_LDLIBS 	+= -ljnigraphics -llog

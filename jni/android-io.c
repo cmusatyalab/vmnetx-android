@@ -32,7 +32,7 @@
 #include "android-spice-widget.h"
 #include "android-spice-widget-priv.h"
 #include "android-io.h"
-#include "android-service.h"
+#include "android-spice.h"
 #include "keymap.h"
 
 #define TAG "vmnetx-io"
