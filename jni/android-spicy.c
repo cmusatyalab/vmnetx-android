@@ -125,9 +125,6 @@ spice_connection *connection_new(struct spice_context *ctx)
                      G_CALLBACK(channel_new), conn);
     g_signal_connect(conn->session, "channel-destroy",
                      G_CALLBACK(channel_destroy), conn);
-
-    ctx->connections++;
-    SPICE_DEBUG("%s (%d)", __FUNCTION__, ctx->connections);
     return conn;
 }
 
@@ -151,10 +148,5 @@ static void connection_destroy(spice_connection *conn)
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "connection_destroy called");
     g_object_unref(conn->session);
     free(conn);
-
-    ctx->connections--;
-    SPICE_DEBUG("%s (%d)", __FUNCTION__, ctx->connections);
-    if (!ctx->connections) {
-        uiCallbackDisconnect(ctx);
-    }
+    uiCallbackDisconnect(ctx);
 }

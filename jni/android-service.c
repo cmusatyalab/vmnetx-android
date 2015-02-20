@@ -106,11 +106,6 @@ static gboolean do_connect(void *data) {
         g_object_set(ctx->conn->session, "password", args->password, NULL);
 
     connection_connect(ctx->conn);
-    if (ctx->connections == 0) {
-        // failed to connect
-        __android_log_write(ANDROID_LOG_ERROR, TAG, "Wrong hostname, port, or password.");
-        uiCallbackDisconnect(ctx);
-    }
 
     g_free(args->password);
     g_slice_free(struct connect_args, args);

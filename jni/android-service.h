@@ -41,7 +41,6 @@ struct spice_context {
     struct spice_connection  *conn;
     struct _SpiceDisplay     *display;
     jobject                   jni_connector;
-    int                       connections;
 };
 
 #endif
