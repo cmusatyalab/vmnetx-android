@@ -83,7 +83,7 @@ static gpointer start_main_loop(gpointer data) {
 
 static gboolean do_disconnect(void *data) {
     struct spice_context *ctx = (struct spice_context *) data;
-    connection_disconnect(ctx->conn);
+    connection_disconnect(ctx);
     return false;
 }
 
@@ -101,11 +101,11 @@ static gboolean do_connect(void *data) {
     struct connect_args *args = data;
     struct spice_context *ctx = args->ctx;
 
-    ctx->conn = connection_new(ctx);
+    ctx->session = spice_session_new();
     if (args->password)
-        g_object_set(ctx->conn->session, "password", args->password, NULL);
+        g_object_set(ctx->session, "password", args->password, NULL);
 
-    connection_connect(ctx->conn);
+    connection_connect(ctx);
 
     g_free(args->password);
     g_slice_free(struct connect_args, args);

@@ -28,19 +28,19 @@
 
 #define TAG "vmnetx-spicy"
 
-static void connection_destroy(spice_connection *conn);
+static void connection_destroy(struct spice_context *ctx);
 
 static void channel_open_fd(SpiceChannel *channel, gint with_tls,
                             gpointer data)
 {
-    spice_connection *conn = data;
-    uiCallbackGetFd(conn->ctx, channel);
+    struct spice_context *ctx = data;
+    uiCallbackGetFd(ctx, channel);
 }
 
 static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
                                gpointer data)
 {
-    spice_connection *conn = data;
+    struct spice_context *ctx = data;
 
     switch (event) {
     case SPICE_CHANNEL_CLOSED:
@@ -49,7 +49,7 @@ static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
     case SPICE_CHANNEL_ERROR_LINK:
     case SPICE_CHANNEL_ERROR_CONNECT:
     case SPICE_CHANNEL_ERROR_AUTH:
-        connection_disconnect(conn);
+        connection_disconnect(ctx);
         break;
     default:
         break;
@@ -58,29 +58,28 @@ static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
 
 static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
 {
-    spice_connection *conn = data;
+    struct spice_context *ctx = data;
     int id;
 
     g_object_get(channel, "channel-id", &id, NULL);
-    conn->channels++;
+    ctx->channels++;
     SPICE_DEBUG("new channel (#%d)", id);
 
     g_signal_connect(channel, "open-fd",
-                     G_CALLBACK(channel_open_fd), conn);
+                     G_CALLBACK(channel_open_fd), ctx);
 
     if (SPICE_IS_MAIN_CHANNEL(channel)) {
         SPICE_DEBUG("new main channel");
         g_signal_connect(channel, "channel-event",
-                         G_CALLBACK(main_channel_event), conn);
+                         G_CALLBACK(main_channel_event), ctx);
     }
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
-        if (conn->display != NULL)
+        if (ctx->display != NULL)
             return;
         SPICE_DEBUG("new display channel (#%d)", id);
-        conn->display = spice_display_new(conn->ctx, conn->session, id);
-        conn->display_channel = id;
-        conn->ctx->display = conn->display;
+        ctx->display = spice_display_new(ctx, id);
+        ctx->display_channel = id;
     }
 
     if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
@@ -93,60 +92,46 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
 {
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "channel_destroy called");
 
-    spice_connection *conn = data;
+    struct spice_context *ctx = data;
     int id;
 
     g_object_get(channel, "channel-id", &id, NULL);
 
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
-        if (conn->display && conn->display_channel == id) {
+        if (ctx->display && ctx->display_channel == id) {
             SPICE_DEBUG("zap display channel (#%d)", id);
-            conn->display = NULL;
+            ctx->display = NULL;
         }
     }
 
-    conn->channels--;
-    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Number of channels: %d", conn->channels);
-    if (conn->channels > 0) {
-        return;
+    ctx->channels--;
+    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Number of channels: %d", ctx->channels);
+    if (ctx->channels == 0) {
+        connection_destroy(ctx);
     }
-
-    connection_destroy(conn);
 }
 
-spice_connection *connection_new(struct spice_context *ctx)
+void connection_connect(struct spice_context *ctx)
 {
-    spice_connection *conn;
-
-    conn = g_new0(spice_connection, 1);
-    conn->ctx = ctx;
-    conn->session = spice_session_new();
-    g_signal_connect(conn->session, "channel-new",
-                     G_CALLBACK(channel_new), conn);
-    g_signal_connect(conn->session, "channel-destroy",
-                     G_CALLBACK(channel_destroy), conn);
-    return conn;
+    g_signal_connect(ctx->session, "channel-new",
+                     G_CALLBACK(channel_new), ctx);
+    g_signal_connect(ctx->session, "channel-destroy",
+                     G_CALLBACK(channel_destroy), ctx);
+    spice_session_open_fd(ctx->session, -1);
 }
 
-void connection_connect(spice_connection *conn)
+void connection_disconnect(struct spice_context *ctx)
 {
-    conn->disconnecting = false;
-    spice_session_open_fd(conn->session, -1);
-}
-
-void connection_disconnect(spice_connection *conn)
-{
-    if (conn->disconnecting)
+    if (ctx->disconnecting)
         return;
-    conn->disconnecting = true;
-    spice_session_disconnect(conn->session);
+    ctx->disconnecting = true;
+    spice_session_disconnect(ctx->session);
 }
 
-static void connection_destroy(spice_connection *conn)
+static void connection_destroy(struct spice_context *ctx)
 {
-    struct spice_context *ctx = conn->ctx;
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "connection_destroy called");
-    g_object_unref(conn->session);
-    free(conn);
+    g_object_unref(ctx->session);
+    ctx->session = NULL;
     uiCallbackDisconnect(ctx);
 }

@@ -24,19 +24,7 @@
 #include "android-service.h"
 #include "android-spice-widget.h"
 
-typedef struct spice_connection spice_connection;
-
-struct spice_connection {
-    struct spice_context *ctx;
-    SpiceSession     *session;
-    SpiceDisplay     *display;
-    int              display_channel;
-    int              channels;
-    int              disconnecting;
-};
-
-spice_connection *connection_new(struct spice_context *ctx);
-void connection_connect(spice_connection *conn);
-void connection_disconnect(spice_connection *conn);
+void connection_connect(struct spice_context *ctx);
+void connection_disconnect(struct spice_context *ctx);
 
 #endif /* _ANDROID_SPICY_H */

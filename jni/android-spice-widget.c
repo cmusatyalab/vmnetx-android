@@ -420,7 +420,7 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
  *
  * Returns: a new #SpiceDisplay widget.
  **/
-SpiceDisplay *spice_display_new(struct spice_context *ctx, SpiceSession *session, int id)
+SpiceDisplay *spice_display_new(struct spice_context *ctx, int id)
 {
     SpiceDisplay *display;
     SpiceDisplayPrivate *d;
@@ -430,17 +430,17 @@ SpiceDisplay *spice_display_new(struct spice_context *ctx, SpiceSession *session
     display = g_object_new(SPICE_TYPE_DISPLAY, NULL);
     d = SPICE_DISPLAY_GET_PRIVATE(display);
     d->ctx = ctx;
-    d->session = g_object_ref(session);
+    d->session = g_object_ref(ctx->session);
     d->channel_id = id;
     SPICE_DEBUG("channel_id:%d",d->channel_id);
 
-    g_signal_connect(session, "channel-new",
+    g_signal_connect(d->session, "channel-new",
                      G_CALLBACK(channel_new), display);
-    g_signal_connect(session, "channel-destroy",
+    g_signal_connect(d->session, "channel-destroy",
                      G_CALLBACK(channel_destroy), display);
-    list = spice_session_get_channels(session);
+    list = spice_session_get_channels(d->session);
     for (it = g_list_first(list); it != NULL; it = g_list_next(it)) {
-        channel_new(session, it->data, (gpointer*)display);
+        channel_new(d->session, it->data, (gpointer*)display);
     }
     g_list_free(list);
 

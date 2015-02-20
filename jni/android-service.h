@@ -21,6 +21,7 @@
 #ifndef ANDROID_SERVICE_H
 #define ANDROID_SERVICE_H
 
+#include <stdbool.h>
 #include <jni.h>
 #include <android/bitmap.h>
 #include <glib.h>
@@ -38,9 +39,12 @@ struct spice_main_thread {
 
 struct spice_context {
     struct spice_main_thread *thr;
-    struct spice_connection  *conn;
-    struct _SpiceDisplay     *display;
     jobject                   jni_connector;
+    struct _SpiceSession     *session;
+    struct _SpiceDisplay     *display;
+    int                       display_channel;
+    int                       channels;
+    bool                      disconnecting;
 };
 
 #endif
