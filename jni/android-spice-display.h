@@ -19,6 +19,7 @@
 #ifndef __ANDROID_SPICE_DISPLAY_H__
 #define __ANDROID_SPICE_DISPLAY_H__
 
+#include <stdbool.h>
 #include <spice-client.h>
 #include <spice-util.h>
 #include "android-spice.h"
