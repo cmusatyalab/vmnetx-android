@@ -46,17 +46,6 @@ static void spice_display_dispose(GObject *obj)
     disconnect_display(display);
     //disconnect_cursor(display);
 
-    //if (d->clipboard) {
-    //    g_signal_handlers_disconnect_by_func(d->clipboard, G_CALLBACK(clipboard_owner_change),
-    //                                         display);
-    //    d->clipboard = NULL;
-    //}
-
-    //if (d->clipboard_primary) {
-    //    g_signal_handlers_disconnect_by_func(d->clipboard_primary, G_CALLBACK(clipboard_owner_change),
-    //                                         display);
-    //    d->clipboard_primary = NULL;
-    //}
     if (d->session) {
         g_signal_handlers_disconnect_by_func(d->session, G_CALLBACK(channel_new),
                                              display);
@@ -73,12 +62,10 @@ static void spice_display_finalize(GObject *obj)
     G_OBJECT_CLASS(spice_display_parent_class)->finalize(obj);
 }
 
-
 static void spice_display_class_init(SpiceDisplayClass *klass)
 {
     g_type_class_add_private(klass, sizeof(SpiceDisplayPrivate));
 }
-
 
 static void spice_display_init(SpiceDisplay *display)
 {
@@ -87,7 +74,6 @@ static void spice_display_init(SpiceDisplay *display)
     d = display->priv = SPICE_DISPLAY_GET_PRIVATE(display);
     memset(d, 0, sizeof(*d));
 }
-
 
 static int get_display_id(SpiceDisplay *display)
 {
@@ -157,7 +143,7 @@ static void cursor_reset(SpiceCursorChannel *cursor, void *data) {
 static gboolean do_color_convert(SpiceDisplay *display,
                                  gint x, gint y, gint w, gint h)
 {
-	SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
     int i, j, maxy, maxx, miny, minx;
     guint32 *dest = d->data;
     guint16 *src = d->data_origin;
@@ -382,17 +368,16 @@ static void invalidate(SpiceChannel *channel,
 
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
 
-	if (x + w > d->width || y + h > d->height) {
-            //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Not drawing.");
-	} else {
-	    uiCallbackInvalidate(d->ctx, x, y, w, h);
-	}
+    if (x + w > d->width || y + h > d->height) {
+        //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Not drawing.");
+    } else {
+        uiCallbackInvalidate(d->ctx, x, y, w, h);
+    }
 }
 
 static void disconnect_main(SpiceDisplay *display)
 {
-	SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
-    //gint i;
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
 
     if (d->main == NULL)
         return;
@@ -403,7 +388,7 @@ static void disconnect_main(SpiceDisplay *display)
 
 static void disconnect_display(SpiceDisplay *display)
 {
-	SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
 
     if (d->display == NULL)
         return;
@@ -468,7 +453,6 @@ static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
     if (SPICE_IS_INPUTS_CHANNEL(channel)) {
         d->inputs = SPICE_INPUTS_CHANNEL(channel);
         spice_channel_connect(channel);
-        //sync_keyboard_lock_modifiers(display);
         return;
     }
 }
@@ -505,8 +489,6 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
         d->inputs = NULL;
         return;
     }
-
-    return;
 }
 
 /**
