@@ -1,6 +1,7 @@
 /**
  * Copyright (C) 2014-2015 Carnegie Mellon University
  * Copyright (C) 2013 Iordan Iordanov
+ * Copyright (C) 2010 Red Hat, Inc.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +24,11 @@
 #include <android/log.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <spice-audio.h>
 
 #include "android-io.h"
 #include "android-service.h"
-
 #include "android-spice-widget.h"
-#include "android-spicy.h"
 
 #define TAG "vmnetx-service"
 
@@ -81,9 +81,95 @@ static gpointer start_main_loop(gpointer data) {
     return thr;
 }
 
+static void channel_open_fd(SpiceChannel *channel, gint with_tls,
+                            gpointer data)
+{
+    struct spice_context *ctx = data;
+    uiCallbackGetFd(ctx, channel);
+}
+
+static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
+                               gpointer data)
+{
+    struct spice_context *ctx = data;
+
+    switch (event) {
+    case SPICE_CHANNEL_CLOSED:
+    case SPICE_CHANNEL_ERROR_IO:
+    case SPICE_CHANNEL_ERROR_TLS:
+    case SPICE_CHANNEL_ERROR_LINK:
+    case SPICE_CHANNEL_ERROR_CONNECT:
+    case SPICE_CHANNEL_ERROR_AUTH:
+        if (ctx->session)
+            spice_session_disconnect(ctx->session);
+        break;
+    default:
+        break;
+    }
+}
+
+static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
+{
+    struct spice_context *ctx = data;
+    int id;
+
+    g_object_get(channel, "channel-id", &id, NULL);
+    ctx->channels++;
+    SPICE_DEBUG("new channel (#%d)", id);
+
+    g_signal_connect(channel, "open-fd",
+                     G_CALLBACK(channel_open_fd), ctx);
+
+    if (SPICE_IS_MAIN_CHANNEL(channel)) {
+        SPICE_DEBUG("new main channel");
+        g_signal_connect(channel, "channel-event",
+                         G_CALLBACK(main_channel_event), ctx);
+    }
+
+    if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
+        if (ctx->display != NULL)
+            return;
+        SPICE_DEBUG("new display channel (#%d)", id);
+        ctx->display = spice_display_new(ctx, id);
+        ctx->display_channel = id;
+    }
+
+    if (SPICE_IS_PLAYBACK_CHANNEL(channel)) {
+        SPICE_DEBUG("new audio channel");
+        spice_audio_get(s, NULL);
+    }
+}
+
+static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer data)
+{
+    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "channel_destroy called");
+
+    struct spice_context *ctx = data;
+    int id;
+
+    g_object_get(channel, "channel-id", &id, NULL);
+
+    if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
+        if (ctx->display && ctx->display_channel == id) {
+            SPICE_DEBUG("zap display channel (#%d)", id);
+            ctx->display = NULL;
+        }
+    }
+
+    ctx->channels--;
+    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Number of channels: %d", ctx->channels);
+    if (ctx->channels == 0) {
+        //__android_log_write(ANDROID_LOG_DEBUG, TAG, "tearing down connection");
+        g_object_unref(ctx->session);
+        ctx->session = NULL;
+        uiCallbackDisconnect(ctx);
+    }
+}
+
 static gboolean do_disconnect(void *data) {
     struct spice_context *ctx = (struct spice_context *) data;
-    connection_disconnect(ctx);
+    if (ctx->session)
+        spice_session_disconnect(ctx->session);
     return false;
 }
 
@@ -105,7 +191,11 @@ static gboolean do_connect(void *data) {
     if (args->password)
         g_object_set(ctx->session, "password", args->password, NULL);
 
-    connection_connect(ctx);
+    g_signal_connect(ctx->session, "channel-new",
+                     G_CALLBACK(channel_new), ctx);
+    g_signal_connect(ctx->session, "channel-destroy",
+                     G_CALLBACK(channel_destroy), ctx);
+    spice_session_open_fd(ctx->session, -1);
 
     g_free(args->password);
     g_slice_free(struct connect_args, args);

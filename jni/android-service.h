@@ -44,7 +44,6 @@ struct spice_context {
     struct _SpiceDisplay     *display;
     int                       display_channel;
     int                       channels;
-    bool                      disconnecting;
 };
 
 #endif
