@@ -272,9 +272,7 @@ abstract public class GestureHandler
 
     public boolean onTouchEvent(MotionEvent e) {
         final int action     = e.getActionMasked();
-        final int index      = e.getActionIndex();
         final int deviceID   = e.getDeviceId();
-        final int pointerID  = e.getPointerId(index);
         Viewport viewport = canvas.getViewport();
         RemotePointer p = canvas.getPointer();
         
@@ -287,9 +285,8 @@ abstract public class GestureHandler
             viewport.setFilteringEnabled(true);
         }
 
-        switch (pointerID) {
-
-        case 0:
+        switch (e.getPointerCount()) {
+        case 1:
             switch (action) {
             case MotionEvent.ACTION_DOWN:
                 // We have put down first pointer on the screen, so we can reset the state of all click-state variables.
@@ -342,10 +339,11 @@ abstract public class GestureHandler
             }
             break;
 
-        case 1:
+        case 2:
             switch (action) {
             case MotionEvent.ACTION_POINTER_DOWN:
-                // Here we only prepare for the second click, which we perform on ACTION_POINTER_UP for pointerID==1.
+                // Here we only prepare for the second click, which we
+                // perform on ACTION_POINTER_UP for getPointerCount()==1.
                 endDragModeAndScrolling();
                 // Prohibit sending mouse-down event on long-tap, and permit
                 // right-clicking.
@@ -370,7 +368,7 @@ abstract public class GestureHandler
             }
             break;
 
-        case 2:
+        case 3:
             switch (action) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 // Prevent the right-click from firing simultaneously as a middle button click.
@@ -387,7 +385,7 @@ abstract public class GestureHandler
             }
             break;
 
-        case 3:
+        case 4:
             switch (action) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 // Prevent the gesture from firing as a middle button click.
