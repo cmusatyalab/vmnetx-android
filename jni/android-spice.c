@@ -161,6 +161,7 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     if (SPICE_IS_DISPLAY_CHANNEL(channel)) {
         if (ctx->display && ctx->display_channel == id) {
             SPICE_DEBUG("zap display channel (#%d)", id);
+            g_object_unref(ctx->display);
             ctx->display = NULL;
         }
     }

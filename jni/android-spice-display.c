@@ -30,6 +30,7 @@ G_DEFINE_TYPE(SpiceDisplay, spice_display, SPICE_TYPE_CHANNEL);
 
 static void disconnect_main(SpiceDisplay *display);
 static void disconnect_display(SpiceDisplay *display);
+static void disconnect_cursor(SpiceDisplay *display);
 static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data);
 static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer data);
 
@@ -44,7 +45,7 @@ static void spice_display_dispose(GObject *obj)
 
     disconnect_main(display);
     disconnect_display(display);
-    //disconnect_cursor(display);
+    disconnect_cursor(display);
 
     if (d->session) {
         g_signal_handlers_disconnect_by_func(d->session, G_CALLBACK(channel_new),
@@ -54,16 +55,14 @@ static void spice_display_dispose(GObject *obj)
         g_object_unref(d->session);
         d->session = NULL;
     }
-}
 
-static void spice_display_finalize(GObject *obj)
-{
-    SPICE_DEBUG("Finalize spice display");
-    G_OBJECT_CLASS(spice_display_parent_class)->finalize(obj);
+    G_OBJECT_CLASS(spice_display_parent_class)->dispose(obj);
 }
 
 static void spice_display_class_init(SpiceDisplayClass *klass)
 {
+    GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+    gobject_class->dispose = spice_display_dispose;
     g_type_class_add_private(klass, sizeof(SpiceDisplayPrivate));
 }
 
@@ -381,8 +380,10 @@ static void disconnect_main(SpiceDisplay *display)
 
     if (d->main == NULL)
         return;
-    //g_signal_handlers_disconnect_by_func(d->main, G_CALLBACK(mouse_update),
-    //                                     display);
+    g_signal_handlers_disconnect_by_func(d->main, G_CALLBACK(update_mouse_mode),
+                                         display);
+    g_signal_handlers_disconnect_by_func(d->main, G_CALLBACK(disable_secondary_displays),
+                                         display);
     d->main = NULL;
 }
 
@@ -399,6 +400,21 @@ static void disconnect_display(SpiceDisplay *display)
     g_signal_handlers_disconnect_by_func(d->display, G_CALLBACK(invalidate),
                                          display);
     d->display = NULL;
+}
+
+static void disconnect_cursor(SpiceDisplay *display)
+{
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+
+    if (d->cursor == NULL)
+        return;
+    g_signal_handlers_disconnect_by_func(d->cursor, G_CALLBACK(cursor_set),
+                                         display);
+    g_signal_handlers_disconnect_by_func(d->cursor, G_CALLBACK(cursor_hide),
+                                         display);
+    g_signal_handlers_disconnect_by_func(d->cursor, G_CALLBACK(cursor_reset),
+                                         display);
+    d->cursor = NULL;
 }
 
 static void channel_new(SpiceSession *s, SpiceChannel *channel, gpointer data)
@@ -478,12 +494,12 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
         return;
     }
 
-    //if (SPICE_IS_CURSOR_CHANNEL(channel)) {
-    //    if (id != d->channel_id)
-    //        return;
-    //    disconnect_cursor(display);
-    //    return;
-    //}
+    if (SPICE_IS_CURSOR_CHANNEL(channel)) {
+        if (id != d->channel_id)
+            return;
+        disconnect_cursor(display);
+        return;
+    }
 
     if (SPICE_IS_INPUTS_CHANNEL(channel)) {
         d->inputs = NULL;
