@@ -81,6 +81,15 @@ static gpointer start_main_loop(gpointer data) {
     return thr;
 }
 
+static void context_destroy(struct spice_context *ctx) {
+    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "tearing down context");
+    g_assert(ctx->channels == 0);
+    (*ctx->thr->jenv)->DeleteGlobalRef(ctx->thr->jenv, ctx->jni_connector);
+    if (ctx->session)
+        g_object_unref(ctx->session);
+    g_slice_free(struct spice_context, ctx);
+}
+
 static void channel_open_fd(SpiceChannel *channel, gint with_tls,
                             gpointer data)
 {
@@ -159,10 +168,8 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     ctx->channels--;
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Number of channels: %d", ctx->channels);
     if (ctx->channels == 0) {
-        //__android_log_write(ANDROID_LOG_DEBUG, TAG, "tearing down connection");
-        g_object_unref(ctx->session);
-        ctx->session = NULL;
         uiCallbackDisconnect(ctx);
+        context_destroy(ctx);
     }
 }
 
@@ -170,6 +177,10 @@ static gboolean do_disconnect(void *data) {
     struct spice_context *ctx = (struct spice_context *) data;
     if (ctx->session)
         spice_session_disconnect(ctx->session);
+    if (ctx->channels == 0) {
+        // never started a connection; tear down by hand
+        context_destroy(ctx);
+    }
     return false;
 }
 
@@ -225,14 +236,6 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientNewContext (JN
     ctx->thr = main_loop_starter.retval;
     ctx->jni_connector = (*env)->NewGlobalRef(env, obj);
     return (jlong) ctx;
-}
-
-JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceClientFreeContext (JNIEnv *env, jobject obj, jlong context)
-{
-    struct spice_context *ctx = (struct spice_context *) context;
-    (*env)->DeleteGlobalRef(env, ctx->jni_connector);
-    g_slice_free(struct spice_context, ctx);
 }
 
 JNIEXPORT jint JNICALL

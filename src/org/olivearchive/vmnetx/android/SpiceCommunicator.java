@@ -35,7 +35,6 @@ public class SpiceCommunicator {
     private final static String TAG = "SpiceCommunicator";
 
     private native long SpiceClientNewContext ();
-    private native void SpiceClientFreeContext (long context);
     private native void SpiceClientConnect (long context, String password);
     private native void SpiceClientDisconnect (long context);
     private native void SpicePointerEvent (long context, boolean absolute, int x, int y);
@@ -85,7 +84,8 @@ public class SpiceCommunicator {
     }
 
     protected void finalize() {
-        SpiceClientFreeContext(_context);
+        if (!disconnected.get())
+            disconnect();
     }
 
     private class ConnectThread extends Thread {
