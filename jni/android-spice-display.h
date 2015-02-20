@@ -16,12 +16,11 @@
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef __SPICE_CLIENT_WIDGET_H__
-#define __SPICE_CLIENT_WIDGET_H__
+#ifndef __ANDROID_SPICE_DISPLAY_H__
+#define __ANDROID_SPICE_DISPLAY_H__
 
-#include "spice-client.h"
-
-#include "spice-util.h"
+#include <spice-client.h>
+#include <spice-util.h>
 #include "android-spice.h"
 
 G_BEGIN_DECLS
@@ -58,4 +57,4 @@ gint get_display_id(SpiceDisplay *display);
 
 G_END_DECLS
 
-#endif /* __SPICE_CLIENT_WIDGET_H__ */
+#endif /* __ANDROID_SPICE_DISPLAY_H__ */

@@ -29,8 +29,8 @@
 #include <android/log.h>
 #include <stdlib.h>
 
-#include "android-spice-widget.h"
-#include "android-spice-widget-priv.h"
+#include "android-spice-display.h"
+#include "android-spice-display-priv.h"
 #include "android-io.h"
 #include "android-spice.h"
 #include "keymap.h"

@@ -15,8 +15,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef __SPICE_WIDGET_PRIV_H__
-#define __SPICE_WIDGET_PRIV_H__
+#ifndef __ANDROID_SPICE_DISPLAY_PRIV_H__
+#define __ANDROID_SPICE_DISPLAY_PRIV_H__
 
 G_BEGIN_DECLS
 
@@ -26,7 +26,7 @@ G_BEGIN_DECLS
 #include <spice/protocol.h>
 
 #include "android-spice.h"
-#include "android-spice-widget.h"
+#include "android-spice-display.h"
 
 #define SPICE_DISPLAY_GET_PRIVATE(obj)                                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), SPICE_TYPE_DISPLAY, SpiceDisplayPrivate))

@@ -28,7 +28,7 @@
 
 #include "android-io.h"
 #include "android-spice.h"
-#include "android-spice-widget.h"
+#include "android-spice-display.h"
 
 #define TAG "vmnetx-spice"
 

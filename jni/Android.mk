@@ -45,7 +45,7 @@ LOCAL_MODULE    := spice
 LOCAL_SRC_FILES := android-io.c \
                    android-socket.c \
                    android-spice.c \
-                   android-spice-widget.c
+                   android-spice-display.c
 
 LOCAL_LDLIBS 	+= -ljnigraphics -llog
 

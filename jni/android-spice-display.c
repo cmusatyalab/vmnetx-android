@@ -19,12 +19,12 @@
 #include <math.h>
 #include <android/log.h>
 
-#include "android-spice-widget.h"
-#include "android-spice-widget-priv.h"
+#include "android-spice-display.h"
+#include "android-spice-display-priv.h"
 #include "android-io.h"
 #include "android-spice.h"
 
-#define TAG "vmnetx-spice-widget"
+#define TAG "vmnetx-spice-display"
 
 G_DEFINE_TYPE(SpiceDisplay, spice_display, SPICE_TYPE_CHANNEL);
 
@@ -418,7 +418,7 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
  * @session: a #SpiceSession
  * @id: the display channel ID to associate with #SpiceDisplay
  *
- * Returns: a new #SpiceDisplay widget.
+ * Returns: a new #SpiceDisplay.
  **/
 SpiceDisplay *spice_display_new(struct spice_context *ctx, int id)
 {
