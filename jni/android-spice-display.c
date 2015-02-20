@@ -89,7 +89,7 @@ static void spice_display_init(SpiceDisplay *display)
 }
 
 
-gint get_display_id(SpiceDisplay *display)
+static int get_display_id(SpiceDisplay *display)
 {
     SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
 
@@ -201,9 +201,50 @@ static gboolean do_color_convert(SpiceDisplay *display,
 
 /* ---------------------------------------------------------------- */
 
-void send_key(SpiceDisplay *display, int scancode, int down)
-{
-	SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+void spice_display_copy_pixels(SpiceDisplay *display, uint32_t *dest,
+                               int x, int y, int width, int height) {
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+    uint32_t *source = d->data;
+    uint32_t *sourcepix = &source[(d->width * y) + x];
+    uint32_t *destpix   = &dest[(d->width * y) + x];
+
+    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Drawing x: %d, y: %d, w: %d, h: %d, wBuf: %d, hBuf: %d", x, y, width, height, d->width, d->height);
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            // ARGB -> R G B X
+            uint32_t value = sourcepix[j] << 8;
+#if BYTE_ORDER == LITTLE_ENDIAN
+            value = __builtin_bswap32(value);
+#endif
+            destpix[j] = value;
+        }
+        sourcepix = sourcepix + d->width;
+        destpix   = destpix + d->width;
+    }
+}
+
+void spice_display_invalidate(SpiceDisplay *display) {
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+    uiCallbackInvalidate(d->ctx, 0, 0, d->width, d->height);
+}
+
+void spice_display_request_resolution(SpiceDisplay *display, int w, int h) {
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+
+    spice_main_update_display(d->main, get_display_id(display), 0, 0,
+                              w, h, TRUE);
+    spice_main_set_display_enabled(d->main, -1, TRUE);
+    // TODO: Sending the monitor config right away may be causing guest OS to shut down.
+    /*
+    if (spice_main_send_monitor_config(d->main)) {
+        __android_log_write(ANDROID_LOG_DEBUG, TAG, "Successfully sent monitor config");
+    } else {
+        __android_log_write(ANDROID_LOG_WARN, TAG, "Failed to send monitor config");
+    }*/
+}
+
+void spice_display_send_key(SpiceDisplay *display, int scancode, bool down) {
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
     uint32_t i, b, m;
 
     if (!d->inputs)
@@ -223,6 +264,61 @@ void send_key(SpiceDisplay *display, int scancode, int down)
         }
         spice_inputs_key_release(d->inputs, scancode);
         d->key_state[i] &= ~m;
+    }
+}
+
+void spice_display_send_pointer(SpiceDisplay *display, bool absolute,
+                                int x, int y) {
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+
+    if (d->inputs) {
+        if (absolute)
+            spice_inputs_position(d->inputs, x, y, d->channel_id,
+                    d->mouse_button_mask);
+        else
+            spice_inputs_motion(d->inputs, x, y, d->mouse_button_mask);
+    }
+}
+
+void spice_display_send_button(SpiceDisplay *display, int button, bool down) {
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+    int button_mask;
+
+    switch (button) {
+    case SPICE_MOUSE_BUTTON_LEFT:
+        button_mask = SPICE_MOUSE_BUTTON_MASK_LEFT;
+        break;
+    case SPICE_MOUSE_BUTTON_MIDDLE:
+        button_mask = SPICE_MOUSE_BUTTON_MASK_MIDDLE;
+        break;
+    case SPICE_MOUSE_BUTTON_RIGHT:
+        button_mask = SPICE_MOUSE_BUTTON_MASK_RIGHT;
+        break;
+    default:
+        return;
+    }
+
+    if (down) {
+        d->mouse_button_mask |= button_mask;
+        if (d->inputs)
+            spice_inputs_button_press(d->inputs, button, d->mouse_button_mask);
+    } else {
+        d->mouse_button_mask &= ~button_mask;
+        if (d->inputs)
+            spice_inputs_button_release(d->inputs, button,
+                    d->mouse_button_mask);
+    }
+}
+
+void spice_display_send_scroll(SpiceDisplay *display, int button, int count) {
+    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(display);
+
+    if (d->inputs) {
+        for (int i = 0; i < count; i++) {
+            spice_inputs_button_press(d->inputs, button, d->mouse_button_mask);
+            spice_inputs_button_release(d->inputs, button,
+                    d->mouse_button_mask);
+        }
     }
 }
 

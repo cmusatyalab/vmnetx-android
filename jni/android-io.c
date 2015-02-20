@@ -30,7 +30,6 @@
 #include <stdlib.h>
 
 #include "android-spice-display.h"
-#include "android-spice-display-priv.h"
 #include "android-io.h"
 #include "android-spice.h"
 #include "keymap.h"
@@ -67,30 +66,10 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceSetFd(JNIEnv *env, j
     g_idle_add_full(G_PRIORITY_DEFAULT, do_set_fd, args, NULL);
 }
 
-static void updatePixels (uint32_t *dest, uint32_t *source, int x, int y, int width, int height, int buffwidth, int buffheight) {
-    //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Drawing x: %d, y: %d, w: %d, h: %d, wBuf: %d, hBuf: %d", x, y, width, height, wBuf, hBuf);
-    uint32_t *sourcepix = &source[(buffwidth * y) + x];
-    uint32_t *destpix   = &dest[(buffwidth * y) + x];
-
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            // ARGB -> R G B X
-            uint32_t value = sourcepix[j] << 8;
-#if BYTE_ORDER == LITTLE_ENDIAN
-            value = __builtin_bswap32(value);
-#endif
-            destpix[j] = value;
-        }
-        sourcepix = sourcepix + buffwidth;
-        destpix   = destpix + buffwidth;
-    }
-}
-
 JNIEXPORT void JNICALL
 Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv* env, jobject obj, jlong context, jobject bitmap, gint x, gint y, gint width, gint height) {
     struct spice_context *ctx = (struct spice_context *) context;
     void* pixels;
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
 
     assert_on_main_loop_thread();
     if (AndroidBitmap_lockPixels(env, bitmap, &pixels) < 0) {
@@ -98,7 +77,7 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv
         return;
     }
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Copying new data into pixels.");
-    updatePixels (pixels, d->data, x, y, width, height, d->width, d->height);
+    spice_display_copy_pixels(ctx->display, pixels, x, y, width, height);
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
@@ -112,10 +91,9 @@ struct redraw_args {
 
 static gboolean do_redraw(void *data) {
     struct redraw_args *args = data;
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
 
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Forcing full invalidate");
-    uiCallbackInvalidate(args->ctx, 0, 0, d->width, d->height);
+    spice_display_invalidate(args->ctx->display);
 
     g_mutex_lock(&args->lock);
     args->done = true;
@@ -146,20 +124,11 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceForceRedraw (JNIEnv*
 }
 
 JNIEXPORT void JNICALL
-Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, jobject obj, jlong context, jint x, jint y) {
+Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceRequestResolution(JNIEnv* env, jobject obj, jlong context, jint w, jint h) {
     struct spice_context *ctx = (struct spice_context *) context;
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
 
     assert_on_main_loop_thread();
-    spice_main_update_display(d->main, get_display_id(ctx->display), 0, 0, x, y, TRUE);
-    spice_main_set_display_enabled(d->main, -1, TRUE);
-    // TODO: Sending the monitor config right away may be causing guest OS to shut down.
-    /*
-    if (spice_main_send_monitor_config(d->main)) {
-        __android_log_write(ANDROID_LOG_DEBUG, TAG, "Successfully sent monitor config");
-    } else {
-        __android_log_write(ANDROID_LOG_WARN, TAG, "Failed to send monitor config");
-    }*/
+    spice_display_request_resolution(ctx->display, w, h);
 }
 
 struct key_event_args {
@@ -172,12 +141,8 @@ static gboolean do_key_event(void *data) {
     struct key_event_args *args = data;
     struct spice_context *ctx = args->ctx;
     int keycode = args->keycode;
-    SpiceDisplayPrivate* d = SPICE_DISPLAY_GET_PRIVATE(ctx->display);
 
     SPICE_DEBUG("%s %s: keycode: %d", __FUNCTION__, "Key", keycode);
-
-    if (!d->inputs)
-        goto OUT;
 
     // The lookup table doesn't include mappings that require multiple
     // keypresses, so translate them here
@@ -207,12 +172,12 @@ static gboolean do_key_event(void *data) {
 
     if (args->down) {
         if (shift)
-            send_key(ctx->display, shift, 1);
-        send_key(ctx->display, scancode, 1);
+            spice_display_send_key(ctx->display, shift, true);
+        spice_display_send_key(ctx->display, scancode, true);
     } else {
-        send_key(ctx->display, scancode, 0);
+        spice_display_send_key(ctx->display, scancode, false);
         if (shift)
-            send_key(ctx->display, shift, 0);
+            spice_display_send_key(ctx->display, shift, false);
     }
 
 OUT:
@@ -239,17 +204,9 @@ struct pointer_event_args {
 static gboolean do_pointer_event(void *data) {
     struct pointer_event_args *args = data;
 
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Pointer event: %d at x: %d, y: %d", args->type, x, y);
-
-    if (d->inputs) {
-        if (args->absolute)
-            spice_inputs_position(d->inputs, args->x, args->y, d->channel_id,
-                    d->mouse_button_mask);
-        else
-            spice_inputs_motion(d->inputs, args->x, args->y,
-                    d->mouse_button_mask);
-    }
+    spice_display_send_pointer(args->ctx->display, args->absolute,
+            args->x, args->y);
 
     g_slice_free(struct pointer_event_args, args);
     return false;
@@ -274,37 +231,25 @@ struct button_event_args {
 static gboolean do_button_event(void *data) {
     struct button_event_args *args = data;
 
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Button event: button %d, down %d", args->button, args->down);
 
     int spice_button;
-    int button_mask;
     switch (args->button) {
     case AMOTION_EVENT_BUTTON_PRIMARY:
         spice_button = SPICE_MOUSE_BUTTON_LEFT;
-        button_mask = SPICE_MOUSE_BUTTON_MASK_LEFT;
         break;
     case AMOTION_EVENT_BUTTON_SECONDARY:
         spice_button = SPICE_MOUSE_BUTTON_RIGHT;
-        button_mask = SPICE_MOUSE_BUTTON_MASK_RIGHT;
         break;
     case AMOTION_EVENT_BUTTON_TERTIARY:
         spice_button = SPICE_MOUSE_BUTTON_MIDDLE;
-        button_mask = SPICE_MOUSE_BUTTON_MASK_MIDDLE;
         break;
     default:
         return false;
     }
 
-    if (args->down) {
-        d->mouse_button_mask |= button_mask;
-        if (d->inputs)
-            spice_inputs_button_press(d->inputs, spice_button, d->mouse_button_mask);
-    } else {
-        d->mouse_button_mask &= ~button_mask;
-        if (d->inputs)
-            spice_inputs_button_release(d->inputs, spice_button, d->mouse_button_mask);
-    }
+    spice_display_send_button(args->ctx->display, spice_button, args->down);
+
     g_slice_free(struct button_event_args, args);
     return false;
 }
@@ -327,15 +272,9 @@ struct scroll_event_args {
 static gboolean do_scroll_event(void *data) {
     struct scroll_event_args *args = data;
 
-    SpiceDisplayPrivate *d = SPICE_DISPLAY_GET_PRIVATE(args->ctx->display);
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Scroll event: button %d, count %d", args->button, args->count);
+    spice_display_send_scroll(args->ctx->display, args->button, args->count);
 
-    if (d->inputs) {
-        for (int i = 0; i < args->count; i++) {
-            spice_inputs_button_press(d->inputs, args->button, d->mouse_button_mask);
-            spice_inputs_button_release(d->inputs, args->button, d->mouse_button_mask);
-        }
-    }
     g_slice_free(struct scroll_event_args, args);
     return false;
 }

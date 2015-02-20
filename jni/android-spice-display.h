@@ -52,8 +52,15 @@ struct _SpiceDisplayClass {
 
 GType spice_display_get_type(void);
 SpiceDisplay* spice_display_new(struct spice_context *ctx, int id);
-void send_key(SpiceDisplay *display, int scancode, int down);
-gint get_display_id(SpiceDisplay *display);
+void spice_display_copy_pixels(SpiceDisplay *display, uint32_t *dest,
+                               int x, int y, int width, int height);
+void spice_display_invalidate(SpiceDisplay *display);
+void spice_display_request_resolution(SpiceDisplay *display, int w, int h);
+void spice_display_send_key(SpiceDisplay *display, int scancode, bool down);
+void spice_display_send_pointer(SpiceDisplay *display, bool absolute,
+                                int x, int y);
+void spice_display_send_button(SpiceDisplay *display, int button, bool down);
+void spice_display_send_scroll(SpiceDisplay *display, int button, int count);
 
 G_END_DECLS
 
