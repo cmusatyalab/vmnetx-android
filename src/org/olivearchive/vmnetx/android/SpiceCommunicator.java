@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.freedesktop.gstreamer.GStreamer;
 
 import org.olivearchive.vmnetx.android.protocol.ProtocolException;
@@ -57,15 +58,16 @@ public class SpiceCommunicator {
     private final RemoteCanvas canvas;
     private final Handler handler;
     private final ConnectionInfo connection;
-    private final long context;
+    private final long _context;
 
     private boolean isInNormalProtocol = false;
+    private final AtomicBoolean disconnected = new AtomicBoolean();
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionInfo connection) {
         this.canvas = canvas;
         this.handler = handler;
         this.connection = connection;
-        this.context = SpiceClientNewContext();
+        this._context = SpiceClientNewContext();
         try {
             GStreamer.init(context);
         } catch (Exception e) {
@@ -75,15 +77,15 @@ public class SpiceCommunicator {
     }
 
     public void connect() {
-        SpiceClientConnect(context, connection.getToken());
+        SpiceClientConnect(getContext(), connection.getToken());
     }
     
     public void disconnect() {
-        SpiceClientDisconnect(context);
+        SpiceClientDisconnect(getContext());
     }
 
     protected void finalize() {
-        SpiceClientFreeContext(context);
+        SpiceClientFreeContext(_context);
     }
 
     private class ConnectThread extends Thread {
@@ -107,27 +109,34 @@ public class SpiceCommunicator {
     }
 
     private void sendPointerEvent (boolean absolute, int x, int y) {
-        SpicePointerEvent(context, absolute, x, y);
+        SpicePointerEvent(getContext(), absolute, x, y);
     }
 
     private void sendButtonEvent (boolean buttonDown, int button) {
-        SpiceButtonEvent(context, buttonDown, button);
+        SpiceButtonEvent(getContext(), buttonDown, button);
     }
 
     private void sendScrollEvent(int button, int count) {
-        SpiceScrollEvent(context, button, count);
+        SpiceScrollEvent(getContext(), button, count);
     }
 
     private void sendKeyEvent (boolean keyDown, int virtualKeyCode) {
-        SpiceKeyEvent(context, keyDown, virtualKeyCode);
+        SpiceKeyEvent(getContext(), keyDown, virtualKeyCode);
     }
     
     public void updateBitmap (Bitmap bitmap, int x, int y, int w, int h) {
-        SpiceUpdateBitmap(context, bitmap, x, y, w, h);
+        SpiceUpdateBitmap(getContext(), bitmap, x, y, w, h);
     }
     
     public void redraw() {
-        SpiceForceRedraw(context);
+        SpiceForceRedraw(getContext());
+    }
+
+    private long getContext() {
+        if (disconnected.get())
+            throw new IllegalStateException("Calling into SPICE JNI " +
+                    "after disconnection");
+        return _context;
     }
 
     /* Callbacks from jni */
@@ -155,6 +164,7 @@ public class SpiceCommunicator {
 
     private void OnDisconnect() {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
+        disconnected.set(true);
     }
 
     public boolean isInNormalProtocol() {
@@ -240,6 +250,6 @@ public class SpiceCommunicator {
     }
 
     public void requestResolution(int x, int y) {
-        SpiceRequestResolution(context, x, y);
+        SpiceRequestResolution(getContext(), x, y);
     }
 }
