@@ -21,6 +21,7 @@
 #ifndef ANDROID_SPICE_H
 #define ANDROID_SPICE_H
 
+#include <stdbool.h>
 #include <jni.h>
 #include <android/bitmap.h>
 #include <glib.h>
@@ -43,6 +44,7 @@ struct spice_context {
     struct _SpiceDisplay     *display;
     int                       display_channel;
     int                       channels;
+    bool                      disconnected;
 };
 
 #endif

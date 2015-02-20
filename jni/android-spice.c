@@ -90,6 +90,13 @@ static void context_destroy(struct spice_context *ctx) {
     g_slice_free(struct spice_context, ctx);
 }
 
+static void context_disconnect(struct spice_context *ctx) {
+    if (!ctx->session || ctx->disconnected)
+        return;
+    ctx->disconnected = true;
+    spice_session_disconnect(ctx->session);
+}
+
 static void channel_open_fd(SpiceChannel *channel, gint with_tls,
                             gpointer data)
 {
@@ -109,8 +116,7 @@ static void main_channel_event(SpiceChannel *channel, SpiceChannelEvent event,
     case SPICE_CHANNEL_ERROR_LINK:
     case SPICE_CHANNEL_ERROR_CONNECT:
     case SPICE_CHANNEL_ERROR_AUTH:
-        if (ctx->session)
-            spice_session_disconnect(ctx->session);
+        context_disconnect(ctx);
         break;
     default:
         break;
@@ -176,8 +182,7 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
 
 static gboolean do_disconnect(void *data) {
     struct spice_context *ctx = (struct spice_context *) data;
-    if (ctx->session)
-        spice_session_disconnect(ctx->session);
+    context_disconnect(ctx);
     if (ctx->channels == 0) {
         // never started a connection; tear down by hand
         context_destroy(ctx);
