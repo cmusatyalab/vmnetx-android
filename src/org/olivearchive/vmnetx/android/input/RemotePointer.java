@@ -30,7 +30,8 @@ import org.olivearchive.vmnetx.android.SpiceCommunicator;
 import org.olivearchive.vmnetx.android.Viewport;
 
 public class RemotePointer {
-    //private static final String TAG = "RemotePointer";
+    @SuppressWarnings("unused")
+    private static final String TAG = "RemotePointer";
 
     public static final int BUTTON_SCROLL_UP	= 4;
     public static final int BUTTON_SCROLL_DOWN	= 5;

@@ -55,7 +55,8 @@ import android.widget.RelativeLayout;
 
 public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         OnSystemUiVisibilityChangeListener {
-    //private final static String TAG = "RemoteCanvasActivity";
+    @SuppressWarnings("unused")
+    private final static String TAG = "RemoteCanvasActivity";
     private final static String CONNECTION_KEY = "RemoteCanvasActivity.connection";
     
     private GestureHandler gestureHandler;

@@ -29,7 +29,8 @@ import org.olivearchive.vmnetx.android.RemoteCanvas;
 import org.olivearchive.vmnetx.android.RemoteCanvasActivity;
 
 public class RelativeMouseHandler extends GestureHandler {
-    static final String TAG = "RelativeMouseHandler";
+    @SuppressWarnings("unused")
+    private static final String TAG = "RelativeMouseHandler";
 
     private final float sensitivity;
     private final boolean acceleration;

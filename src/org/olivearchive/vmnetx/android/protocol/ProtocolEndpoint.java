@@ -26,10 +26,13 @@ import net.asdfa.msgpack.MsgPack;
 import org.olivearchive.vmnetx.android.Constants;
 
 abstract class ProtocolEndpoint {
+    @SuppressWarnings("unused")
+    static private final String TAG = "ProtocolEndpoint";
     static private final String MTYPE_KEY = "_";
 
     static protected final class RecvMessage {
-        //static private final String TAG = "RecvMessage";
+        @SuppressWarnings("unused")
+        static private final String TAG = "RecvMessage";
 
         public final String mtype;
         private final Map<Object, Object> items;
