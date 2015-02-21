@@ -317,9 +317,7 @@ abstract public class GestureHandler
                     dragY = e.getY();
                     return true;
                 } else if (dragModeButton != 0) {
-                    if (!updatePosition(e))
-                        return false;
-                    return p.processButtonEvent(deviceID, dragModeButton);
+                    return updatePosition(e);
                 } else if (inSwiping) {
                     // Save the coordinates and restore them afterward.
                     float x = e.getX();
