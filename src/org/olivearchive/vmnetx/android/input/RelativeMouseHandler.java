@@ -128,7 +128,7 @@ public class RelativeMouseHandler extends GestureHandler {
     }
 
     @Override
-    protected boolean updatePosition(int x, int y) {
+    protected boolean updatePosition(MotionEvent e) {
         // no position to update
         return true;
     }

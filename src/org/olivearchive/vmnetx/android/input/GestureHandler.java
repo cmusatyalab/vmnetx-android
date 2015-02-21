@@ -108,36 +108,16 @@ abstract public class GestureHandler
     }
 
     /**
-     * Function to get appropriate X coordinate from motion event for this input handler.
-     * @return the appropriate X coordinate.
-     */
-    protected int getX(MotionEvent e) {
-        return (int) canvas.getViewport().viewToImageX(e.getX());
-    }
-
-    /**
-     * Function to get appropriate Y coordinate from motion event for this input handler.
-     * @return the appropriate Y coordinate.
-     */
-    protected int getY(MotionEvent e) {
-        int[] location = new int[2];
-        canvas.getLocationOnScreen(location);
-
-        return (int) canvas.getViewport().viewToImageY(e.getY() -
-                (float) location[1]);
-    }
-
-    /**
      * Update the current mouse position from the specified MotionEvent.
      */
     protected boolean updatePosition(MotionEvent e) {
-        return updatePosition(getX(e), getY(e));
-    }
+        int[] location = new int[2];
+        canvas.getLocationOnScreen(location);
 
-    /**
-     * Update the current mouse position to the specified coordinates.
-     */
-    protected boolean updatePosition(int x, int y) {
+        int x = (int) canvas.getViewport().viewToImageX(e.getX());
+        int y = (int) canvas.getViewport().viewToImageY(e.getY() -
+                (float) location[1]);
+
         if (!canvas.getPointer().processPointerEvent(x, y))
             return false;
         canvas.getViewport().panToMouse();
@@ -161,8 +141,6 @@ abstract public class GestureHandler
         }
 
         RemotePointer p  = canvas.getPointer();
-        int x = getX(e);
-        int y = getY(e);
 
         switch (e.getActionMasked()) {
         // First mouse button pressed
@@ -174,7 +152,7 @@ abstract public class GestureHandler
         // Mouse was moved OR as reported, some external mice trigger
         // this when a mouse button is pressed as well
         case MotionEvent.ACTION_HOVER_MOVE:
-            if (!updatePosition(x, y))
+            if (!updatePosition(e))
                 return false;
             return p.processButtonEvent(e.getDeviceId(), e.getButtonState());
 
