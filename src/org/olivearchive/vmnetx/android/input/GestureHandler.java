@@ -285,6 +285,33 @@ abstract public class GestureHandler
             viewport.setFilteringEnabled(true);
         }
 
+        if (action == MotionEvent.ACTION_MOVE) {
+            // Send scroll up/down events if swiping is happening.
+            if (panMode) {
+                float scale = viewport.getScale();
+                viewport.pan(-(int)((e.getX() - dragX) * scale),
+                             -(int)((e.getY() - dragY) * scale));
+                dragX = e.getX();
+                dragY = e.getY();
+                return true;
+            } else if (dragModeButton != 0) {
+                return updatePosition(e);
+            } else if (inSwiping) {
+                // Save the coordinates and restore them afterward.
+                float x = e.getX();
+                float y = e.getY();
+                // Set the coordinates to where the swipe began (i.e. where scaling started).
+                setEventCoordinates(e, xInitialFocus, yInitialFocus);
+                if (twoFingerSwipeUp) {
+                    p.processScrollEvent(RemotePointer.BUTTON_SCROLL_UP, (int) Math.min(swipeSpeed, maxSwipeSpeed));
+                } else if (twoFingerSwipeDown) {
+                    p.processScrollEvent(RemotePointer.BUTTON_SCROLL_DOWN, (int) Math.min(swipeSpeed, maxSwipeSpeed));
+                }
+                // Restore the coordinates so that onScale doesn't get all muddled up.
+                setEventCoordinates(e, x, y);
+            }
+        }
+
         switch (e.getPointerCount()) {
         case 1:
             switch (action) {
@@ -308,30 +335,6 @@ abstract public class GestureHandler
                     return p.processButtonEvent(deviceID, 0);
                 }
                 break;
-            case MotionEvent.ACTION_MOVE:
-                // Send scroll up/down events if swiping is happening.
-                if (panMode) {
-                    float scale = viewport.getScale();
-                    viewport.pan(-(int)((e.getX() - dragX)*scale), -(int)((e.getY() - dragY)*scale));
-                    dragX = e.getX();
-                    dragY = e.getY();
-                    return true;
-                } else if (dragModeButton != 0) {
-                    return updatePosition(e);
-                } else if (inSwiping) {
-                    // Save the coordinates and restore them afterward.
-                    float x = e.getX();
-                    float y = e.getY();
-                    // Set the coordinates to where the swipe began (i.e. where scaling started).
-                    setEventCoordinates(e, xInitialFocus, yInitialFocus);
-                    if (twoFingerSwipeUp) {
-                        p.processScrollEvent(RemotePointer.BUTTON_SCROLL_UP, (int) Math.min(swipeSpeed, maxSwipeSpeed));
-                    } else if (twoFingerSwipeDown) {
-                        p.processScrollEvent(RemotePointer.BUTTON_SCROLL_DOWN, (int) Math.min(swipeSpeed, maxSwipeSpeed));
-                    }
-                    // Restore the coordinates so that onScale doesn't get all muddled up.
-                    setEventCoordinates(e, x, y);
-                }
             }
             break;
 
