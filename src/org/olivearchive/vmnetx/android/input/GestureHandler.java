@@ -305,8 +305,6 @@ abstract public class GestureHandler
             case MotionEvent.ACTION_UP:
                 // If any drag mode was going on, end it and send a mouse up event.
                 if (endDragModeAndScrolling()) {
-                    if (!updatePosition(e))
-                        return false;
                     return p.processButtonEvent(deviceID, 0);
                 }
                 break;
