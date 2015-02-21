@@ -258,11 +258,6 @@ abstract public class GestureHandler
         if (handleMouseActions (e))
             return true;
 
-        if (action == MotionEvent.ACTION_UP) {
-            // Turn filtering back on.
-            viewport.setFilteringEnabled(true);
-        }
-
         if (action == MotionEvent.ACTION_MOVE) {
             // Send scroll up/down events if swiping is happening.
             if (panMode) {
@@ -302,8 +297,6 @@ abstract public class GestureHandler
                 scalingJustFinished = false;
                 // Cancel drag mode and scrolling.
                 endDragModeAndScrolling();
-                // If we are manipulating the desktop, turn off bitmap filtering for faster response.
-                viewport.setFilteringEnabled(false);
                 dragX = e.getX();
                 dragY = e.getY();
                 break;

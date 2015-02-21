@@ -129,7 +129,7 @@ public class Viewport {
         this.spice = spice;
         this.canvas = canvas;
         this.handler = new Handler();
-        setFilteringEnabled(true);
+        paint.setFilterBitmap(true);
         canvas.setImageDrawable(drawable);
         canvas.setScaleType(ImageView.ScaleType.MATRIX);
     }
@@ -336,14 +336,6 @@ public class Viewport {
         bm.getPixels(tempPixels, 0, w, 0, 0, w, h);
         // Set softCursor to whatever the resource is.
         setSoftCursor(tempPixels, w, h, 0, 0);
-    }
-
-    public void setFilteringEnabled(boolean enabled) {
-        paint.setFilterBitmap(enabled);
-        if (enabled) {
-            // Invalidate to make things pretty.
-            canvas.invalidate();
-        }
     }
 
     public float getScale() {
