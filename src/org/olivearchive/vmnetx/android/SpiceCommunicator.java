@@ -207,7 +207,9 @@ public class SpiceCommunicator {
     }
 
     private void OnGraphicsUpdate(int x, int y, int width, int height) {
-        canvas.getViewport().OnGraphicsUpdate(x, y, width, height);
+        Viewport viewport = canvas.getViewport();
+        if (viewport != null)
+            viewport.OnGraphicsUpdate(x, y, width, height);
     }
 
     private void OnMouseMode(boolean absoluteMouse) {
@@ -216,7 +218,9 @@ public class SpiceCommunicator {
 
     private void OnCursorConfig(boolean shown, int[] bitmap, int w, int h,
             int hotX, int hotY) {
-        canvas.getViewport().OnCursorConfig(shown, bitmap, w, h, hotX, hotY);
+        Viewport viewport = canvas.getViewport();
+        if (viewport != null)
+            viewport.OnCursorConfig(shown, bitmap, w, h, hotX, hotY);
     }
 
     private void OnDisconnect() {

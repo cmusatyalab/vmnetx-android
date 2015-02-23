@@ -387,7 +387,8 @@ public class RemoteCanvas extends ImageView {
         }
 
         // Notify viewport.
-        viewport.OnSettingsChanged(width, height);
+        if (viewport != null)
+            viewport.OnSettingsChanged(width, height);
 
         // Update activity state.
         handler.post(updateActivity);
