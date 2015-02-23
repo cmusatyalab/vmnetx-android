@@ -461,7 +461,7 @@ public class RemoteCanvas extends ImageView {
         }
 
         public void stop() {
-            handler.removeCallbacks(pinger);
+            handler.removeCallbacks(this);
         }
 
         public void pong() {
@@ -469,7 +469,7 @@ public class RemoteCanvas extends ImageView {
         }
 
         private void schedule() {
-            handler.postDelayed(pinger, INTERVAL);
+            handler.postDelayed(this, INTERVAL);
         }
 
         @Override
