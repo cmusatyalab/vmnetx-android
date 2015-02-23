@@ -81,13 +81,20 @@ static gpointer start_main_loop(gpointer data) {
     return thr;
 }
 
-static void context_destroy(struct spice_context *ctx) {
-    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "tearing down context");
+// We fire the Java disconnect callback and destroy the context from a
+// main loop callback.  We don't want to do this inside the disconnect
+// JNI call, since that would force the Java code to upgrade its reader
+// lock to a writer lock inside the Java disconnect callback.
+static gboolean destroy_context_callback(void *data) {
+    struct spice_context *ctx = data;
     g_assert(ctx->channels == 0);
+    uiCallbackDisconnect(ctx);
+    //__android_log_write(ANDROID_LOG_DEBUG, TAG, "tearing down context");
     (*ctx->thr->jenv)->DeleteGlobalRef(ctx->thr->jenv, ctx->jni_connector);
     if (ctx->session)
         g_object_unref(ctx->session);
     g_slice_free(struct spice_context, ctx);
+    return false;
 }
 
 static void context_disconnect(struct spice_context *ctx) {
@@ -175,8 +182,8 @@ static void channel_destroy(SpiceSession *s, SpiceChannel *channel, gpointer dat
     ctx->channels--;
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Number of channels: %d", ctx->channels);
     if (ctx->channels == 0) {
-        uiCallbackDisconnect(ctx);
-        context_destroy(ctx);
+        g_idle_add_full(G_PRIORITY_DEFAULT, destroy_context_callback, ctx,
+                NULL);
     }
 }
 
@@ -185,7 +192,8 @@ static gboolean do_disconnect(void *data) {
     context_disconnect(ctx);
     if (ctx->channels == 0) {
         // never started a connection; tear down by hand
-        context_destroy(ctx);
+        g_idle_add_full(G_PRIORITY_DEFAULT, destroy_context_callback, ctx,
+                NULL);
     }
     return false;
 }
