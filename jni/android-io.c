@@ -77,7 +77,10 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceUpdateBitmap (JNIEnv
         return;
     }
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Copying new data into pixels.");
-    spice_display_copy_pixels(ctx->display, pixels, x, y, width, height);
+    if (ctx->display)
+        spice_display_copy_pixels(ctx->display, pixels, x, y, width, height);
+    else
+        memset(pixels, 0, width * height * 4);
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
@@ -93,7 +96,8 @@ static gboolean do_redraw(void *data) {
     struct redraw_args *args = data;
 
     //__android_log_write(ANDROID_LOG_DEBUG, TAG, "Forcing full invalidate");
-    spice_display_invalidate(args->ctx->display);
+    if (args->ctx->display)
+        spice_display_invalidate(args->ctx->display);
 
     g_mutex_lock(&args->lock);
     args->done = true;
@@ -128,7 +132,8 @@ Java_org_olivearchive_vmnetx_android_SpiceCommunicator_SpiceRequestResolution(JN
     struct spice_context *ctx = (struct spice_context *) context;
 
     assert_on_main_loop_thread();
-    spice_display_request_resolution(ctx->display, w, h);
+    if (ctx->display)
+        spice_display_request_resolution(ctx->display, w, h);
 }
 
 struct key_event_args {
@@ -143,6 +148,9 @@ static gboolean do_key_event(void *data) {
     int keycode = args->keycode;
 
     SPICE_DEBUG("%s %s: keycode: %d", __FUNCTION__, "Key", keycode);
+
+    if (!ctx->display)
+        goto OUT;
 
     // The lookup table doesn't include mappings that require multiple
     // keypresses, so translate them here
@@ -205,8 +213,9 @@ static gboolean do_pointer_event(void *data) {
     struct pointer_event_args *args = data;
 
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Pointer event: %d at x: %d, y: %d", args->type, x, y);
-    spice_display_send_pointer(args->ctx->display, args->absolute,
-            args->x, args->y);
+    if (args->ctx->display)
+        spice_display_send_pointer(args->ctx->display, args->absolute,
+                args->x, args->y);
 
     g_slice_free(struct pointer_event_args, args);
     return false;
@@ -248,7 +257,9 @@ static gboolean do_button_event(void *data) {
         return false;
     }
 
-    spice_display_send_button(args->ctx->display, spice_button, args->down);
+    if (args->ctx->display)
+        spice_display_send_button(args->ctx->display, spice_button,
+                args->down);
 
     g_slice_free(struct button_event_args, args);
     return false;
@@ -273,7 +284,9 @@ static gboolean do_scroll_event(void *data) {
     struct scroll_event_args *args = data;
 
     //__android_log_print(ANDROID_LOG_DEBUG, TAG, "Scroll event: button %d, count %d", args->button, args->count);
-    spice_display_send_scroll(args->ctx->display, args->button, args->count);
+    if (args->ctx->display)
+        spice_display_send_scroll(args->ctx->display, args->button,
+                args->count);
 
     g_slice_free(struct scroll_event_args, args);
     return false;
