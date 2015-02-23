@@ -51,6 +51,7 @@ public class Viewport {
 
     // Image bitmap
     private Bitmap bitmap;
+    private final Object bitmapLock = new Object();
     private final Paint paint = new Paint();
     private final BitmapDrawable drawable = new BitmapDrawable();
     private int imageWidth = 1;
@@ -83,14 +84,14 @@ public class Viewport {
         @Override
         public void draw(Canvas canvas) {
             try {
-                if (bitmap != null) {
-                    synchronized (bitmap) {
-                        canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint);
-                        if (softCursor != null)
-                            canvas.drawBitmap(softCursor, cursorRect.left,
-                                    cursorRect.top, paint);
-                    }
+                synchronized (bitmapLock) {
+                    if (bitmap == null)
+                        return;
+                    canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint);
                 }
+                if (softCursor != null)
+                    canvas.drawBitmap(softCursor, cursorRect.left,
+                            cursorRect.top, paint);
             } catch (Throwable e) { }
         }
 
@@ -378,24 +379,28 @@ public class Viewport {
             @Override
             @TargetApi(Build.VERSION_CODES.KITKAT)
             public void run() {
-                if (bitmap != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        try {
-                            bitmap.reconfigure(width, height, BITMAP_CONFIG);
-                        } catch (IllegalArgumentException e) {
+                synchronized (bitmapLock) {
+                    if (bitmap != null) {
+                        if (Build.VERSION.SDK_INT >=
+                                Build.VERSION_CODES.KITKAT) {
+                            try {
+                                bitmap.reconfigure(width, height,
+                                        BITMAP_CONFIG);
+                            } catch (IllegalArgumentException e) {
+                                bitmap = null;
+                            }
+                        } else {
                             bitmap = null;
                         }
-                    } else {
-                        bitmap = null;
                     }
-                }
-                if (bitmap == null) {
-                    try {
-                        bitmap = Bitmap.createBitmap(width, height,
-                                BITMAP_CONFIG);
-                        bitmap.setHasAlpha(false);
-                    } catch (Throwable e) {
-                        canvas.showFatalMessageAndQuit(canvas.getContext().getString(R.string.error_out_of_memory));
+                    if (bitmap == null) {
+                        try {
+                            bitmap = Bitmap.createBitmap(width, height,
+                                    BITMAP_CONFIG);
+                            bitmap.setHasAlpha(false);
+                        } catch (Throwable e) {
+                            canvas.showFatalMessageAndQuit(canvas.getContext().getString(R.string.error_out_of_memory));
+                        }
                     }
                 }
                 imageWidth = width;
@@ -409,10 +414,9 @@ public class Viewport {
     void OnGraphicsUpdate(int x, int y, int width, int height) {
         //android.util.Log.d(TAG, "OnGraphicsUpdate called: " + x +", " + y + " + " + width + "x" + height );
 
-        if (bitmap == null)
-            return;
-
-        synchronized (bitmap) {
+        synchronized (bitmapLock) {
+            if (bitmap == null)
+                return;
             spice.updateBitmap(bitmap, x, y, width, height);
         }
 
