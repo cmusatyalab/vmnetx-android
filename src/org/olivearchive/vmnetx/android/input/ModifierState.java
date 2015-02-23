@@ -46,7 +46,7 @@ class ModifierState {
         public int compareTo(Device o) {
             if (type != o.type)
                 return type.compareTo(o.type);
-            return new Integer(id).compareTo(o.id);
+            return Integer.valueOf(id).compareTo(o.id);
         }
     }
 

@@ -256,7 +256,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         }
     }
 
-    @TargetApi(21)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void updateTitle() {
         String vmName = canvas.getVMName();
         if (vmName != null) {
@@ -275,6 +275,7 @@ public class RemoteCanvasActivity extends Activity implements OnKeyListener,
         keyboardMenuItem.setVisible(softKeyboardEnabled);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public void setFullScreen(boolean fullScreen) {
         if (canvas == null)
             return;

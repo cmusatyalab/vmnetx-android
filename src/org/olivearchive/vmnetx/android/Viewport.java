@@ -25,6 +25,7 @@
 
 package org.olivearchive.vmnetx.android;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -33,6 +34,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.DrawableContainer;
+import android.os.Build;
 import android.os.Handler;
 import android.widget.ImageView;
 
@@ -374,11 +376,16 @@ public class Viewport {
         // Recreate bitmap.
         handler.post(new Runnable() {
             @Override
+            @TargetApi(Build.VERSION_CODES.KITKAT)
             public void run() {
                 if (bitmap != null) {
-                    try {
-                        bitmap.reconfigure(width, height, BITMAP_CONFIG);
-                    } catch (IllegalArgumentException e) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        try {
+                            bitmap.reconfigure(width, height, BITMAP_CONFIG);
+                        } catch (IllegalArgumentException e) {
+                            bitmap = null;
+                        }
+                    } else {
                         bitmap = null;
                     }
                 }

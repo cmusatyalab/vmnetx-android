@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
 <org.olivearchive.vmnetx.android.RemoteCanvas
     android:id="@+id/remoteCanvas"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="bottom|center"
-    >
-</org.olivearchive.vmnetx.android.RemoteCanvas>
+    android:layout_gravity="bottom|center"/>
 
 <RelativeLayout
     android:id="@+id/layoutKeys"
@@ -44,18 +38,21 @@
 		    android:src="@drawable/taboff"
 	    	    android:layout_width="wrap_content"
 	    	    android:layout_height="wrap_content"
+		    android:contentDescription="@string/key_tab"
 	    	    />
 			<ImageButton android:id="@+id/keyEsc"
 		    android:background="@null"
 		    android:src="@drawable/escoff"
 	    	    android:layout_width="wrap_content"
 	    	    android:layout_height="wrap_content"
+		    android:contentDescription="@string/key_escape"
 	    	    />
 			<ImageButton android:id="@+id/keyShift"
 		    android:background="@null"
 		    android:src="@drawable/shiftoff"
 	    	    android:layout_width="wrap_content"
 	    	    android:layout_height="wrap_content"
+		    android:contentDescription="@string/key_shift"
 	    	    />
 		</LinearLayout>
 		<LinearLayout
@@ -70,18 +67,21 @@
 		        android:src="@drawable/ctrloff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+		        android:contentDescription="@string/key_control"
 		        />
 			<ImageButton android:id="@+id/keySuper"
 		        android:background="@null"
 		        android:src="@drawable/superoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+		        android:contentDescription="@string/key_super"
 		        />
 			<ImageButton android:id="@+id/keyAlt"
 		        android:background="@null"
 		        android:src="@drawable/altoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+		        android:contentDescription="@string/key_alt"
 		        />
 		</LinearLayout>
 	</LinearLayout>
@@ -101,6 +101,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="top|center"
+	        android:contentDescription="@string/key_up"
 	        />
 		<LinearLayout
 		    android:id="@+id/layoutArrowKeysBottomRow"
@@ -114,21 +115,24 @@
 		        android:src="@drawable/leftoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+		        android:contentDescription="@string/key_left"
 		        />
 			<ImageButton android:id="@+id/keyDownArrow"
 		        android:background="@null"
 		        android:src="@drawable/downoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+		        android:contentDescription="@string/key_down"
 		        />
 			<ImageButton android:id="@+id/keyRightArrow"
 		        android:background="@null"
 		        android:src="@drawable/rightoff"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+		        android:contentDescription="@string/key_right"
 		        />
 		</LinearLayout>
 	</LinearLayout>
 </RelativeLayout>
 
-</FrameLayout>
+</merge>
