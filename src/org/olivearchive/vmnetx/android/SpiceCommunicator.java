@@ -25,7 +25,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.freedesktop.gstreamer.GStreamer;
 
 import org.olivearchive.vmnetx.android.protocol.ProtocolException;
@@ -57,16 +57,18 @@ public class SpiceCommunicator {
     private final RemoteCanvas canvas;
     private final Handler handler;
     private final ConnectionInfo connection;
-    private final long _context;
+    private final long context;
 
-    private boolean isInNormalProtocol = false;
-    private final AtomicBoolean disconnected = new AtomicBoolean();
+    private boolean isInNormalProtocol;
+    private boolean disconnected;
+    private final ReentrantReadWriteLock disconnectLock =
+            new ReentrantReadWriteLock();
 
     public SpiceCommunicator (Context context, RemoteCanvas canvas, Handler handler, ConnectionInfo connection) {
         this.canvas = canvas;
         this.handler = handler;
         this.connection = connection;
-        this._context = SpiceClientNewContext();
+        this.context = SpiceClientNewContext();
         try {
             GStreamer.init(context);
         } catch (Exception e) {
@@ -75,17 +77,43 @@ public class SpiceCommunicator {
         }
     }
 
+    private boolean startNativeCall() {
+        disconnectLock.readLock().lock();
+        if (disconnected) {
+            disconnectLock.readLock().unlock();
+            return false;
+        }
+        return true;
+    }
+
+    private void endNativeCall() {
+        disconnectLock.readLock().unlock();
+    }
+
     public void connect() {
-        SpiceClientConnect(getContext(), connection.getToken());
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceClientConnect(context, connection.getToken());
+        } finally {
+            endNativeCall();
+        }
     }
     
     public void disconnect() {
-        SpiceClientDisconnect(getContext());
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceClientDisconnect(context);
+        } finally {
+            endNativeCall();
+        }
     }
 
     protected void finalize() {
-        if (!disconnected.get())
-            disconnect();
+        // Ensure native resources are cleaned up.
+        // Redundant if already disconnected.
+        disconnect();
     }
 
     private class ConnectThread extends Thread {
@@ -109,34 +137,63 @@ public class SpiceCommunicator {
     }
 
     private void sendPointerEvent (boolean absolute, int x, int y) {
-        SpicePointerEvent(getContext(), absolute, x, y);
+        if (!startNativeCall())
+            return;
+        try {
+            SpicePointerEvent(context, absolute, x, y);
+        } finally {
+            endNativeCall();
+        }
     }
 
     private void sendButtonEvent (boolean buttonDown, int button) {
-        SpiceButtonEvent(getContext(), buttonDown, button);
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceButtonEvent(context, buttonDown, button);
+        } finally {
+            endNativeCall();
+        }
     }
 
     private void sendScrollEvent(int button, int count) {
-        SpiceScrollEvent(getContext(), button, count);
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceScrollEvent(context, button, count);
+        } finally {
+            endNativeCall();
+        }
     }
 
     private void sendKeyEvent (boolean keyDown, int virtualKeyCode) {
-        SpiceKeyEvent(getContext(), keyDown, virtualKeyCode);
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceKeyEvent(context, keyDown, virtualKeyCode);
+        } finally {
+            endNativeCall();
+        }
     }
     
     public void updateBitmap (Bitmap bitmap, int x, int y, int w, int h) {
-        SpiceUpdateBitmap(getContext(), bitmap, x, y, w, h);
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceUpdateBitmap(context, bitmap, x, y, w, h);
+        } finally {
+            endNativeCall();
+        }
     }
     
     public void redraw() {
-        SpiceForceRedraw(getContext());
-    }
-
-    private long getContext() {
-        if (disconnected.get())
-            throw new IllegalStateException("Calling into SPICE JNI " +
-                    "after disconnection");
-        return _context;
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceForceRedraw(context);
+        } finally {
+            endNativeCall();
+        }
     }
 
     /* Callbacks from jni */
@@ -164,7 +221,9 @@ public class SpiceCommunicator {
 
     private void OnDisconnect() {
         handler.sendEmptyMessage(Constants.SPICE_CONNECT_FAILURE);
-        disconnected.set(true);
+        disconnectLock.writeLock().lock();
+        disconnected = true;
+        disconnectLock.writeLock().unlock();
     }
 
     public boolean isInNormalProtocol() {
@@ -250,6 +309,12 @@ public class SpiceCommunicator {
     }
 
     public void requestResolution(int x, int y) {
-        SpiceRequestResolution(getContext(), x, y);
+        if (!startNativeCall())
+            return;
+        try {
+            SpiceRequestResolution(context, x, y);
+        } finally {
+            endNativeCall();
+        }
     }
 }
