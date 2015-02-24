@@ -457,6 +457,7 @@ public class RemoteCanvas extends ImageView {
 
         public void stop() {
             handler.removeCallbacks(this);
+            outstanding = 0;
         }
 
         public void pong() {
@@ -530,11 +531,12 @@ public class RemoteCanvas extends ImageView {
                 vmState = Constants.VM_STATE_UNKNOWN;
                 pinger.stop();
                 if (maintainConnection) {
-                    if (!spiceUpdateReceived) {
-                        showFatalMessageAndQuit(getContext().getString(R.string.error_connection_failed));
-                    } else {
-                        showFatalMessageAndQuit(getContext().getString(R.string.error_connection_interrupted));
-                    }
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startControlConnection();
+                        }
+                    }, 1000);
                 }
                 break;
 
