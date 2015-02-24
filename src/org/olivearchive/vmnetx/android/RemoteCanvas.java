@@ -445,8 +445,8 @@ public class RemoteCanvas extends ImageView {
 
 
     private class PingerRunnable implements Runnable {
-        private static final int INTERVAL = 5000;
-        private static final int COUNT = 5;
+        private static final int INTERVAL = 3000;
+        private static final int COUNT = 3;
 
         private int outstanding = 0;
 
