@@ -166,9 +166,6 @@ public class RemoteCanvas extends ImageView {
             if (maintainConnection) {
                 Log.e(TAG, e.toString());
                 e.printStackTrace();
-                // Ensure we dismiss the progress dialog before we finish
-                if (pd.isShowing())
-                    pd.dismiss();
 
                 if (e instanceof OutOfMemoryError) {
                     showFatalMessageAndQuit (getContext().getString(R.string.error_out_of_memory));
@@ -214,6 +211,9 @@ public class RemoteCanvas extends ImageView {
         closeConnection();
         handler.post(new Runnable() {
             public void run() {
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                }
                 Utils.showFatalErrorMessage(getContext(), error);
             }
         });
@@ -530,9 +530,6 @@ public class RemoteCanvas extends ImageView {
                 vmState = Constants.VM_STATE_UNKNOWN;
                 pinger.stop();
                 if (maintainConnection) {
-                    if (pd != null && pd.isShowing()) {
-                        pd.dismiss();
-                    }
                     if (!spiceUpdateReceived) {
                         showFatalMessageAndQuit(getContext().getString(R.string.error_connection_failed));
                     } else {
