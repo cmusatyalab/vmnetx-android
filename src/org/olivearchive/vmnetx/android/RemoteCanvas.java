@@ -131,12 +131,7 @@ public class RemoteCanvas extends ImageView {
         pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                closeConnection();
-                handler.post(new Runnable() {
-                    public void run() {
-                        Utils.showFatalErrorMessage(getContext(), getContext().getString(R.string.info_progress_dialog_aborted));
-                    }
-                });
+                showFatalMessageAndQuit(getContext().getString(R.string.info_progress_dialog_aborted));
             }
         });
         pd.show();
