@@ -30,7 +30,7 @@ configsub_ver="bf654c7e"
 configguess_ver="28d244f1"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
 openssl_ver="1.0.2"
-spicegtk_ver="0.27"
+spicegtk_ver="0.28"
 gstreamer_ver="1.4.5"
 
 # Tarball URLs
@@ -213,14 +213,13 @@ build_one() {
         make install_sw
         ;;
     spicegtk)
-        patch -p1 < "${basedir}/spice-no-gtk.patch"
         patch -p1 < "${basedir}/spice-marshaller-sigbus.patch"
         autoreconf -fi
         do_configure \
                 --with-gtk=no \
                 --enable-dbus=no \
                 --enable-controller=no \
-                --with-audio=gstreamer1 \
+                --with-audio=gstreamer \
                 LIBS="-lm"
         make $parallel
         make install
