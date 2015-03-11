@@ -233,18 +233,18 @@ build_one() {
 
 sdist() {
     # Build source distribution
-    local package zipdir
-    zipdir="vmnetx-android-dependencies"
-    rm -rf "${zipdir}"
-    mkdir -p "${zipdir}"
+    local package tardir
+    tardir="vmnetx-android-dependencies"
+    rm -rf "${tardir}"
+    mkdir -p "${tardir}"
     for package in $packages
     do
         fetch "$package"
-        cp "$(tarpath ${package})" "${zipdir}"
+        cp "$(tarpath ${package})" "${tardir}"
     done
-    rm -f "${zipdir}.zip"
-    zip -r "${zipdir}.zip" "${zipdir}"
-    rm -r "${zipdir}"
+    rm -f "${tardir}.tar.gz"
+    tar czf "${tardir}.tar.gz" "${tardir}"
+    rm -r "${tardir}"
 }
 
 setup() {
