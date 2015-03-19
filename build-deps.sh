@@ -29,7 +29,7 @@ packages="configguess configsub celt openssl spicegtk"
 configsub_ver="bf654c7e"
 configguess_ver="28d244f1"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
-openssl_ver="1.0.2"
+openssl_ver="1.0.2a"
 spicegtk_ver="0.28"
 gstreamer_ver="1.4.5"
 
