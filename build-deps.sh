@@ -179,6 +179,9 @@ build_one() {
         cd libcelt
         make $parallel
         make install
+        cd ..
+        mkdir -p "${root}/lib/pkgconfig"
+        cp -a celt051.pc "${root}/lib/pkgconfig"
         ;;
     openssl)
         local os
@@ -371,6 +374,10 @@ Version: 8
 Libs: -L\${libdir} -ljpeg
 Cflags: -I\${includedir}
 EOF
+        # Drop pkg-config file for opus, since static libopus and static
+        # libcelt051 can't be linked into the same binary due to symbol
+        # conflicts, and RHEL's libspice-server doesn't link with opus
+        rm -f ${gst}/lib-fixed/pkgconfig/opus.pc
     fi
 
     # Build
