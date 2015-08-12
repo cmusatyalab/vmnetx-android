@@ -60,6 +60,8 @@ public class ClientProtocolEndpoint extends ProtocolEndpoint {
             bundle.putInt(Constants.ARG_VM_STATE, msg.getVmState("state"));
             bundle.putString(Constants.ARG_VM_NAME, msg.getString("name"));
             bundle.putInt(Constants.ARG_MAX_MOUSE_RATE, msg.getInt("limit_mouse_rate", 0));
+            bundle.putInt(Constants.ARG_SERVER_TIMEOUT_MIN, msg.getInt("server_timeout_min", 0));
+            bundle.putInt(Constants.ARG_SERVER_TIMEOUT_MAX, msg.getInt("server_timeout_max", 0));
             emit(Constants.CLIENT_PROTOCOL_AUTH_OK, bundle);
 
         } else if (msg.mtype.equals("auth-failed")) {

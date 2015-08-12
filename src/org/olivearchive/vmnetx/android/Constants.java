@@ -73,6 +73,10 @@ public class Constants {
     public static final String ARG_VM_NAME = "vm-name";
     // int
     public static final String ARG_MAX_MOUSE_RATE = "max-mouse-rate";
+    // int
+    public static final String ARG_SERVER_TIMEOUT_MIN = "server-timeout-min";
+    // int
+    public static final String ARG_SERVER_TIMEOUT_MAX = "server-timeout-max";
 
     // VM states
     public static final int VM_STATE_UNKNOWN = 0;

@@ -449,9 +449,11 @@ public class RemoteCanvas extends ImageView {
         private static final int COUNT = 3;
 
         private int outstanding = 0;
+        private long lastAlive = System.nanoTime();
 
         public void start() {
             stop();
+            lastAlive = System.nanoTime();
             schedule();
         }
 
@@ -462,6 +464,7 @@ public class RemoteCanvas extends ImageView {
 
         public void pong() {
             outstanding = 0;
+            lastAlive = System.nanoTime();
         }
 
         private void schedule() {
@@ -479,6 +482,10 @@ public class RemoteCanvas extends ImageView {
                 controlConn.close();
             }
         }
+
+        public long getSecondsSinceAlive() {
+            return ((System.nanoTime() - lastAlive) / (long) 1e9);
+        }
     };
     private final PingerRunnable pinger = new PingerRunnable();
 
@@ -487,6 +494,8 @@ public class RemoteCanvas extends ImageView {
      * Handler for connection events.
      */
     private final Handler handler = new Handler() {
+        private int serverTimeout;
+
         private void showProtocolErrorAndQuit(String error) {
             showFatalMessageAndQuit(getContext().getString(R.string.error_protocol) + " " + error);
         }
@@ -531,12 +540,17 @@ public class RemoteCanvas extends ImageView {
                 vmState = Constants.VM_STATE_UNKNOWN;
                 pinger.stop();
                 if (maintainConnection) {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            startControlConnection();
-                        }
-                    }, 1000);
+                    if (serverTimeout == 0 ||
+                            pinger.getSecondsSinceAlive() <= serverTimeout) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startControlConnection();
+                            }
+                        }, 1000);
+                    } else {
+                        showFatalMessageAndQuit(getContext().getString(R.string.error_connection_failed));
+                    }
                 }
                 break;
 
@@ -544,7 +558,9 @@ public class RemoteCanvas extends ImageView {
                 vmName = args.getString(Constants.ARG_VM_NAME);
                 vmState = args.getInt(Constants.ARG_VM_STATE);
                 int maxMouseRate = args.getInt(Constants.ARG_MAX_MOUSE_RATE);
-                Log.d(TAG, "auth ok " + vmName + " " + Integer.toString(vmState) + " " + Integer.toString(maxMouseRate));
+                int serverTimeoutMin = args.getInt(Constants.ARG_SERVER_TIMEOUT_MIN);
+                serverTimeout = args.getInt(Constants.ARG_SERVER_TIMEOUT_MAX);
+                Log.d(TAG, "auth ok " + vmName + " " + Integer.toString(vmState) + " " + Integer.toString(maxMouseRate) + " " + Integer.toString(serverTimeoutMin) + " " + Integer.toString(serverTimeout));
 
                 // Start pinging
                 pinger.start();
