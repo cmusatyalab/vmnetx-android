@@ -24,7 +24,7 @@ set -eE
 
 platform="android-16"
 abis="armeabi-v7a x86"
-packages="configguess configsub celt openssl spicegtk"
+packages="configguess configsub celt openssl spicegtk gstreamer_src"
 
 # Package versions
 configsub_ver="bf654c7e"
@@ -32,7 +32,7 @@ configguess_ver="28d244f1"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
 openssl_ver="1.0.2d"
 spicegtk_ver="0.29"
-gstreamer_ver="1.4.5"
+gstreamer_ver="1.6.1"
 
 # Tarball URLs
 configguess_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=${configguess_ver}"
@@ -40,9 +40,10 @@ configsub_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=c
 celt_url="http://downloads.xiph.org/releases/celt/celt-${celt_ver}.tar.gz"
 openssl_url="http://www.openssl.org/source/openssl-${openssl_ver}.tar.gz"
 spicegtk_url="http://www.spice-space.org/download/gtk/spice-gtk-${spicegtk_ver}.tar.bz2"
-gstreamer_armeabi_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-arm-release-${gstreamer_ver}.tar.bz2"
-gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-armv7-release-${gstreamer_ver}.tar.bz2"
-gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-release-${gstreamer_ver}.tar.bz2"
+gstreamer_armeabi_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-arm-nodebug-${gstreamer_ver}.tar.bz2"
+gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-armv7-nodebug-${gstreamer_ver}.tar.bz2"
+gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-nodebug-${gstreamer_ver}.tar.bz2"
+gstreamer_src_url="http://gstreamer.freedesktop.org/data/pkg/src/${gstreamer_ver}/cerbero-${gstreamer_ver}.tar.bz2"
 
 # Unpacked source trees
 celt_build="celt-${celt_ver}"
