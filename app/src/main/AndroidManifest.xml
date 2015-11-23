@@ -2,12 +2,7 @@
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="org.olivearchive.vmnetx.android"
-        android:installLocation="auto"
-        android:versionCode="200"
-        android:versionName="0.2.0">
-    <uses-sdk
-            android:minSdkVersion="16"
-            android:targetSdkVersion="22"/>
+        android:installLocation="auto">
     <uses-permission android:name="android.permission.INTERNET"/>
     <supports-screens
             android:xlargeScreens="true"
