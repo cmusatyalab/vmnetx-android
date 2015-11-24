@@ -1,6 +1,6 @@
-1. Add vmnetx-android to Eclipse as an existing Android project.
+1. Add vmnetx-android to Android Studio as an existing Android project.
 
 2. ./build-deps.sh -j 4 -n /path/to/ndk build
 
-3. HOST_SED=sed /path/to/ndk/ndk-build -j 4
+3. cd app/src/main && HOST_SED=sed /path/to/ndk/ndk-build -j 4
    (https://bugzilla.gnome.org/show_bug.cgi?id=750162)

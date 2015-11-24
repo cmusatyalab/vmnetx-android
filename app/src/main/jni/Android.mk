@@ -1,5 +1,6 @@
 LOCAL_PATH 	:= $(call my-dir)
-PREBUILT_ROOT   := ../deps/$(TARGET_ARCH_ABI)/root
+COMMON_ROOT	:= ../../../../deps/$(TARGET_ARCH_ABI)
+PREBUILT_ROOT   := $(COMMON_ROOT)/root
 
 include $(CLEAR_VARS)
 LOCAL_MODULE            := celt
@@ -30,8 +31,9 @@ LOCAL_STATIC_LIBRARIES  := celt libssl
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-GSTREAMER_ROOT            := $(LOCAL_PATH)/../deps/$(TARGET_ARCH_ABI)/gstreamer
+GSTREAMER_ROOT		  := $(LOCAL_PATH)/$(COMMON_ROOT)/gstreamer
 GSTREAMER_NDK_BUILD_PATH  := $(GSTREAMER_ROOT)/share/gst-android/ndk-build/
+GSTREAMER_JAVA_SRC_DIR	  := java
 include $(GSTREAMER_NDK_BUILD_PATH)/plugins.mk
 GSTREAMER_PLUGINS         := $(GSTREAMER_PLUGINS_CORE) $(GSTREAMER_PLUGINS_SYS)
 G_IO_MODULES              := gnutls

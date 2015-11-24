@@ -1,3 +1,12 @@
-.idea/workspace.xml
-local.properties
-tar/
+/.idea/libraries/
+/.idea/workspace.xml
+/local.properties
+/deps/
+/tar/
+/app/src/main/assets/
+/app/src/main/gst-build-*/
+/app/src/main/java/org/freedesktop/
+/app/src/main/libs/
+/app/src/main/obj/
+.gradle
+build

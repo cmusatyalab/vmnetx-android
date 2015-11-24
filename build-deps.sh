@@ -40,9 +40,9 @@ configsub_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=c
 celt_url="http://downloads.xiph.org/releases/celt/celt-${celt_ver}.tar.gz"
 openssl_url="http://www.openssl.org/source/openssl-${openssl_ver}.tar.gz"
 spicegtk_url="http://www.spice-space.org/download/gtk/spice-gtk-${spicegtk_ver}.tar.bz2"
-gstreamer_armeabi_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-arm-nodebug-${gstreamer_ver}.tar.bz2"
-gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-armv7-nodebug-${gstreamer_ver}.tar.bz2"
-gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-nodebug-${gstreamer_ver}.tar.bz2"
+gstreamer_armeabi_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-arm-${gstreamer_ver}.tar.bz2"
+gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-armv7-${gstreamer_ver}.tar.bz2"
+gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-${gstreamer_ver}.tar.bz2"
 gstreamer_src_url="http://gstreamer.freedesktop.org/data/pkg/src/${gstreamer_ver}/cerbero-${gstreamer_ver}.tar.bz2"
 
 # Unpacked source trees
