@@ -56,12 +56,6 @@ git archive --format tar "v${version}" "--prefix=vmnetx-android-${version}/" \
         -o "vmnetx-android-${version}.tar"
 xz -9f "vmnetx-android-${version}.tar"
 
-# Build GStreamer SDK
-./build-gstreamer.sh clean
-./build-gstreamer.sh build
-mv vmnetx-android-gstreamer-sdk-source.tar.gz \
-        "vmnetx-android-${version}-gstreamer-sdk-source.tar.gz"
-
 # Clean and rebuild binary dependencies
 ./build-deps.sh clean
 ./build-deps.sh sdist
@@ -70,13 +64,13 @@ mv vmnetx-android-dependencies.tar.gz \
 ./build-deps.sh $parallel -n "${ndk}" build
 
 # NDK build
-"${ndk}/ndk-build" clean
-"${ndk}/ndk-build" $parallel
+( cd app/src/main && "${ndk}/ndk-build" clean )
+( cd app/src/main && "${ndk}/ndk-build" )
 
 # Java build
 cat <<EOF
 
-Refresh Eclipse, use "Export Unsigned Application Package" to export an
+Refresh AndroidStudio, use "Export Unsigned Application Package" to export an
 unsigned APK to VMNetX.apk in this directory, then hit Enter.
 EOF
 while true
