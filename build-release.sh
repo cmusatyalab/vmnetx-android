@@ -24,13 +24,14 @@ set -e
 parallel=-j8
 
 if [ -z "$4" ] ; then
-    echo "Usage: $0 <version> <sdk-path> <ndk-path> <keystore-path>" >&2
+    echo "Usage: $0 <version> <sdk-path> <keystore-path>" >&2
     exit 1
 fi
 version="$1"
 sdk="$2"
-ndk="$3"
-keystore="$4"
+keystore="$3"
+
+ndk="$sdk/ndk-bundle"
 
 # Validate
 if [ ! -e "${sdk}/build-tools" ] ; then
@@ -66,23 +67,26 @@ mv vmnetx-android-dependencies.tar.gz \
 # NDK build
 ( cd app/src/main && "${ndk}/ndk-build" clean )
 ( cd app/src/main && "${ndk}/ndk-build" )
+touch deps/built
 
 # Java build
+APK="app/build/outputs/apk/app-release-unsigned.apk"
 cat <<EOF
 
-Refresh AndroidStudio, use "Export Unsigned Application Package" to export an
-unsigned APK to VMNetX.apk in this directory, then hit Enter.
+Refresh Android Studio, use "Build" -> "Build APK" to build an
+unsigned APK, then hit Enter.
 EOF
 while true
 do
     read
-    if [ -e VMNetX.apk ] ; then
+    if [ -e "$APK" -a "$APK" -nt "deps/built" ] ; then
         break
     fi
     echo "APK not found.  Try again."
 done
 
 # Sign
+cp "$APK" VMNetX.apk
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
         -keystore "${keystore}" VMNetX.apk vmnetx
 "${zipalign}" -v 4 VMNetX.apk "vmnetx-${version}.apk"
