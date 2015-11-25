@@ -24,14 +24,15 @@ set -eE
 
 platform="android-16"
 abis="armeabi-v7a x86"
-packages="configguess configsub celt openssl spicegtk gstreamer_src"
+packages="configguess configsub celt openssl spiceprotocol spicegtk gstreamer_src"
 
 # Package versions
 configsub_ver="bf654c7e"
 configguess_ver="28d244f1"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
 openssl_ver="1.0.2d"
-spicegtk_ver="0.29"
+spicegtk_ver="0.30"
+spiceprotocol_ver="0.12.10"
 gstreamer_ver="1.6.1"
 
 # Tarball URLs
@@ -40,6 +41,7 @@ configsub_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=c
 celt_url="http://downloads.xiph.org/releases/celt/celt-${celt_ver}.tar.gz"
 openssl_url="http://www.openssl.org/source/openssl-${openssl_ver}.tar.gz"
 spicegtk_url="http://www.spice-space.org/download/gtk/spice-gtk-${spicegtk_ver}.tar.bz2"
+spiceprotocol_url="http://www.spice-space.org/download/releases/spice-protocol-${spiceprotocol_ver}.tar.bz2"
 gstreamer_armeabi_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-arm-${gstreamer_ver}.tar.bz2"
 gstreamer_armeabiv7a_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-armv7-${gstreamer_ver}.tar.bz2"
 gstreamer_x86_url="http://gstreamer.freedesktop.org/data/pkg/android/${gstreamer_ver}/gstreamer-1.0-android-x86-${gstreamer_ver}.tar.bz2"
@@ -49,22 +51,26 @@ gstreamer_src_url="http://gstreamer.freedesktop.org/data/pkg/src/${gstreamer_ver
 celt_build="celt-${celt_ver}"
 openssl_build="openssl-${openssl_ver}"
 spicegtk_build="spice-gtk-${spicegtk_ver}"
+spiceprotocol_build="spice-protocol-${spiceprotocol_ver}"
 
 # Installed libraries
 celt_artifacts="libcelt051.a"
 openssl_artifacts="libssl.a libcrypto.a"
 spicegtk_artifacts="libspice-client-glib-2.0.a"
+spiceprotocol_artifacts="spice-protocol/spice.proto"
 
 # Update-checking URLs
 celt_upurl="http://downloads.xiph.org/releases/celt/"
 openssl_upurl="http://www.openssl.org/source/"
 spicegtk_upurl="http://www.spice-space.org/download/gtk/"
+spiceprotocol_upurl="http://www.spice-space.org/download/releases/"
 gstreamer_upurl="http://gstreamer.freedesktop.org/data/pkg/android/"
 
 # Update-checking regexes
 celt_upregex="celt-(0\.5\.1\.[0-9]+)\.tar"
 openssl_upregex="openssl-([0-9.]+[a-z]?)\.tar"
 spicegtk_upregex="spice-gtk-([0-9.]+)\.tar"
+spiceprotocol_upregex="spice-protocol-([0-9.]+)\.tar"
 gstreamer_upregex=">([0-9.]+)/<"
 
 expand() {
@@ -149,7 +155,7 @@ do_configure() {
             --disable-shared \
             --disable-dependency-tracking \
             PKG_CONFIG="pkg-config --static" \
-            PKG_CONFIG_LIBDIR="${root}/lib/pkgconfig:${gst}/lib-fixed/pkgconfig" \
+            PKG_CONFIG_LIBDIR="${root}/share/pkgconfig:${root}/lib/pkgconfig:${gst}/lib-fixed/pkgconfig" \
             PKG_CONFIG_PATH= \
             CPPFLAGS="${cppflags} -I${root}/include -I${gst}/include" \
             CFLAGS="${cflags}" \
@@ -217,8 +223,13 @@ build_one() {
         make
         make install_sw
         ;;
+    spiceprotocol)
+        autoreconf -fi
+        do_configure
+        make $parallel
+        make install
+        ;;
     spicegtk)
-        patch -p1 < "${basedir}/spice-marshaller-sigbus.patch"
         autoreconf -fi
         do_configure \
                 --with-gtk=no \
@@ -227,8 +238,11 @@ build_one() {
                 --with-audio=gstreamer \
                 LIBS="-lm"
         make $parallel
-        make install
-        cd spice-common/spice-protocol
+
+        # Patch to avoid SIGBUS due to unaligned accesses on ARM7
+        patch -p1 < "${basedir}/spice-marshaller-sigbus.patch"
+        make $parallel
+
         make install
         ;;
     esac

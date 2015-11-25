@@ -1,6 +1,8 @@
 1. Add vmnetx-android to Android Studio as an existing Android project.
 
-2. ./build-deps.sh -j 4 -n /path/to/ndk build
+2. pip install --user --ignore-installed six pyparsing
 
-3. cd app/src/main && HOST_SED=sed /path/to/ndk/ndk-build -j 4
+3. ./build-deps.sh -j 4 -n /path/to/ndk build
+
+4. cd app/src/main && HOST_SED=sed /path/to/ndk/ndk-build -j 4
    (https://bugzilla.gnome.org/show_bug.cgi?id=750162)
