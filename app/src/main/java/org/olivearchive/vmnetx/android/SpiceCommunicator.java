@@ -110,10 +110,14 @@ public class SpiceCommunicator {
         }
     }
 
-    protected void finalize() {
+    protected void finalize() throws Throwable {
         // Ensure native resources are cleaned up.
         // Redundant if already disconnected.
-        disconnect();
+        try {
+            disconnect();
+        } finally {
+            super.finalize();
+        }
     }
 
     private class ConnectThread extends Thread {
