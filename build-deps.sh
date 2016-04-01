@@ -24,7 +24,7 @@ set -eE
 
 platform="android-16"
 abis="armeabi-v7a x86"
-packages="configguess configsub celt openssl spiceprotocol spicegtk gstreamer_src"
+packages="configguess configsub celt openssl spiceprotocol spicegtk" # gstreamer_src"
 
 # Package versions
 configsub_ver="bf654c7e"

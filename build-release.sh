@@ -23,7 +23,7 @@ set -e
 
 parallel=-j8
 
-if [ -z "$4" ] ; then
+if [ -z "$3" ] ; then
     echo "Usage: $0 <version> <sdk-path> <keystore-path>" >&2
     exit 1
 fi
@@ -66,7 +66,7 @@ mv vmnetx-android-dependencies.tar.gz \
 
 # NDK build
 ( cd app/src/main && "${ndk}/ndk-build" clean )
-( cd app/src/main && "${ndk}/ndk-build" )
+( cd app/src/main && NDK_HOST_SED=sed "${ndk}/ndk-build" )
 touch deps/built
 
 # Java build
@@ -78,7 +78,8 @@ unsigned APK, then hit Enter.
 EOF
 while true
 do
-    read
+    #read
+    sleep 10
     if [ -e "$APK" -a "$APK" -nt "deps/built" ] ; then
         break
     fi
