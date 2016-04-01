@@ -24,7 +24,7 @@
 #include <android/log.h>
 #include <glib.h>
 #include <stdlib.h>
-#include <spice-audio.h>
+#include <spice-client.h>
 
 #include "android-io.h"
 #include "android-spice.h"

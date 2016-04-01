@@ -30,10 +30,10 @@ packages="configguess configsub celt openssl spiceprotocol spicegtk gstreamer_sr
 configsub_ver="bf654c7e"
 configguess_ver="28d244f1"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
-openssl_ver="1.0.2d"
-spicegtk_ver="0.30"
-spiceprotocol_ver="0.12.10"
-gstreamer_ver="1.6.1"
+openssl_ver="1.0.2g"
+spicegtk_ver="0.31"
+spiceprotocol_ver="0.12.11"
+gstreamer_ver="1.8.0"
 
 # Tarball URLs
 configguess_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=${configguess_ver}"
