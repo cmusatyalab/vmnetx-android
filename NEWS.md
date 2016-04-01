@@ -1,3 +1,12 @@
+VMNetX for Android 0.2.2 (2016-04-01)
+-------------------------------------
+
+- Update dependencies.
+    openssl         1.0.2g
+    gstreamer       1.8.0
+    spicegtk        0.31
+    spiceprotocol   0.12.11
+
 VMNetX for Android 0.2.1 (2015-11-24)
 -------------------------------------
 
