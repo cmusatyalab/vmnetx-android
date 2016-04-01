@@ -4,5 +4,5 @@
 
 3. ./build-deps.sh -j 4 -n /path/to/ndk build
 
-4. cd app/src/main && HOST_SED=sed /path/to/ndk/ndk-build -j 4
+4. cd app/src/main && NDK_HOST_SED=sed /path/to/ndk/ndk-build -j 4
    (https://bugzilla.gnome.org/show_bug.cgi?id=750162)
