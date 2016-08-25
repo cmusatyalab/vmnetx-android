@@ -22,7 +22,7 @@
 
 set -eE
 
-platform="android-16"
+android_api="16"
 abis="armeabi-v7a x86"
 packages="configguess configsub celt openssl spiceprotocol spicegtk" # gstreamer_src"
 
@@ -332,14 +332,10 @@ setup() {
             echo "No toolchain configured and NDK directory not set."
             exit 1
         fi
-        if [ $(uname -p) = "x86_64" ] ; then
-            system_arg="--system=linux-x86_64"
-        fi
-        ${ndkdir}/build/tools/make-standalone-toolchain.sh \
-                --platform="${platform}" \
-                --arch="${arch}" \
-                --install-dir="${toolchain}" \
-                "${system_arg}"
+        ${ndkdir}/build/tools/make_standalone_toolchain.py \
+                --api "${android_api}" \
+                --arch "${arch}" \
+                --install-dir "${toolchain}"
     fi
     if ! [ -e "${toolchain}/bin/${build_host}-gcc" ] ; then
         echo "Couldn't configure compiler."
