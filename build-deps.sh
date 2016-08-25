@@ -30,10 +30,10 @@ packages="configguess configsub celt openssl spiceprotocol spicegtk" # gstreamer
 configsub_ver="bf654c7e"
 configguess_ver="28d244f1"
 celt_ver="0.5.1.3"  # spice-gtk requires 0.5.1.x specifically
-openssl_ver="1.0.2g"
-spicegtk_ver="0.31"
-spiceprotocol_ver="0.12.11"
-gstreamer_ver="1.8.0"
+openssl_ver="1.0.2h"
+spicegtk_ver="0.32"
+spiceprotocol_ver="0.12.12"
+gstreamer_ver="1.9.1"
 
 # Tarball URLs
 configguess_url="http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=${configguess_ver}"
@@ -237,6 +237,7 @@ build_one() {
                 --enable-controller=no \
                 --with-audio=gstreamer \
                 LIBS="-lm"
+        patch -p1 < "${basedir}/spice-gtk-exit.patch"
         make $parallel
 
         # Patch to avoid SIGBUS due to unaligned accesses on ARM7
