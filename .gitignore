@@ -10,3 +10,4 @@
 /app/src/main/obj/
 .gradle
 build
+vmnetx.keystore

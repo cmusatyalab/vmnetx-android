@@ -1,9 +1,13 @@
 apply plugin: 'com.android.application'
-
 android {
+    signingConfigs {
+        config {
+            keyAlias 'vmnetx'
+            storeFile file('vmnetx.keystore')
+        }
+    }
     compileSdkVersion 22
     buildToolsVersion "23.0.1"
-
     defaultConfig {
         applicationId "org.olivearchive.vmnetx.android"
         minSdkVersion 16
@@ -19,11 +23,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.config
         }
     }
 }
-
-if(project.hasProperty("VMNetX.signing")
-    && new File(project.property("VMNetX.signing") + ".gradle").exists()) {
-  apply from: project.property("VMNetX.signing") + ".gradle";
+if (project.hasProperty("VMNetX.signing")
+        && new File(project.property("VMNetX.signing") + ".gradle").exists()) {
+    apply from: project.property("VMNetX.signing") + ".gradle";
+}
+dependencies {
 }
