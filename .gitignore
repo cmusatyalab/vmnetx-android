@@ -1,6 +1,11 @@
-/.idea/libraries/
-/.idea/workspace.xml
+*.iml
+.gradle
 /local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+build/
+/captures
 /deps/
 /tar/
 /app/src/main/assets/
@@ -8,6 +13,4 @@
 /app/src/main/java/org/freedesktop/
 /app/src/main/libs/
 /app/src/main/obj/
-.gradle
-build
 vmnetx.keystore
