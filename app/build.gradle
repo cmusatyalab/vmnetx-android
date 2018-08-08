@@ -3,12 +3,12 @@ android {
     signingConfigs {
 
     }
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "org.olivearchive.vmnetx.android"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 203
         versionName "0.2.3"
     }
